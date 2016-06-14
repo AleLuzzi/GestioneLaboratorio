@@ -6,12 +6,15 @@ class Main(tk.Frame):
         tk.Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
         self.frm_alto = tk.Frame(self)
+        self.frm_alto.grid()
 
-        self.btn1 = tk.Button(self, text='btn1')
-        self.btn1.grid(row=0, column=0)
+        img_btn1 = tk.PhotoImage(file='.//immagini//logo.gif')
+
+        self.btn1 = tk.Button(self.frm_alto, text='btn1', compound='bottom', image=img_btn1)
+        self.btn1.grid()
 
 
 if __name__ == "__main__":
     root = tk.Tk()
-    Main(root).pack(side="top", fill="both", expand=True)
+    Main(root).grid()
     root.mainloop()
