@@ -22,7 +22,8 @@ class Main(tk.Frame):
         self.img_btn5 = tk.PhotoImage(file=".//immagini//ingredienti.gif")
         self.img_btn6 = tk.PhotoImage(file=".//immagini//lock.gif")
         self.img_btn7 = tk.PhotoImage(file=".//immagini//lvendita.gif")
-        self.img_btn8 = tk.PhotoImage(file=".//immagini//exit.gif")
+        self.img_btn8 = tk.PhotoImage(file=".//immagini//impostazioni.gif")
+        self.img_btn9 = tk.PhotoImage(file=".//immagini//exit.gif")
 
         bottone1 = ttk.Button(self.frm_alto, text="Ingresso Merce", compound='bottom',
                               image=self.img_btn1)
@@ -52,10 +53,15 @@ class Main(tk.Frame):
         bottone7 = ttk.Button(self.frm_alto, text="Vendita", compound='bottom',
                               image=self.img_btn7)
         bottone7.grid(row=0, column=6, padx=4, pady=4)
-    
-        bottone8 = ttk.Button(self.frm_alto, text="Uscita", compound='bottom',
+
+        bottone8 = ttk.Button(self.frm_alto, text="Impostazioni", compound='bottom',
                               image=self.img_btn8)
+
         bottone8.grid(row=0, column=7, padx=4, pady=4)
+    
+        bottone9 = ttk.Button(self.frm_alto, text="Uscita", compound='bottom',
+                              image=self.img_btn9)
+        bottone9.grid(row=0, column=8, padx=4, pady=4)
 
         self.frm_centrale.grid_propagate(False)
         self.frm_centrale.grid_rowconfigure(0, weight=2)
