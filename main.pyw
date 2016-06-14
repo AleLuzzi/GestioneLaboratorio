@@ -26,7 +26,7 @@ class Main(tk.Frame):
         self.img_btn9 = tk.PhotoImage(file=".//immagini//exit.gif")
 
         bottone1 = ttk.Button(self.frm_alto, text="Ingresso Merce", compound='bottom',
-                              image=self.img_btn1)
+                              image=self.img_btn1, command=self.ingresso_merce)
 
         bottone1.grid(row=0, column=0, padx=4, pady=4)
     
@@ -60,7 +60,7 @@ class Main(tk.Frame):
         bottone8.grid(row=0, column=7, padx=4, pady=4)
     
         bottone9 = ttk.Button(self.frm_alto, text="Uscita", compound='bottom',
-                              image=self.img_btn9)
+                              image=self.img_btn9, command=self.quit)
         bottone9.grid(row=0, column=8, padx=4, pady=4)
 
         self.frm_centrale.grid_propagate(False)
@@ -75,6 +75,9 @@ class Main(tk.Frame):
 
         label2 = tk.Label(self.frm_basso, text="Barra di stato")
         label2.grid(row=0, column=0, padx=4, pady=4)
+
+    def ingresso_merce(self):
+        pass
 
 
 if __name__ == "__main__":
