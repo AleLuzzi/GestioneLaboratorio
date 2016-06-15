@@ -10,17 +10,16 @@ class IngressoMerce(tk.Toplevel):
         self.title("Ingresso Merce")
         self.geometry("%dx525+0+0" % self.winfo_screenwidth())
         '''
-        Lettura progressivo lotto acquisto da file
-        '''
-        self.f = open('../laboratorio/prog_lotto_acq.txt', "r")
-        self.prog_lotto_acq = self.f.read()
-        self.f.close()
-        '''
         Connessione al database
         '''
-        self.conn = sqlite3.connect('../Laboratorio/data.db',
+        self.conn = sqlite3.connect('../Data/data.db',
                                     detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
         self.c = self.conn.cursor()
+        '''
+        Lettura progressivo lotto acquisto da file
+        '''
+        self.c.execute("SELECT prog_acq FROM progressivi")
+        self.prog_lotto_acq = self.c.fetchone()[0]
         '''
         Inizializzazione lista per valori da salvare sul database
         '''
@@ -152,16 +151,14 @@ class IngressoMerce(tk.Toplevel):
         self.lista_da_salvare.append(((str(self.prog_lotto_acq)+'A'), self.data, (self.num_ddt.get()),
                                       (self.fornitore.get()), (self.taglio_s.get()),
                                       (self.peso.get()), (self.peso.get()), 'no'))
-        print(type(self.data))
         self.entry.delete(0, tk.END)
 
     def salva_esci(self):
         self.c.executemany('INSERT INTO ingresso_merce VALUES (?,?,?,?,?,?,?,?)', self.lista_da_salvare)
         self.conn.commit()
+        self.c.execute('UPDATE progressivi SET prog_acq = ?', (self.prog_lotto_acq + 1,))
+        self.conn.commit()
         self.conn.close()
-        f = open('../laboratorio/prog_lotto_acq.txt', "w")
-        f.write(str(int(self.prog_lotto_acq)+1))
-        f.close()
         self.destroy()
 
     def chiudi(self):
