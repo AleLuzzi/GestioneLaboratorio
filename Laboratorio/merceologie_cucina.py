@@ -1,0 +1,174 @@
+import tkinter as tk
+from tkinter import ttk
+import sqlite3
+
+
+class MerceologieCucina(tk.Frame):
+    def __init__(self, parent):
+        tk.Frame.__init__(self, parent)
+
+        self.item = ''
+        self.valore_flag = dict()
+
+        '''
+        Connessione al Database
+        '''
+        self.conn = sqlite3.connect('../laboratorio/data.db',
+                                    detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+        self.c = self.conn.cursor()
+        '''
+        Definizione Frame
+        '''
+        self.frame_sx = ttk.Frame(self)
+        self.frame_centrale = ttk.Frame(self)
+        self.frame_dx = ttk.Frame(self)
+        '''
+        Treeview per tab Merceologie
+        '''
+        self.tree_merceologie = ttk.Treeview(self.frame_sx, height=23)
+        self.tree_merceologie['columns'] = ('Id', 'Merceologia')
+        self.tree_merceologie['show'] = 'headings'
+        self.tree_merceologie.heading('Id', text="Id")
+        self.tree_merceologie.heading('Merceologia', text="Merceologia")
+
+        self.tree_merceologie.column("Id", width=10)
+        self.tree_merceologie.column("Merceologia", width=150)
+
+        self.tree_merceologie.bind("<Double-1>", self.ondoubleclick)
+
+        '''
+        Lista campi del record
+        '''
+        self.campi = ['merceologia']
+        self.attributi = ['Inventario', 'Tagli']
+        self.label = {}
+        self.ckbutton = {}
+        self.entry = {}
+        '''
+        Labelframe dettagli reparto selezionato
+        '''
+        self.lbl_frame_merceologia_selezionata = ttk.LabelFrame(self.frame_centrale,
+                                                                text='Dettagli merceologia selezionata')
+
+        self.lbl_frame_attributi_merceologia = ttk.LabelFrame(self.frame_centrale,
+                                                              text='Attributi merceologia selezionata')
+        '''
+        Labelframe scegli prodotto
+        '''
+        self.lbl_frame_scegli = ttk.LabelFrame(self.frame_centrale, text='Azioni')
+        self.btn_modifica = ttk.Button(self.lbl_frame_scegli, text='Modifica', command=self.modifica)
+        self.btn_inserisci = ttk.Button(self.lbl_frame_scegli, text='Inserisci', command=self.inserisci)
+
+        self.aggiorna()
+        self.crea_label_entry()
+        self.crea_attributi()
+
+        '''
+        LAYOUT
+        '''
+
+        self.frame_sx.grid(row=1, column=0, sticky='n')
+        self.frame_centrale.grid(row=1, column=1, sticky='n')
+        self.frame_dx.grid(row=1, column=2, sticky='n')
+
+        self.tree_merceologie.grid(row=1, column=0, columnspan=3, sticky='ns')
+        self.lbl_frame_merceologia_selezionata.grid(row=1, column=0, sticky='n')
+        self.lbl_frame_attributi_merceologia.grid(row=2, column=0)
+        self.lbl_frame_scegli.grid(row=3, column=0)
+        self.btn_modifica.grid()
+        self.btn_inserisci.grid()
+
+    def crea_label_entry(self):
+        r = 1
+        c = 0
+        for campo in self.campi:
+            if r % 12 == 0:
+                r = 1
+                c += 2
+            lbl = ttk.Label(self.lbl_frame_merceologia_selezionata, text=campo)
+            lbl.grid(row=r, column=c)
+            self.label[campo] = lbl
+
+            ent = ttk.Entry(self.lbl_frame_merceologia_selezionata)
+            ent.grid(row=r, column=c + 1)
+            self.entry[campo] = ent
+            r += 1
+
+    def crea_attributi(self):
+        r = 1
+        c = 0
+        for attributo in self.attributi:
+            if r % 12 == 0:
+                r = 1
+                c += 2
+            lbl = ttk.Label(self.lbl_frame_attributi_merceologia, text=attributo)
+            lbl.grid(row=r, column=c)
+            self.label[attributo] = lbl
+
+            self.valore_flag[attributo] = tk.IntVar()
+            ckbtn = tk.Checkbutton(self.lbl_frame_attributi_merceologia, variable=self.valore_flag[attributo])
+            ckbtn.grid(row=r, column=c + 1)
+            self.ckbutton[attributo] = ckbtn
+            r += 1
+
+    def modifica(self):
+        valori_da_salvare = []
+        for campo in self.campi:
+            stringa = 'UPDATE merceologie SET {}=? WHERE ID = ?'.format(campo)
+            self.c.execute(stringa, (self.entry[campo].get(), (self.item[0])))
+            self.conn.commit()
+
+        for attributo in self.attributi:
+            valori_da_salvare.append(self.valore_flag[attributo].get())
+
+        stringa = 'UPDATE merceologie SET flag1_inv=? , flag2_taglio=? WHERE ID = ?'
+        self.c.execute(stringa, (valori_da_salvare[0], valori_da_salvare[1], (self.item[0])))
+        self.conn.commit()
+        self.aggiorna()
+
+    def inserisci(self):
+        lista_da_salvare = []
+        for campo in self.campi:
+            lista_da_salvare.append(self.entry[campo].get())
+        for attributo in self.attributi:
+            lista_da_salvare.append(self.valore_flag[attributo].get())
+        self.c.execute('INSERT INTO merceologie(merceologia,flag1_inv,flag2_taglio) VALUES (?,?,?)', lista_da_salvare)
+        self.conn.commit()
+        self.aggiorna()
+
+    def aggiorna(self):
+        self.tree_merceologie.delete(*self.tree_merceologie.get_children())
+        for lista in self.c.execute("SELECT * From merceologie "):
+            self.tree_merceologie.insert('', 'end', values=(lista[0], lista[1]))
+        lista = []
+
+        for row in self.c.execute("SELECT ID From merceologie"):
+            lista.extend(row)
+
+    def ondoubleclick(self, event):
+        for campo in self.campi:
+            self.entry[campo].delete(0, 'end')
+
+        for attributo in self.attributi:
+            self.ckbutton[attributo].deselect()
+
+        self.item = (self.tree_merceologie.item(self.tree_merceologie.selection(), 'values'))
+
+        for self.row in self.c.execute("SELECT * FROM merceologie WHERE ID = ?", (self.item[0],)):
+            for campo in self.campi:
+                self.entry[campo].insert(0, self.row[1])
+
+            i = 2
+            for attributo in self.attributi:
+                if self.row[i] == 1:
+                    self.ckbutton[attributo].select()
+                i += 1
+
+
+if __name__ == '__main__':
+    root = tk.Tk()
+    notebook = ttk.Notebook(root)
+    notebook.grid(row='1', column='0')
+    new = MerceologieCucina(notebook)
+    notebook.add(new, text='Reparti')
+    root.mainloop()
