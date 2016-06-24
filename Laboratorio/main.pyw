@@ -79,7 +79,7 @@ class Main(tk.Frame):
         label2.grid(row=0, column=0, padx=4, pady=4)
 
     @staticmethod
-    def ingresso_merce(self):
+    def ingresso_merce():
         IngressoMerce()
 
 
