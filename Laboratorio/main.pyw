@@ -1,6 +1,8 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 
+from ingresso_merce import IngressoMerce
+
 
 class Main(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
@@ -77,7 +79,7 @@ class Main(tk.Frame):
         label2.grid(row=0, column=0, padx=4, pady=4)
 
     def ingresso_merce(self):
-        pass
+        IngressoMerce()
 
 
 if __name__ == "__main__":
