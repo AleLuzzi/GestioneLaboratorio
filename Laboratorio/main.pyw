@@ -78,6 +78,7 @@ class Main(tk.Frame):
         label2 = tk.Label(self.frm_basso, text="Barra di stato")
         label2.grid(row=0, column=0, padx=4, pady=4)
 
+    @staticmethod
     def ingresso_merce(self):
         IngressoMerce()
 
