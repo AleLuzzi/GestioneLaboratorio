@@ -120,5 +120,6 @@ class Main(tk.Frame):
 
 if __name__ == "__main__":
     root = tk.Tk()
+    root.geometry('+0+0')
     Main(root).grid()
     root.mainloop()
