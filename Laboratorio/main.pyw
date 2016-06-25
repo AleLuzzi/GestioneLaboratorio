@@ -1,7 +1,14 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 
+from ingredienti import Ingredienti
 from ingresso_merce import IngressoMerce
+from chiudi_lotto import ChiudiLotto
+from lotti_vendita import LottiInVendita
+from nuovo_lotto import NuovoLotto
+from nuovo_lotto_cucina import NuovoLottoCucina
+from inventario import Inventario
+from anagrafica import Anagrafica
 
 
 class Main(tk.Frame):
@@ -33,31 +40,31 @@ class Main(tk.Frame):
         bottone1.grid(row=0, column=0, padx=4, pady=4)
     
         bottone2 = ttk.Button(self.frm_alto, text="Nuovo Lotto", compound='bottom',
-                              image=self.img_btn2)
+                              image=self.img_btn2, command=self.nuovo_lotto)
         bottone2.grid(row=0, column=1, padx=4, pady=4)
     
         bottone3 = ttk.Button(self.frm_alto, text="Inventario", compound='bottom',
-                              image=self.img_btn3)
+                              image=self.img_btn3, command=self.inventario)
         bottone3.grid(row=0, column=2, padx=4, pady=4)
     
         bottone4 = ttk.Button(self.frm_alto, text="Lotto Cucina", compound='bottom',
-                              image=self.img_btn4)
+                              image=self.img_btn4, command=self.nuovo_lotto_cucina)
         bottone4.grid(row=0, column=3, padx=4, pady=4)
     
         bottone5 = ttk.Button(self.frm_alto, text="Ingredienti", compound='bottom',
-                              image=self.img_btn5)
+                              image=self.img_btn5, command=self.ingredienti)
         bottone5.grid(row=0, column=4, padx=4, pady=4)
     
         bottone6 = ttk.Button(self.frm_alto, text="Chiudi Lotti", compound='bottom',
-                              image=self.img_btn6)
+                              image=self.img_btn6, command=self.chiudi_lotto)
         bottone6.grid(row=0, column=5, padx=4, pady=4)
     
         bottone7 = ttk.Button(self.frm_alto, text="Vendita", compound='bottom',
-                              image=self.img_btn7)
+                              image=self.img_btn7, command=self.lotti_in_vendita)
         bottone7.grid(row=0, column=6, padx=4, pady=4)
 
         bottone8 = ttk.Button(self.frm_alto, text="Impostazioni", compound='bottom',
-                              image=self.img_btn8)
+                              image=self.img_btn8, command=self.anagrafica)
 
         bottone8.grid(row=0, column=7, padx=4, pady=4)
     
@@ -81,6 +88,34 @@ class Main(tk.Frame):
     @staticmethod
     def ingresso_merce():
         IngressoMerce()
+
+    @staticmethod
+    def nuovo_lotto():
+        NuovoLotto()
+
+    @staticmethod
+    def inventario():
+        Inventario()
+
+    @staticmethod
+    def nuovo_lotto_cucina():
+        NuovoLottoCucina()
+
+    @staticmethod
+    def ingredienti():
+        Ingredienti()
+
+    @staticmethod
+    def chiudi_lotto():
+        ChiudiLotto()
+
+    @staticmethod
+    def lotti_in_vendita():
+        LottiInVendita()
+
+    @staticmethod
+    def anagrafica():
+        Anagrafica()
 
 
 if __name__ == "__main__":
