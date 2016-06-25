@@ -12,7 +12,7 @@ class Dipendenti(tk.Frame):
         '''
         Connessione al Database
         '''
-        self.conn = sqlite3.connect('/Laboratorio/data.db',
+        self.conn = sqlite3.connect('../laboratorio/data.db',
                                     detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
         self.c = self.conn.cursor()
         '''
