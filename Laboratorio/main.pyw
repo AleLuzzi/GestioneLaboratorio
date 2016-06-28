@@ -1,5 +1,6 @@
 import tkinter as tk
 import tkinter.ttk as ttk
+import os
 
 from ingredienti import Ingredienti
 from ingresso_merce import IngressoMerce
@@ -24,15 +25,15 @@ class Main(tk.Frame):
         self.frm_centrale.grid(row=1, column=0)
         self.frm_basso.grid(row=2, column=0, sticky="we")
 
-        self.img_btn1 = tk.PhotoImage(file=".//immagini//lbeef.gif")
-        self.img_btn2 = tk.PhotoImage(file=".//immagini//documentnew.gif")
-        self.img_btn3 = tk.PhotoImage(file=".//immagini//drun.gif")
-        self.img_btn4 = tk.PhotoImage(file=".//immagini//lfood.gif")
-        self.img_btn5 = tk.PhotoImage(file=".//immagini//ingredienti.gif")
-        self.img_btn6 = tk.PhotoImage(file=".//immagini//lock.gif")
-        self.img_btn7 = tk.PhotoImage(file=".//immagini//lvendita.gif")
-        self.img_btn8 = tk.PhotoImage(file=".//immagini//impostazioni.gif")
-        self.img_btn9 = tk.PhotoImage(file=".//immagini//exit.gif")
+        self.img_btn1 = tk.PhotoImage(file=os.path.join('immagini', 'lbeef.gif'))
+        self.img_btn2 = tk.PhotoImage(file=os.path.join('immagini', 'documentnew.gif'))
+        self.img_btn3 = tk.PhotoImage(file=os.path.join('immagini', 'drun.gif'))
+        self.img_btn4 = tk.PhotoImage(file=os.path.join('immagini', 'lfood.gif'))
+        self.img_btn5 = tk.PhotoImage(file=os.path.join('immagini', 'ingredienti.gif'))
+        self.img_btn6 = tk.PhotoImage(file=os.path.join('immagini', 'lock.gif'))
+        self.img_btn7 = tk.PhotoImage(file=os.path.join('immagini', 'lvendita.gif'))
+        self.img_btn8 = tk.PhotoImage(file=os.path.join('immagini', 'impostazioni.gif'))
+        self.img_btn9 = tk.PhotoImage(file=os.path.join('immagini', 'exit.gif'))
 
         bottone1 = ttk.Button(self.frm_alto, text="Ingresso Merce", compound='bottom',
                               image=self.img_btn1, command=self.ingresso_merce)
@@ -77,7 +78,7 @@ class Main(tk.Frame):
         self.frm_centrale.grid_columnconfigure(0, weight=2)
         self.frm_centrale.grid(row=1, column=0)
 
-        self.immagine1 = tk.PhotoImage(file=".//immagini//dlogo.gif")
+        self.immagine1 = tk.PhotoImage(file=os.path.join('immagini', 'dlogo.gif'))
 
         label1 = tk.Label(self.frm_centrale, image=self.immagine1, bd=0)
         label1.grid(row=0, column=0)
