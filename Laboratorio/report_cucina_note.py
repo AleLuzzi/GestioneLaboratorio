@@ -62,11 +62,6 @@ class ReportCucina(tk.Frame):
         '''
         self.stampa = ttk.Button(self.lblFrame_azioni, text="Crea PDF", command=self.crea_pdf)
         self.stampa.grid()
-        '''
-        Bottone per uscita
-        '''
-        self.esci = ttk.Button(self.lblFrame_azioni, text='Esci', command=self.destroy)
-        self.esci.grid()
 
     def inserisci(self):
 
