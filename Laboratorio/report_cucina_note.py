@@ -15,7 +15,7 @@ class ReportCucina(tk.Frame):
         '''
         Connessione al database
         '''
-        self.conn = sqlite3.connect('../laboratorio/data.db')
+        self.conn = sqlite3.connect(os.path.join('..', 'laboratorio', 'data.db'))
         self.c = self.conn.cursor()
         '''
         Treeview per riepilogo immissioni
@@ -88,7 +88,7 @@ class ReportCucina(tk.Frame):
                                 (self.settimana.get(),)):
             data.append(i)
 
-        doc = SimpleDocTemplate("../LaboratorioReport/table.pdf", pagesize=A4)
+        doc = SimpleDocTemplate("./table.pdf", pagesize=A4)
 
         parts = []
         table_with_style = Table(data, [1 * inch, 1.7 * inch, inch])
@@ -106,7 +106,7 @@ class ReportCucina(tk.Frame):
         parts.append(Spacer(1, 0.5 * inch))
         parts.append(table_with_style)
         doc.build(parts)
-        os.startfile("z:/LaboratorioReport/table.pdf")
+        os.startfile("table.pdf")
 
 
 if __name__ == '__main__':
