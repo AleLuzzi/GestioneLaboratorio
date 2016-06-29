@@ -18,7 +18,7 @@ class Main(tk.Frame):
         self.parent = parent
         
         self.frm_alto = tk.Frame(self, bd=1, relief="raised", bg="yellow")
-        self.frm_centrale = tk.Frame(self,height=400, width=self.winfo_screenwidth(), bd=1, relief="raised", bg="white")
+        self.frm_centrale = tk.Frame(self, height=400, width=self.winfo_screenwidth(), bd=1, relief="raised", bg="white")
         self.frm_basso = tk.Frame(self, bd=1, relief="raised")
         
         self.frm_alto.grid(row=0, column=0)
@@ -122,5 +122,6 @@ class Main(tk.Frame):
 if __name__ == "__main__":
     root = tk.Tk()
     root.geometry('+0+0')
+    root.title('Gestione Laboratorio')
     Main(root).grid()
     root.mainloop()
