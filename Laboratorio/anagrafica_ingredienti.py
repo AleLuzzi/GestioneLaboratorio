@@ -7,6 +7,7 @@ class Ingredienti(tk.Frame):
     def __init__(self, parent):
         tk.Frame.__init__(self, parent)
 
+        self.item = ''
         self.valore_flag = dict()
 
         '''
@@ -32,12 +33,12 @@ class Ingredienti(tk.Frame):
         self.tree_ingredienti.column("Id", width=10)
         self.tree_ingredienti.column("Ingrediente", width=200)
 
-        # self.tree_ingredienti.bind("<Double-1>", self.ondoubleclick)
+        self.tree_ingredienti.bind("<Double-1>", self.ondoubleclick)
 
         '''
         Lista campi del record
         '''
-        self.campi = ['ingrediente']
+        self.campi = ['ingrediente_base']
         self.attributi = ['Allergene']
         self.label = {}
         self.ckbutton = {}
@@ -52,8 +53,8 @@ class Ingredienti(tk.Frame):
         Labelframe scegli ingrediente
         '''
         self.lbl_frame_scegli = ttk.LabelFrame(self.frame_dx, text='Azioni')
-        self.btn_modifica = ttk.Button(self.lbl_frame_scegli, text='Modifica')
-        self.btn_inserisci = ttk.Button(self.lbl_frame_scegli, text='Inserisci')
+        self.btn_modifica = ttk.Button(self.lbl_frame_scegli, text='Modifica', command=self.modifica)
+        self.btn_inserisci = ttk.Button(self.lbl_frame_scegli, text='Inserisci', command=self.inserisci)
         '''
         LAYOUT
         '''
@@ -68,6 +69,7 @@ class Ingredienti(tk.Frame):
         self.btn_modifica.grid()
         self.btn_inserisci.grid()
 
+        self.aggiorna()
         self.crea_label_entry()
         self.crea_attributi()
 
@@ -103,6 +105,61 @@ class Ingredienti(tk.Frame):
             ckbtn.grid(row=r, column=c + 1)
             self.ckbutton[attributo] = ckbtn
             r += 1
+
+    def inserisci(self):
+        lista_da_salvare = []
+        for campo in self.campi:
+            lista_da_salvare.append(self.entry[campo].get())
+        for attributo in self.attributi:
+            lista_da_salvare.append(self.valore_flag[attributo].get())
+        self.c.execute('INSERT INTO ingredienti_base(ingrediente_base,flag1_allergene) VALUES (?,?)', lista_da_salvare)
+        self.conn.commit()
+        self.aggiorna()
+
+    def modifica(self):
+        valori_da_salvare = []
+        for campo in self.campi:
+            stringa = 'UPDATE ingredienti_base SET {}=? WHERE ID = ?'.format(campo)
+            self.c.execute(stringa, (self.entry[campo].get(), (self.item[0])))
+            self.conn.commit()
+
+        for attributo in self.attributi:
+            valori_da_salvare.append(self.valore_flag[attributo].get())
+
+        stringa = 'UPDATE ingredienti_base SET flag1_allergene=? WHERE ID = ?'
+        self.c.execute(stringa, (valori_da_salvare[0], (self.item[0])))
+        self.conn.commit()
+        self.aggiorna()
+
+    def aggiorna(self):
+        self.tree_ingredienti.delete(*self.tree_ingredienti.get_children())
+        for lista in self.c.execute("SELECT * FROM ingredienti_base "):
+            self.tree_ingredienti.insert('', 'end', values=(lista[0], lista[1]))
+
+        lista = []
+
+        for row in self.c.execute("SELECT ID From fornitori"):
+            lista.extend(row)
+
+    def ondoubleclick(self, event):
+        for campo in self.campi:
+            self.entry[campo].delete(0, 'end')
+
+        for attributo in self.attributi:
+            self.ckbutton[attributo].deselect()
+
+        self.item = (self.tree_ingredienti.item(self.tree_ingredienti.selection(), 'values'))
+
+        for self.row in self.c.execute("SELECT * FROM ingredienti_base WHERE ID = ?", (self.item[0],)):
+            for campo in self.campi:
+                self.entry[campo].insert(0, self.row[1])
+
+            i = 2
+            for attributo in self.attributi:
+                if self.row[i] == 1:
+                    self.ckbutton[attributo].select()
+                i += 1
+
 
 if __name__ == '__main__':
     root = tk.Tk()
