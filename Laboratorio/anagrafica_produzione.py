@@ -19,22 +19,22 @@ class Produzione(tk.Frame):
         '''
         Definizione Frame
         '''
-        self.frame_sx = ttk.Frame(self)
-        self.frame_sx.grid(row='1', column='0', rowspan='2', sticky='n')
+        self.frame_sx = tk.Frame(self, bd=1, relief="raised")
+        self.frame_sx.grid(row=1, column=0, rowspan=2, sticky='n')
 
-        self.frame_centrale_alto = ttk.Frame(self)
-        self.frame_centrale_alto.grid(row='1', column='1', sticky='n')
+        self.frame_centrale_alto = tk.Frame(self, bd=1, relief="raised")
+        self.frame_centrale_alto.grid(row=1, column=1, sticky='n')
 
-        self.frame_centrale_basso = ttk.Frame(self)
-        self.frame_centrale_basso.grid(row='2', column='1', sticky='n')
+        self.frame_centrale_basso = tk.Frame(self, bd=1, relief="raised")
+        self.frame_centrale_basso.grid(row=2, column=1, sticky='n')
 
-        self.frame_dx = ttk.Frame(self)
-        self.frame_dx.grid(row='1', column='2', sticky='n')
+        self.frame_dx = tk.Frame(self, bd=1, relief="raised")
+        self.frame_dx.grid(row=1, column=2, sticky='n')
         '''
         LabelFrame lista prodotti
         '''
         self.lbl_lista_prodotti = ttk.LabelFrame(self.frame_sx, text='Lista Prodotti')
-        self.lbl_lista_prodotti.grid(row='1', column='0', sticky='n')
+        self.lbl_lista_prodotti.grid(row=1, column=0, sticky='n')
         '''
         Treeview per tab lista prodotti
         '''
@@ -66,16 +66,19 @@ class Produzione(tk.Frame):
         Labelframe ed entry per nome prodotto e reparto
         '''
         self.lbl_frame_nome_prodotto = ttk.Labelframe(self.frame_centrale_alto, text='Prodotto')
-        self.lbl_frame_nome_prodotto.grid(row='1', column='0')
+        self.lbl_frame_nome_prodotto.grid(row=1, column=0)
 
         self.ent_nome_prodotto = ttk.Entry(self.lbl_frame_nome_prodotto, width=30)
-        self.ent_nome_prodotto.grid(row='1', column='0')
+        self.ent_nome_prodotto.grid(row=1, column=0)
 
         self.lbl_frame_reparto_prodotto = ttk.Labelframe(self.frame_centrale_alto, text='Reparto')
-        self.lbl_frame_reparto_prodotto.grid(row='1', column='1')
+        self.lbl_frame_reparto_prodotto.grid(row=1, column=1)
 
-        self.ent_reparto_prodotto = ttk.Entry(self.lbl_frame_reparto_prodotto, width=30)
-        self.ent_reparto_prodotto.grid(row='1', column='0')
+        self.ent_reparto_prodotto = ttk.Entry(self.lbl_frame_reparto_prodotto, width=5)
+        self.ent_reparto_prodotto.grid(row=1, column=0)
+
+        self.nome_reparto = ttk.Label(self.lbl_frame_reparto_prodotto, text='reparto', width=25, anchor='center')
+        self.nome_reparto.grid(row=1, column=1)
         '''
         Labelframe dettagli prodotto selezionato
         '''
