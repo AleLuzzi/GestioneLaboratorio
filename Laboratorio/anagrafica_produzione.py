@@ -74,11 +74,10 @@ class Produzione(tk.Frame):
         self.lbl_frame_reparto_prodotto = ttk.Labelframe(self.frame_centrale_alto, text='Reparto')
         self.lbl_frame_reparto_prodotto.grid(row=1, column=1)
 
-        self.ent_reparto_prodotto = ttk.Entry(self.lbl_frame_reparto_prodotto, width=5)
-        self.ent_reparto_prodotto.grid(row=1, column=0)
+        self.box_value = tk.StringVar()
+        self.box = ttk.Combobox(self.lbl_frame_reparto_prodotto, textvariable=self.box_value)
 
-        self.nome_reparto = ttk.Label(self.lbl_frame_reparto_prodotto, text='reparto', width=25, anchor='center')
-        self.nome_reparto.grid(row=1, column=1)
+        self.box.grid(row=1, column=0)
         '''
         Labelframe dettagli prodotto selezionato
         '''
@@ -167,13 +166,23 @@ class Produzione(tk.Frame):
         self.btn_filtra.grid(row=7, column=0)
 
         self.aggiorna()
+        self.riempi_combo()
+
+    def riempi_combo(self):
+        lista = []
+
+        for row in self.conn.execute("SELECT reparto From reparti"):
+            lista.extend(row)
+        self.box['values'] = lista
+
+        # self.box.current(0)
 
     def modifica(self):
         stringa = 'UPDATE prodotti SET prodotto = ? WHERE ID = ?'
         self.c.execute(stringa, (self.ent_nome_prodotto.get(), (self.item[0])))
         self.conn.commit()
         stringa = 'UPDATE prodotti SET reparto = ? WHERE ID = ?'
-        self.c.execute(stringa, (self.ent_reparto_prodotto.get(), (self.item[0])))
+        self.c.execute(stringa, (self.box_value.get(), (self.item[0])))
         self.conn.commit()
 
         for campo in self.campi:
@@ -224,7 +233,6 @@ class Produzione(tk.Frame):
 
     def ondoubleclick(self, event):
         self.ent_nome_prodotto.delete(0, 'end')
-        self.ent_reparto_prodotto.delete(0, 'end')
         self.item = (self.tree_produzione.item(self.tree_produzione.selection(), 'values'))
         for campo in self.campi:
             self.entry[campo].delete(0, 'end')
@@ -238,7 +246,7 @@ class Produzione(tk.Frame):
 
             self.ent_nome_prodotto.insert(0, self.row[i])
             i += 1
-            self.ent_reparto_prodotto.insert(0, self.row[i])
+            self.box.set(self.row[i])
             i += 1
             while i != 25:
                 for campo in self.campi:
