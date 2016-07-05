@@ -8,6 +8,7 @@ class Reparti(tk.Frame):
         tk.Frame.__init__(self, parent)
 
         self.item = ''
+        self.valore_flag = dict()
 
         '''
         Connessione al Database
@@ -39,12 +40,17 @@ class Reparti(tk.Frame):
         Lista campi del record
         '''
         self.campi = ['reparto']
+        self.attributi = ['Mostra nel tab dipendenti', 'Mostra nel tab produzione']
         self.label = {}
+        self.ckbutton = {}
         self.entry = {}
         '''
         Labelframe dettagli reparto selezionato
         '''
         self.lbl_frame_dettagli_selezionato = ttk.LabelFrame(self.frame_centrale, text='Dettagli reparto selezionato')
+
+        self.lbl_frame_attributi_reparto = ttk.LabelFrame(self.frame_centrale,
+                                                          text='Attributi reparto selezionato')
         '''
         Labelframe scegli prodotto
         '''
@@ -54,6 +60,7 @@ class Reparti(tk.Frame):
 
         self.aggiorna()
         self.crea_label_entry()
+        self.crea_attributi()
 
         '''
         LAYOUT
@@ -62,9 +69,10 @@ class Reparti(tk.Frame):
         self.frame_centrale.grid(row='1', column='1', sticky='n')
         self.frame_dx.grid(row='1', column='2', sticky='n')
 
-        self.tree_reparti.grid(row='1', column='0', columnspan='3', sticky='we')
-        self.lbl_frame_dettagli_selezionato.grid(row='1', column='0', sticky='n')
-        self.lbl_frame_scegli.grid(row='2', column='0')
+        self.tree_reparti.grid(row=1, column=0, columnspan=3, sticky='we')
+        self.lbl_frame_dettagli_selezionato.grid(row=1, column=0, sticky='n')
+        self.lbl_frame_attributi_reparto.grid(row=2, column=0)
+        self.lbl_frame_scegli.grid(row=3, column=0)
         self.btn_modifica.grid()
         self.btn_inserisci.grid()
 
@@ -84,11 +92,36 @@ class Reparti(tk.Frame):
             self.entry[campo] = ent
             r += 1
 
+    def crea_attributi(self):
+        r = 1
+        c = 0
+        for attributo in self.attributi:
+            if r % 12 == 0:
+                r = 1
+                c += 2
+            lbl = ttk.Label(self.lbl_frame_attributi_reparto, text=attributo)
+            lbl.grid(row=r, column=c)
+            self.label[attributo] = lbl
+
+            self.valore_flag[attributo] = tk.IntVar()
+            ckbtn = tk.Checkbutton(self.lbl_frame_attributi_reparto, variable=self.valore_flag[attributo])
+            ckbtn.grid(row=r, column=c + 1)
+            self.ckbutton[attributo] = ckbtn
+            r += 1
+
     def modifica(self):
+        valori_da_salvare = []
         for campo in self.campi:
             stringa = 'UPDATE reparti SET {}=? WHERE ID = ?'.format(campo)
             self.c.execute(stringa, (self.entry[campo].get(), (self.item[0])))
             self.conn.commit()
+
+        for attributo in self.attributi:
+            valori_da_salvare.append(self.valore_flag[attributo].get())
+
+        stringa = 'UPDATE reparti SET flag1_dip=? , flag2_prod=? WHERE ID = ?'
+        self.c.execute(stringa, (valori_da_salvare[0], valori_da_salvare[1], (self.item[0])))
+        self.conn.commit()
         self.aggiorna()
 
     def inserisci(self):
@@ -112,12 +145,21 @@ class Reparti(tk.Frame):
         for campo in self.campi:
             self.entry[campo].delete(0, 'end')
 
+        for attributo in self.attributi:
+            self.ckbutton[attributo].deselect()
+
         self.item = (self.tree_reparti.item(self.tree_reparti.selection(), 'values'))
 
         i = 1
         for self.row in self.c.execute("SELECT * FROM reparti WHERE ID = ?", (self.item[0],)):
             for campo in self.campi:
                 self.entry[campo].insert(0, self.row[i])
+                i += 1
+
+            i = 2
+            for attributo in self.attributi:
+                if self.row[i] == 1:
+                    self.ckbutton[attributo].select()
                 i += 1
 
 
