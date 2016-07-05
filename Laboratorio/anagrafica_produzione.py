@@ -171,7 +171,7 @@ class Produzione(tk.Frame):
     def riempi_combo(self):
         lista = []
 
-        for row in self.conn.execute("SELECT reparto From reparti"):
+        for row in self.conn.execute("SELECT reparto From reparti WHERE flag2_prod = 1"):
             lista.extend(row)
         self.box['values'] = lista
 
