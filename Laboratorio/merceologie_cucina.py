@@ -40,7 +40,7 @@ class MerceologieCucina(tk.Frame):
         Lista campi del record
         '''
         self.campi = ['merceologia']
-        self.attributi = ['Mostra nel modulo Inventario', 'Mostra nel Tab Tagli']
+        self.attributi = ['Mostra nel modulo Inventario', 'Mostra nel Tab gTagli']
         self.label = {}
         self.ckbutton = {}
         self.entry = {}
