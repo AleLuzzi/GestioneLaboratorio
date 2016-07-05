@@ -84,58 +84,14 @@ class Produzione(tk.Frame):
         self.lbl_frame_dettagli_selezionato = ttk.LabelFrame(self.frame_centrale_alto,
                                                              text='Dettagli prodotto selezionato')
         self.lbl_frame_dettagli_selezionato.grid(row='2', column='0', columnspan=2, sticky='n')
-        '''
-        Label ed entry per mostrare dettagli prodotto selezionato
-        '''
-        r = 1
-        c = 0
-        for campo in self.campi:
-            if r % 12 == 0:
-                r = 1
-                c += 2
-            lbl = ttk.Label(self.lbl_frame_dettagli_selezionato, text=campo)
-            lbl.grid(row=r, column=c)
-            self.label[campo] = lbl
 
-            ent = ttk.Entry(self.lbl_frame_dettagli_selezionato)
-            ent.grid(row=r, column=c+1)
-            self.entry[campo] = ent
-            r += 1
         '''
         Label e text per ingredienti
         '''
         self.lbl_ingredienti = ttk.Label(self.frame_centrale_basso, text='INGREDIENTI')
         self.lbl_ingredienti.grid(row='1', column='0', columnspan='4', pady=10)
 
-        r = 2
-        c = 0
-        for campo in self.formati:
-            if r % 12 == 0:
-                r = 1
-                c += 2
-            lbl = ttk.Label(self.frame_centrale_basso, text=campo)
-            lbl.grid(row=r, column=c)
-            self.label[campo] = lbl
 
-            ent = ttk.Entry(self.frame_centrale_basso, width='5')
-            ent.grid(row=r, column=c+1)
-            self.entry[campo] = ent
-            r += 1
-
-        r = 2
-        c = 2
-        for campo in self.ingredienti:
-            if r % 12 == 0:
-                r = 1
-                c += 2
-            lbl = ttk.Label(self.frame_centrale_basso, text=campo)
-            lbl.grid(row=r, column=c)
-            self.label[campo] = lbl
-
-            ent = ttk.Entry(self.frame_centrale_basso, width='50')
-            ent.grid(row=r, column=c+1)
-            self.entry[campo] = ent
-            r += 1
         '''
         Labelframe scegli prodotto
         '''
@@ -167,6 +123,55 @@ class Produzione(tk.Frame):
 
         self.aggiorna()
         self.riempi_combo()
+        self.crea_label_entry()
+        self.crea_label_formato_ingredienti()
+
+    def crea_label_entry(self):
+        r = 1
+        c = 0
+        for campo in self.campi:
+            if r % 12 == 0:
+                r = 1
+                c += 2
+            lbl = ttk.Label(self.lbl_frame_dettagli_selezionato, text=campo)
+            lbl.grid(row=r, column=c)
+            self.label[campo] = lbl
+
+            ent = ttk.Entry(self.lbl_frame_dettagli_selezionato)
+            ent.grid(row=r, column=c + 1)
+            self.entry[campo] = ent
+            r += 1
+
+    def crea_label_formato_ingredienti(self):
+        r = 2
+        c = 0
+        for campo in self.formati:
+            if r % 12 == 0:
+                r = 1
+                c += 2
+            lbl = ttk.Label(self.frame_centrale_basso, text=campo)
+            lbl.grid(row=r, column=c)
+            self.label[campo] = lbl
+
+            ent = ttk.Entry(self.frame_centrale_basso, width='5')
+            ent.grid(row=r, column=c + 1)
+            self.entry[campo] = ent
+            r += 1
+
+        r = 2
+        c = 2
+        for campo in self.ingredienti:
+            if r % 12 == 0:
+                r = 1
+                c += 2
+            lbl = ttk.Label(self.frame_centrale_basso, text=campo)
+            lbl.grid(row=r, column=c)
+            self.label[campo] = lbl
+
+            ent = ttk.Entry(self.frame_centrale_basso, width='50')
+            ent.grid(row=r, column=c + 1)
+            self.entry[campo] = ent
+            r += 1
 
     def riempi_combo(self):
         lista = []
