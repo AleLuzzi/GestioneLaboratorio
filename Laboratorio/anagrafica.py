@@ -14,7 +14,7 @@ class Anagrafica(tk.Toplevel):
     def __init__(self):
         tk.Toplevel.__init__(self)
         self.title("Anagrafica")
-        self.geometry('%dx525+0+0' % self.winfo_screenwidth())
+        # self.geometry('%dx525+0+0' % self.winfo_screenwidth())
         '''
         Disposizione Frame
         '''
