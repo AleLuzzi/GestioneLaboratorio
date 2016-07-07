@@ -105,11 +105,11 @@ class LottiInVendita(tk.Toplevel):
         RADIOBUTTON
         '''
         self.filtro = tk.StringVar()
-        self.filtro.set(3)
+        self.filtro.set('Macelleria')
         self.rdbtn_macelleria = tk.Radiobutton(self.lblframe_box, text='Macelleria',
-                                               variable=self.filtro, value=3, command=self.riempi_combo)
+                                               variable=self.filtro, value='Macelleria', command=self.riempi_combo)
         self.rdbtn_gastronomia = tk.Radiobutton(self.lblframe_box, text='Gastronomia',
-                                                variable=self.filtro, value=2, command=self.riempi_combo)
+                                                variable=self.filtro, value='Gastronomia', command=self.riempi_combo)
         self.rdbtn_macelleria.grid(row=0, column=0, padx=5, sticky='w')
         self.rdbtn_gastronomia.grid(row=0, column=1, padx=5, sticky='w')
 
