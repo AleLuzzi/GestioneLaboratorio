@@ -49,7 +49,7 @@ class Produzione(tk.Frame):
 
         self.tree_produzione.bind("<Double-1>", self.ondoubleclick)
 
-        self.tree_produzione.grid(row='1', column='0', columnspan='3', sticky='we')
+        self.tree_produzione.grid(row=1, column=0, columnspan=3, sticky='we')
 
         '''
         Lista campi del record
@@ -66,43 +66,49 @@ class Produzione(tk.Frame):
         Labelframe ed entry per nome prodotto e reparto
         '''
         self.lbl_frame_nome_prodotto = ttk.Labelframe(self.frame_centrale_alto, text='Prodotto')
-        self.lbl_frame_nome_prodotto.grid(row=1, column=0)
+        self.lbl_frame_nome_prodotto.grid(row=1, column=0, columnspan=2)
 
         self.ent_nome_prodotto = ttk.Entry(self.lbl_frame_nome_prodotto, width=30)
         self.ent_nome_prodotto.grid(row=1, column=0)
 
         self.lbl_frame_reparto_prodotto = ttk.Labelframe(self.frame_centrale_alto, text='Reparto')
-        self.lbl_frame_reparto_prodotto.grid(row=1, column=1)
+        self.lbl_frame_reparto_prodotto.grid(row=2, column=0)
+
+        self.lbl_frame_merceologia = ttk.Labelframe(self.frame_centrale_alto, text='Merceologia')
+        self.lbl_frame_merceologia.grid(row=2, column=1)
 
         self.box_value = tk.StringVar()
         self.box = ttk.Combobox(self.lbl_frame_reparto_prodotto, textvariable=self.box_value)
 
+        self.box_merceologia = ttk.Combobox(self.lbl_frame_merceologia)
+
         self.box.grid(row=1, column=0)
+        self.box_merceologia.grid(row=1, column=1)
+
         '''
         Labelframe dettagli prodotto selezionato
         '''
         self.lbl_frame_dettagli_selezionato = ttk.LabelFrame(self.frame_centrale_alto,
                                                              text='Dettagli prodotto selezionato')
-        self.lbl_frame_dettagli_selezionato.grid(row='2', column='0', columnspan=2, sticky='n')
+        self.lbl_frame_dettagli_selezionato.grid(row=3, column=0, columnspan=2, sticky='n')
 
         '''
         Label e text per ingredienti
         '''
         self.lbl_ingredienti = ttk.Label(self.frame_centrale_basso, text='INGREDIENTI')
-        self.lbl_ingredienti.grid(row='1', column='0', columnspan='4', pady=10)
-
+        self.lbl_ingredienti.grid(row=1, column=0, columnspan=4, pady=10)
 
         '''
         Labelframe scegli prodotto
         '''
         self.lbl_frame_scegli = ttk.LabelFrame(self.frame_dx, text='Seleziona prodotto')
-        self.lbl_frame_scegli.grid(row='1', column='0')
+        self.lbl_frame_scegli.grid(row=1, column=0)
 
         self.btn_modifica = ttk.Button(self.lbl_frame_scegli, text='Modifica', command=self.modifica)
-        self.btn_modifica.grid(row='3', column='0', columnspan='2')
+        self.btn_modifica.grid(row=3, column=0, columnspan=2)
 
         self.btn_inserisci = ttk.Button(self.lbl_frame_scegli, text='Inserisci', command=self.inserisci)
-        self.btn_inserisci.grid(row='4', column='0', columnspan='2')
+        self.btn_inserisci.grid(row=4, column=0, columnspan=2)
 
         '''
         RADIOBUTTON
@@ -180,8 +186,6 @@ class Produzione(tk.Frame):
             lista.extend(row)
         self.box['values'] = lista
 
-        # self.box.current(0)
-
     def modifica(self):
         stringa = 'UPDATE prodotti SET prodotto = ? WHERE ID = ?'
         self.c.execute(stringa, (self.ent_nome_prodotto.get(), (self.item[0])))
@@ -209,7 +213,7 @@ class Produzione(tk.Frame):
     def inserisci(self):
 
         self.lista_da_salvare.append(self.ent_nome_prodotto.get())
-        self.lista_da_salvare.append(self.ent_reparto_prodotto.get())
+        self.lista_da_salvare.append(self.box_value.get())
         for campo in self.campi:
             self.lista_da_salvare.append(self.entry[campo].get())
         for campo in self.ingredienti:
