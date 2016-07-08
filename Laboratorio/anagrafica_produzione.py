@@ -80,7 +80,8 @@ class Produzione(tk.Frame):
         self.box_value = tk.StringVar()
         self.box = ttk.Combobox(self.lbl_frame_reparto_prodotto, textvariable=self.box_value)
 
-        self.box_merceologia = ttk.Combobox(self.lbl_frame_merceologia)
+        self.box_merceologia_value = tk.StringVar()
+        self.box_merceologia = ttk.Combobox(self.lbl_frame_merceologia, textvariable=self.box_merceologia_value)
 
         self.box.grid(row=1, column=0)
         self.box_merceologia.grid(row=1, column=1)
@@ -201,6 +202,9 @@ class Produzione(tk.Frame):
         stringa = 'UPDATE prodotti SET reparto = ? WHERE ID = ?'
         self.c.execute(stringa, (self.box_value.get(), (self.item[0])))
         self.conn.commit()
+        stringa = 'UPDATE prodotti SET merceologia = ? WHERE ID = ?'
+        self.c.execute(stringa, (self.box_merceologia_value.get(), (self.item[0])))
+        self.conn.commit()
 
         for campo in self.campi:
             stringa = 'UPDATE prodotti SET {}=? WHERE ID = ?'.format(campo)
@@ -228,13 +232,15 @@ class Produzione(tk.Frame):
             self.lista_da_salvare.append(self.entry[campo].get())
         for campo in self.formati:
             self.lista_da_salvare.append(self.entry[campo].get())
+        self.lista_da_salvare.append(self.box_merceologia_value.get())
 
         self.c.execute('INSERT INTO prodotti(prodotto, reparto, plu, prezzo1, prezzo2, prezzo3, prezzo4, '
                        'prezzo_straord,gruppo_merc, tara, gg_cons_1, gg_cons_2, ean, testo_agg_1, testo_agg_2, '
                        'testo_agg_3, testo_agg_4, pz_x_scatola, peso_fisso, num_offerta, art_in_pubblic, '
                        'sovrascritt_prezzo, stile_tracc, rich_stm_traccia, riga_1, riga_2, riga_3, riga_4, '
-                       'formato_1, formato_2, formato_3, formato_4 ) '
-                       'VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', self.lista_da_salvare)
+                       'formato_1, formato_2, formato_3, formato_4, merceologia ) '
+                       'VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                       self.lista_da_salvare)
         self.conn.commit()
         self.aggiorna()
 
@@ -277,6 +283,7 @@ class Produzione(tk.Frame):
                 for campo in self.formati:
                     self.entry[campo].insert(0, self.row[i])
                     i += 1
+            self.box_merceologia_value.set(self.row[i])
 
 
 if __name__ == '__main__':
