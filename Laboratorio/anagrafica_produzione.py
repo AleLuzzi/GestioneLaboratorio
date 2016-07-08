@@ -129,6 +129,7 @@ class Produzione(tk.Frame):
 
         self.aggiorna()
         self.riempi_combo()
+        self.riempi_combo_merceologie()
         self.crea_label_entry()
         self.crea_label_formato_ingredienti()
 
@@ -185,6 +186,13 @@ class Produzione(tk.Frame):
         for row in self.conn.execute("SELECT reparto From reparti WHERE flag2_prod = 1"):
             lista.extend(row)
         self.box['values'] = lista
+
+    def riempi_combo_merceologie(self):
+        lista_merc = []
+
+        for row in self.conn.execute("SELECT merceologia From merceologie"):
+            lista_merc.extend(row)
+        self.box_merceologia['values'] = lista_merc
 
     def modifica(self):
         stringa = 'UPDATE prodotti SET prodotto = ? WHERE ID = ?'
