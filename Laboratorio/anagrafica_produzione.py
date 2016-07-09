@@ -106,27 +106,27 @@ class Produzione(tk.Frame):
         self.lbl_frame_scegli.grid(row=1, column=0)
 
         self.btn_modifica = ttk.Button(self.lbl_frame_scegli, text='Modifica', command=self.modifica)
-        self.btn_modifica.grid(row=3, column=0, columnspan=2)
+        self.btn_modifica.grid(row=1, column=0, columnspan=2)
 
         self.btn_inserisci = ttk.Button(self.lbl_frame_scegli, text='Inserisci', command=self.inserisci)
-        self.btn_inserisci.grid(row=4, column=0, columnspan=2)
+        self.btn_inserisci.grid(row=2, column=0, columnspan=2)
 
         '''
-        RADIOBUTTON
+        Combobox per filtro
         '''
-        self.filtro = tk.StringVar()
-        self.filtro.set(3)
-        self.rdbtn_macelleria = tk.Radiobutton(self.lbl_frame_scegli, text='Macelleria',
-                                               variable=self.filtro, value=3)
-        self.rdbtn_gastronomia = tk.Radiobutton(self.lbl_frame_scegli, text='Gastronomia',
-                                                variable=self.filtro, value=2)
-        self.rdbtn_macelleria.grid(row=5, column=0)
-        self.rdbtn_gastronomia.grid(row=6, column=0)
+        self.filtro_reparto = tk.StringVar()
+        self.box_reparto_filtro = ttk.Combobox(self.lbl_frame_scegli, textvariable=self.filtro_reparto)
+        self.box_reparto_filtro.grid(row=3, column=0)
+
+        self.filtro_merceologia = tk.StringVar()
+        self.box_merceologia_filtro = ttk.Combobox(self.lbl_frame_scegli, textvariable=self.filtro_merceologia)
+        self.box_merceologia_filtro.grid(row=4, column=0)
+
         '''
         BOTTONE Filtra
         '''
         self.btn_filtra = ttk.Button(self.lbl_frame_scegli, text='Filtra')
-        self.btn_filtra.grid(row=7, column=0)
+        self.btn_filtra.grid(row=5, column=0)
 
         self.aggiorna()
         self.riempi_combo()
@@ -187,6 +187,7 @@ class Produzione(tk.Frame):
         for row in self.conn.execute("SELECT reparto From reparti WHERE flag2_prod = 1"):
             lista.extend(row)
         self.box['values'] = lista
+        self.box_reparto_filtro['values'] = lista
 
     def riempi_combo_merceologie(self):
         lista_merc = []
@@ -194,6 +195,7 @@ class Produzione(tk.Frame):
         for row in self.conn.execute("SELECT merceologia From merceologie"):
             lista_merc.extend(row)
         self.box_merceologia['values'] = lista_merc
+        self.box_merceologia_filtro['values'] = lista_merc
 
     def modifica(self):
         stringa = 'UPDATE prodotti SET prodotto = ? WHERE ID = ?'
