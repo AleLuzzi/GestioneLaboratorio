@@ -114,22 +114,23 @@ class Produzione(tk.Frame):
         '''
         Combobox per filtro
         '''
-        self.filtro_reparto = tk.StringVar()
-        self.box_reparto_filtro = ttk.Combobox(self.lbl_frame_scegli, textvariable=self.filtro_reparto)
-        self.box_reparto_filtro.grid(row=3, column=0)
-
         self.filtro_merceologia = tk.StringVar()
         self.box_merceologia_filtro = ttk.Combobox(self.lbl_frame_scegli, textvariable=self.filtro_merceologia)
-        self.box_merceologia_filtro.grid(row=4, column=0)
+        self.box_merceologia_filtro.grid(row=3, column=0)
 
         '''
         BOTTONE Filtra
         '''
-        self.btn_filtra = ttk.Button(self.lbl_frame_scegli, text='Filtra')
-        self.btn_filtra.grid(row=5, column=0)
+        self.btn_filtra = ttk.Button(self.lbl_frame_scegli, text='Filtra', command=self.filtra)
+        self.btn_filtra.grid(row=4, column=0)
+
+        '''
+        BOTTONE Reset
+        '''
+        self.btn_reset = ttk.Button(self.lbl_frame_scegli, text='Reset Lista Prodotti', command=self.aggiorna)
+        self.btn_reset.grid(row=5, column=0)
 
         self.aggiorna()
-        self.riempi_combo()
         self.riempi_combo_merceologie()
         self.crea_label_entry()
         self.crea_label_formato_ingredienti()
@@ -180,14 +181,6 @@ class Produzione(tk.Frame):
             ent.grid(row=r, column=c + 1)
             self.entry[campo] = ent
             r += 1
-
-    def riempi_combo(self):
-        lista = []
-
-        for row in self.conn.execute("SELECT reparto From reparti WHERE flag2_prod = 1"):
-            lista.extend(row)
-        self.box['values'] = lista
-        self.box_reparto_filtro['values'] = lista
 
     def riempi_combo_merceologie(self):
         lista_merc = []
@@ -286,6 +279,11 @@ class Produzione(tk.Frame):
                     self.entry[campo].insert(0, self.row[i])
                     i += 1
             self.box_merceologia_value.set(self.row[i])
+
+    def filtra(self):
+        self.tree_produzione.delete(*self.tree_produzione.get_children())
+        for lista in self.c.execute("SELECT * FROM prodotti WHERE merceologia = ?", (self.filtro_merceologia.get(),)):
+            self.tree_produzione.insert('', 'end', values=(lista[0], lista[1]))
 
 
 if __name__ == '__main__':
