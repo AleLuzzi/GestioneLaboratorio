@@ -246,6 +246,7 @@ class Produzione(tk.Frame):
                        self.lista_da_salvare)
         self.conn.commit()
         self.aggiorna()
+        del self.lista_da_salvare[0:]
 
     def aggiorna(self):
         self.tree_produzione.delete(*self.tree_produzione.get_children())
