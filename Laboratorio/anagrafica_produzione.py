@@ -131,6 +131,7 @@ class Produzione(tk.Frame):
         self.btn_reset.grid(row=5, column=0)
 
         self.aggiorna()
+        self.riempi_combo_reparto()
         self.riempi_combo_merceologie()
         self.crea_label_entry()
         self.crea_label_formato_ingredienti()
@@ -181,6 +182,13 @@ class Produzione(tk.Frame):
             ent.grid(row=r, column=c + 1)
             self.entry[campo] = ent
             r += 1
+
+    def riempi_combo_reparto(self):
+        lista_rep = []
+
+        for row in self.conn.execute("SELECT reparto From reparti WHERE flag2_prod = 1 "):
+            lista_rep.extend(row)
+        self.box['values'] = lista_rep
 
     def riempi_combo_merceologie(self):
         lista_merc = []
