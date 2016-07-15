@@ -31,7 +31,7 @@ class NuovoLottoCucina(tk.Toplevel):
         self.frame_nuovolotto.grid(row=0, column=1, sticky='n')
 
         self.frame_basso = tk.Frame(self, bd='3', relief='groove')
-        self.frame_basso.grid(row=1, column=0, columnspan=3, sticky='n')
+        self.frame_basso.grid(row=1, column=0, columnspan=3, sticky='w')
         '''
         Treeview per riepilogo immissioni
         '''
@@ -70,7 +70,7 @@ class NuovoLottoCucina(tk.Toplevel):
         LABELFRAME per peso da inserire
         '''
         self.lblframe_peso = ttk.LabelFrame(self.frame_basso, text='Peso')
-        self.lblframe_peso.grid(row=0, column=0)
+        self.lblframe_peso.grid(row=0, column=0, sticky='w')
         '''
         ENTRY per inserimento del peso
         '''
