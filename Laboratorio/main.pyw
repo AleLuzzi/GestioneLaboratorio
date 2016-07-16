@@ -1,7 +1,6 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 import os
-import random
 
 from ingredienti import Ingredienti
 from ingresso_merce import IngressoMerce
