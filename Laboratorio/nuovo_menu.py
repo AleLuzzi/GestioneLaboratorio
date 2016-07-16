@@ -5,7 +5,7 @@ import sqlite3
 import random
 
 
-class NuovoLottoCucina(tk.Toplevel):
+class NuovoMenu(tk.Toplevel):
     def __init__(self):
         tk.Toplevel.__init__(self)
         self.title("Nuovo Lotto Cucina")
@@ -208,5 +208,5 @@ class NuovoLottoCucina(tk.Toplevel):
 
 if __name__ == '__main__':
     root = tk.Tk()
-    new = NuovoLottoCucina()
+    new = NuovoMenu()
     root.mainloop()
