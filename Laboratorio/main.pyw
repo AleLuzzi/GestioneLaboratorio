@@ -10,6 +10,7 @@ from nuovo_lotto import NuovoLotto
 from nuovo_lotto_cucina import NuovoLottoCucina
 from inventario import Inventario
 from anagrafica import Anagrafica
+from nuovo_menu import NuovoMenu
 
 
 class Main(tk.Frame):
@@ -33,7 +34,8 @@ class Main(tk.Frame):
         self.img_btn6 = tk.PhotoImage(file=os.path.join('immagini', 'lock.gif'))
         self.img_btn7 = tk.PhotoImage(file=os.path.join('immagini', 'lvendita.gif'))
         self.img_btn8 = tk.PhotoImage(file=os.path.join('immagini', 'impostazioni.gif'))
-        self.img_btn9 = tk.PhotoImage(file=os.path.join('immagini', 'exit.gif'))
+        self.img_btn9 = tk.PhotoImage(file=os.path.join('immagini', 'menu.gif'))
+        self.img_btn10 = tk.PhotoImage(file=os.path.join('immagini', 'exit.gif'))
 
         bottone1 = ttk.Button(self.frm_alto, text="Ingresso Merce", compound='bottom',
                               image=self.img_btn1, command=self.ingresso_merce)
@@ -68,10 +70,15 @@ class Main(tk.Frame):
                               image=self.img_btn8, command=self.anagrafica)
 
         bottone8.grid(row=0, column=7, padx=4, pady=4)
-    
-        bottone9 = ttk.Button(self.frm_alto, text="Uscita", compound='bottom',
-                              image=self.img_btn9, command=self.quit)
+
+        bottone9 = ttk.Button(self.frm_alto, text="Nuovo Menu", compound='bottom',
+                              image=self.img_btn9, command=self.nuovo_menu)
+
         bottone9.grid(row=0, column=8, padx=4, pady=4)
+    
+        bottone10 = ttk.Button(self.frm_alto, text="Uscita", compound='bottom',
+                              image=self.img_btn10, command=self.quit)
+        bottone10.grid(row=0, column=9, padx=4, pady=4)
 
         self.frm_centrale.grid_propagate(False)
         self.frm_centrale.grid_rowconfigure(0, weight=2)
@@ -113,6 +120,10 @@ class Main(tk.Frame):
     @staticmethod
     def lotti_in_vendita():
         LottiInVendita()
+
+    @staticmethod
+    def nuovo_menu():
+        NuovoMenu()
 
     @staticmethod
     def anagrafica():
