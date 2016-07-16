@@ -63,10 +63,10 @@ class Produzione(tk.Frame):
         self.label = {}
         self.entry = {}
         '''
-        Labelframe ed entry per nome prodotto e reparto
+        Labelframe ed entry per nome prodotto e reparto e attributi
         '''
         self.lbl_frame_nome_prodotto = ttk.Labelframe(self.frame_centrale_alto, text='Prodotto')
-        self.lbl_frame_nome_prodotto.grid(row=1, column=0, columnspan=2)
+        self.lbl_frame_nome_prodotto.grid(row=1, column=0, columnspan=3)
 
         self.ent_nome_prodotto = ttk.Entry(self.lbl_frame_nome_prodotto, width=30)
         self.ent_nome_prodotto.grid(row=1, column=0)
@@ -77,14 +77,17 @@ class Produzione(tk.Frame):
         self.lbl_frame_merceologia = ttk.Labelframe(self.frame_centrale_alto, text='Merceologia')
         self.lbl_frame_merceologia.grid(row=2, column=1)
 
-        self.box_value = tk.StringVar()
-        self.box = ttk.Combobox(self.lbl_frame_reparto_prodotto, textvariable=self.box_value)
+        self.box_reparto_value = tk.StringVar()
+        self.box_reparto = ttk.Combobox(self.lbl_frame_reparto_prodotto, textvariable=self.box_reparto_value)
 
         self.box_merceologia_value = tk.StringVar()
         self.box_merceologia = ttk.Combobox(self.lbl_frame_merceologia, textvariable=self.box_merceologia_value)
 
-        self.box.grid(row=1, column=0)
+        self.ckb_flag1 = ttk.Checkbutton(self.lbl_frame_merceologia, text='Usa in produzione')
+
+        self.box_reparto.grid(row=1, column=0)
         self.box_merceologia.grid(row=1, column=1)
+        self.ckb_flag1.grid(row=1, column=2)
 
         '''
         Labelframe dettagli prodotto selezionato
@@ -188,7 +191,7 @@ class Produzione(tk.Frame):
 
         for row in self.conn.execute("SELECT reparto From reparti WHERE flag2_prod = 1 "):
             lista_rep.extend(row)
-        self.box['values'] = lista_rep
+        self.box_reparto['values'] = lista_rep
 
     def riempi_combo_merceologie(self):
         lista_merc = []
@@ -203,7 +206,7 @@ class Produzione(tk.Frame):
         self.c.execute(stringa, (self.ent_nome_prodotto.get(), (self.item[0])))
         self.conn.commit()
         stringa = 'UPDATE prodotti SET reparto = ? WHERE ID = ?'
-        self.c.execute(stringa, (self.box_value.get(), (self.item[0])))
+        self.c.execute(stringa, (self.box_reparto_value.get(), (self.item[0])))
         self.conn.commit()
         stringa = 'UPDATE prodotti SET merceologia = ? WHERE ID = ?'
         self.c.execute(stringa, (self.box_merceologia_value.get(), (self.item[0])))
@@ -228,7 +231,7 @@ class Produzione(tk.Frame):
     def inserisci(self):
 
         self.lista_da_salvare.append(self.ent_nome_prodotto.get())
-        self.lista_da_salvare.append(self.box_value.get())
+        self.lista_da_salvare.append(self.box_reparto_value.get())
         for campo in self.campi:
             self.lista_da_salvare.append(self.entry[campo].get())
         for campo in self.ingredienti:
@@ -273,7 +276,7 @@ class Produzione(tk.Frame):
 
             self.ent_nome_prodotto.insert(0, self.row[i])
             i += 1
-            self.box.set(self.row[i])
+            self.box_reparto.set(self.row[i])
             i += 1
             while i != 25:
                 for campo in self.campi:
