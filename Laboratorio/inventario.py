@@ -43,11 +43,11 @@ class Inventario(tk.Toplevel):
         '''
         LAYOUT
         '''
-        self.frame_alto.grid(row='1', column='0', columnspan='2')
+        self.frame_alto.grid(row='1', column='0')
         self.frame_sx.grid(row='2', column='0')
         self.frame_dx.grid(row='2', column='1', sticky='ns')
         self.frame_basso.grid(row='3', column='0', columnspan='2')
-        self.frame_classe.grid(row=4, column=0, columnspan=2)
+        self.frame_classe.grid(row=4, column=0, sticky='w')
 
         self.tree.grid(row='1', column='0', columnspan='2', pady='5')
         self.labelframe_fornitori.grid(row='2', column='0', sticky='n')
@@ -79,7 +79,7 @@ class Inventario(tk.Toplevel):
 
     def crea_bottoni_tagli(self):
         for label in self.labelframe_tagli.grid_slaves():
-            if int(label.grid_info()["row"]) > 1:
+            if int(label.grid_info()["row"]) > 0:
                 label.grid_forget()
         lista_tagli = []
         stringa = self.classe.get()
