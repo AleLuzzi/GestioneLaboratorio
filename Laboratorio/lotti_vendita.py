@@ -8,8 +8,8 @@ import shutil
 
 class LottiInVendita(tk.Toplevel):
     def __init__(self):
-        tk.Toplevel.__init__(self)
-        self.geometry("%dx525+0+0" % self.winfo_screenwidth())
+        super(LottiInVendita, self).__init__()
+        self.geometry("+0+0")
         self.title('Lotti in vendita')
 
         self.conn_v = sqlite3.connect('../laboratorio/data.db',
@@ -19,6 +19,7 @@ class LottiInVendita(tk.Toplevel):
         self.data = dt.date.today()
 
         self.item = ''
+        self.tot_qta = 0
 
         '''
         Disposizione Frame e LabelFrame
@@ -90,17 +91,23 @@ class LottiInVendita(tk.Toplevel):
         self.tree.grid(row='1', column='0')
         self.tree_selezionato.grid(row='2', column='0', columnspan=2)
         self.tree_dettagli.grid(row='4', column='0', columnspan='2')
-
+        '''
+        Label quantita totale
+        '''
+        self.lbl_txt_quantita = ttk.Label(self.frame_dx, text='Quantita prodotta nel periodo selezionato KG       ')
+        self.lbl_peso_totale = ttk.Label(self.frame_dx, text='0')
+        self.lbl_txt_quantita.grid(row=6, column=0, pady=20, padx=20, columnspan=2)
+        self.lbl_peso_totale.grid(row=6, column=1, padx=20)
         '''
         Bottone uscita
         '''
         self.btn_uscita = ttk.Button(self.frame_dx, text='Chiudi finestra', command=self.destroy)
-        self.btn_uscita.grid(row='6', column='1', pady='20')
+        self.btn_uscita.grid(row=7, column=1, pady='20')
         '''
         Bottone manda in bilancia
         '''
         self.btn_in_bilancia = ttk.Button(self.frame_dx, text='Invia in bilancia', command=self.crea_file)
-        self.btn_in_bilancia.grid(row=6, column=0)
+        self.btn_in_bilancia.grid(row=7, column=0)
         '''
         RADIOBUTTON
         '''
@@ -151,6 +158,7 @@ class LottiInVendita(tk.Toplevel):
         self.box.current(0)
 
     def filtra(self):
+        self.tot_qta = 0
         self.tree.delete(*self.tree.get_children())
         giorni = self.data - dt.timedelta(days=31*int(self.filtro_mese.get()))
         for lista in self.c_v.execute("SELECT DISTINCT progressivo_ven,prodotto,data_ven,quantita "
@@ -158,6 +166,7 @@ class LottiInVendita(tk.Toplevel):
                                       "WHERE prodotto = ?"
                                       "AND lotti_vendita.data_ven > ?"
                                       "ORDER BY progressivo_ven DESC", (self.box_value.get(), giorni)):
+            self.tot_qta += lista[3]
             try:
                 self.tree.insert('', 'end', lista[0], text=lista[0], tags=('odd',))
                 self.tree.insert(lista[0], 'end', text=lista[1],
@@ -167,6 +176,7 @@ class LottiInVendita(tk.Toplevel):
                 self.tree.insert(lista[0], 'end', text=lista[1],
                                  values=(dt.date.strftime(lista[2], '%d/%m/%y'), lista[3]))
                 self.tree.item(lista[0], open='true')
+        self.lbl_peso_totale['text'] = self.tot_qta
 
     def riempi_tutti(self):
         self.tree.delete(*self.tree.get_children())
