@@ -9,7 +9,19 @@ class Produzione(tk.Frame):
 
         self.item = ''
         self.lista_da_salvare = []
-
+        self.campi = ['plu', 'prezzo1', 'prezzo2', 'prezzo3', 'prezzo4', 'prezzo_straord', 'gruppo_merc', 'tara',
+                      'gg_cons_1', 'gg_cons_2', 'ean', 'testo_agg_1', 'testo_agg_2', 'testo_agg_3', 'testo_agg_4',
+                      'pz_x_scatola', 'peso_fisso', 'num_offerta', 'art_in_pubblic', 'sovrascritt_prezzo',
+                      'stile_tracc', 'rich_stm_traccia']
+        self.formati = ['formato_1', 'formato_2', 'formato_3', 'formato_4']
+        self.ingredienti = ['riga_1', 'riga_2', 'riga_3', 'riga_4']
+        self.label = {}
+        self.entry = {}
+        self.box_reparto_value = tk.StringVar()
+        self.box_merceologia_value = tk.StringVar()
+        self.filtro_merceologia = tk.StringVar()
+        self.valore_ckb_flag1 = tk.StringVar()
+        self.valore_ckb_flag1.set(0)
         '''
         Connessione al Database
         '''
@@ -20,21 +32,11 @@ class Produzione(tk.Frame):
         Definizione Frame
         '''
         self.frame_sx = tk.Frame(self, bd=1, relief="raised")
-        self.frame_sx.grid(row=1, column=0, rowspan=2, sticky='n')
-
         self.frame_centrale_alto = tk.Frame(self, bd=1, relief="raised")
-        self.frame_centrale_alto.grid(row=1, column=1, sticky='n')
-
         self.frame_centrale_basso = tk.Frame(self, bd=1, relief="raised")
-        self.frame_centrale_basso.grid(row=2, column=1, sticky='n')
-
         self.frame_dx = tk.Frame(self, bd=1, relief="raised")
-        self.frame_dx.grid(row=1, column=2, sticky='n')
-        '''
-        LabelFrame lista prodotti
-        '''
+
         self.lbl_lista_prodotti = ttk.LabelFrame(self.frame_sx, text='Lista Prodotti')
-        self.lbl_lista_prodotti.grid(row=1, column=0, sticky='n')
         '''
         Treeview per tab lista prodotti
         '''
@@ -49,95 +51,59 @@ class Produzione(tk.Frame):
 
         self.tree_produzione.bind("<Double-1>", self.ondoubleclick)
 
-        self.tree_produzione.grid(row=1, column=0, columnspan=3, sticky='we')
-
-        '''
-        Lista campi del record
-        '''
-        self.campi = ['plu', 'prezzo1', 'prezzo2', 'prezzo3', 'prezzo4', 'prezzo_straord', 'gruppo_merc', 'tara',
-                      'gg_cons_1', 'gg_cons_2', 'ean', 'testo_agg_1', 'testo_agg_2', 'testo_agg_3', 'testo_agg_4',
-                      'pz_x_scatola', 'peso_fisso', 'num_offerta', 'art_in_pubblic', 'sovrascritt_prezzo',
-                      'stile_tracc', 'rich_stm_traccia']
-        self.formati = ['formato_1', 'formato_2', 'formato_3', 'formato_4']
-        self.ingredienti = ['riga_1', 'riga_2', 'riga_3', 'riga_4']
-        self.label = {}
-        self.entry = {}
-        '''
-        Labelframe ed entry per nome prodotto e reparto e attributi
-        '''
         self.lbl_frame_nome_prodotto = ttk.Labelframe(self.frame_centrale_alto, text='Prodotto')
-        self.lbl_frame_nome_prodotto.grid(row=1, column=0, columnspan=3)
-
         self.ent_nome_prodotto = ttk.Entry(self.lbl_frame_nome_prodotto, width=30)
-        self.ent_nome_prodotto.grid(row=1, column=0)
-
         self.lbl_frame_reparto_prodotto = ttk.Labelframe(self.frame_centrale_alto, text='Reparto')
-        self.lbl_frame_reparto_prodotto.grid(row=2, column=0)
-
         self.lbl_frame_merceologia = ttk.Labelframe(self.frame_centrale_alto, text='Merceologia')
-        self.lbl_frame_merceologia.grid(row=2, column=1)
-
-        self.box_reparto_value = tk.StringVar()
         self.box_reparto = ttk.Combobox(self.lbl_frame_reparto_prodotto, textvariable=self.box_reparto_value)
-
-        self.box_merceologia_value = tk.StringVar()
         self.box_merceologia = ttk.Combobox(self.lbl_frame_merceologia, textvariable=self.box_merceologia_value)
-
-        self.ckb_flag1 = ttk.Checkbutton(self.lbl_frame_merceologia, text='Usa in produzione')
-
-        self.box_reparto.grid(row=1, column=0)
-        self.box_merceologia.grid(row=1, column=1)
-        self.ckb_flag1.grid(row=1, column=2)
-
-        '''
-        Labelframe dettagli prodotto selezionato
-        '''
+        self.ckb_flag1 = tk.Checkbutton(self.lbl_frame_merceologia, text='Usa in produzione',
+                                        variable=self.valore_ckb_flag1)
         self.lbl_frame_dettagli_selezionato = ttk.LabelFrame(self.frame_centrale_alto,
                                                              text='Dettagli prodotto selezionato')
-        self.lbl_frame_dettagli_selezionato.grid(row=3, column=0, columnspan=2, sticky='n')
-
-        '''
-        Label e text per ingredienti
-        '''
         self.lbl_ingredienti = ttk.Label(self.frame_centrale_basso, text='INGREDIENTI')
-        self.lbl_ingredienti.grid(row=1, column=0, columnspan=4, pady=10)
-
-        '''
-        Labelframe scegli prodotto
-        '''
         self.lbl_frame_scegli = ttk.LabelFrame(self.frame_dx, text='Seleziona prodotto')
-        self.lbl_frame_scegli.grid(row=1, column=0)
-
         self.btn_modifica = ttk.Button(self.lbl_frame_scegli, text='Modifica', command=self.modifica)
-        self.btn_modifica.grid(row=1, column=0, columnspan=2)
-
         self.btn_inserisci = ttk.Button(self.lbl_frame_scegli, text='Inserisci', command=self.inserisci)
-        self.btn_inserisci.grid(row=2, column=0, columnspan=2)
-
-        '''
-        Combobox per filtro
-        '''
-        self.filtro_merceologia = tk.StringVar()
         self.box_merceologia_filtro = ttk.Combobox(self.lbl_frame_scegli, textvariable=self.filtro_merceologia)
-        self.box_merceologia_filtro.grid(row=3, column=0)
-
-        '''
-        BOTTONE Filtra
-        '''
         self.btn_filtra = ttk.Button(self.lbl_frame_scegli, text='Filtra', command=self.filtra)
-        self.btn_filtra.grid(row=4, column=0)
-
-        '''
-        BOTTONE Reset
-        '''
         self.btn_reset = ttk.Button(self.lbl_frame_scegli, text='Reset Lista Prodotti', command=self.aggiorna)
-        self.btn_reset.grid(row=5, column=0)
 
+        self.crea_layout()
         self.aggiorna()
         self.riempi_combo_reparto()
         self.riempi_combo_merceologie()
         self.crea_label_entry()
         self.crea_label_formato_ingredienti()
+
+    def crea_layout(self):
+        self.frame_sx.grid(row=1, column=0, rowspan=2, sticky='n')
+        self.frame_centrale_alto.grid(row=1, column=1, sticky='n')
+        self.frame_centrale_basso.grid(row=2, column=1, sticky='n')
+        self.frame_dx.grid(row=1, column=2, sticky='n')
+        self.lbl_lista_prodotti.grid(row=1, column=0, sticky='n')
+
+        self.tree_produzione.grid(row=1, column=0, columnspan=3, sticky='we')
+
+        self.lbl_frame_nome_prodotto.grid(row=1, column=0, columnspan=3)
+        self.ent_nome_prodotto.grid(row=1, column=0)
+        self.lbl_frame_reparto_prodotto.grid(row=2, column=0)
+        self.lbl_frame_merceologia.grid(row=2, column=1)
+
+        self.box_reparto.grid(row=1, column=0)
+        self.box_merceologia.grid(row=1, column=1)
+        self.ckb_flag1.grid(row=1, column=2)
+
+        self.lbl_frame_dettagli_selezionato.grid(row=3, column=0, columnspan=2, sticky='n')
+        self.lbl_ingredienti.grid(row=1, column=0, columnspan=4, pady=10)
+
+        self.lbl_frame_scegli.grid(row=1, column=0)
+        self.btn_modifica.grid(row=1, column=0, columnspan=2)
+        self.btn_inserisci.grid(row=2, column=0, columnspan=2)
+
+        self.box_merceologia_filtro.grid(row=3, column=0)
+        self.btn_filtra.grid(row=4, column=0)
+        self.btn_reset.grid(row=5, column=0)
 
     def crea_label_entry(self):
         r = 1
@@ -226,6 +192,9 @@ class Produzione(tk.Frame):
             stringa = 'UPDATE prodotti SET {}=? WHERE ID = ?'.format(campo)
             self.c.execute(stringa, (self.entry[campo].get(), (self.item[0])))
             self.conn.commit()
+
+        self.c.execute('UPDATE prodotti SET flag1_prod=? WHERE ID = ?', (self.valore_ckb_flag1.get(), (self.item[0])))
+        self.conn.commit()
         self.aggiorna()
 
     def inserisci(self):
@@ -239,13 +208,14 @@ class Produzione(tk.Frame):
         for campo in self.formati:
             self.lista_da_salvare.append(self.entry[campo].get())
         self.lista_da_salvare.append(self.box_merceologia_value.get())
+        self.lista_da_salvare.append(self.valore_ckb_flag1.get())
 
         self.c.execute('INSERT INTO prodotti(prodotto, reparto, plu, prezzo1, prezzo2, prezzo3, prezzo4, '
                        'prezzo_straord,gruppo_merc, tara, gg_cons_1, gg_cons_2, ean, testo_agg_1, testo_agg_2, '
                        'testo_agg_3, testo_agg_4, pz_x_scatola, peso_fisso, num_offerta, art_in_pubblic, '
                        'sovrascritt_prezzo, stile_tracc, rich_stm_traccia, riga_1, riga_2, riga_3, riga_4, '
-                       'formato_1, formato_2, formato_3, formato_4, merceologia ) '
-                       'VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                       'formato_1, formato_2, formato_3, formato_4, merceologia, flag1_prod ) '
+                       'VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                        self.lista_da_salvare)
         self.conn.commit()
         self.aggiorna()
@@ -262,6 +232,7 @@ class Produzione(tk.Frame):
             lista.extend(row)
 
     def ondoubleclick(self, event):
+        self.ckb_flag1.deselect()
         self.ent_nome_prodotto.delete(0, 'end')
         self.item = (self.tree_produzione.item(self.tree_produzione.selection(), 'values'))
         for campo in self.campi:
@@ -291,6 +262,9 @@ class Produzione(tk.Frame):
                     self.entry[campo].insert(0, self.row[i])
                     i += 1
             self.box_merceologia_value.set(self.row[i])
+        i += 1
+        if self.row[i] == 1:
+            self.ckb_flag1.select()
 
     def filtra(self):
         self.tree_produzione.delete(*self.tree_produzione.get_children())
