@@ -5,7 +5,7 @@ import sqlite3
 
 class Produzione(tk.Frame):
     def __init__(self, parent):
-        tk.Frame.__init__(self, parent)
+        super(Produzione, self).__init__(parent)
 
         self.item = ''
         self.lista_da_salvare = []
