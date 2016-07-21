@@ -63,7 +63,7 @@ class NuovoLottoCucina(tk.Toplevel):
         self.labelframe = ttk.Labelframe(self.frame_nuovolotto, text="Nuova Produzione")
         self.labelframe.grid(row=2, column=0)
 
-        for row in self.c.execute("SELECT prodotto FROM prodotti WHERE reparto = 'Gastronomia'"):
+        for row in self.c.execute("SELECT prodotto FROM prodotti WHERE flag1_prod = 1 "):
             self.lista_nuova_produzione.extend(row)
 
         '''
