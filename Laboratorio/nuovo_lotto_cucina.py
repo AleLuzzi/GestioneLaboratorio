@@ -6,9 +6,9 @@ import sqlite3
 
 class NuovoLottoCucina(tk.Toplevel):
     def __init__(self):
-        tk.Toplevel.__init__(self)
+        super(NuovoLottoCucina, self).__init__()
         self.title("Nuovo Lotto Cucina")
-        self.geometry("%dx525+0+0" % self.winfo_screenwidth())
+        self.geometry("+0+0")
 
         self.data = dt.date.today()
 
@@ -25,7 +25,7 @@ class NuovoLottoCucina(tk.Toplevel):
         DISPOSIZIONE FRAME
         '''
         self.frame_treeview = tk.Frame(self, bd='3', relief='groove')
-        self.frame_treeview.grid(row='0', column='0', padx='10', sticky='n')
+        self.frame_treeview.grid(row=0, column=0, padx='10', sticky='n')
 
         self.frame_nuovolotto = tk.Frame(self, bd='3', relief='groove')
         self.frame_nuovolotto.grid(row=0, column=1, sticky='n')
