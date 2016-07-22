@@ -205,8 +205,6 @@ class Ingredienti(tk.Toplevel):
         '''
         BOTTONI per inserimento salvataggio e chiusura finestra
         '''
-        self.stile = ttk.Style()
-        self.stile.configure('TButton', font='Helvetica')
         self.btn_invio = ttk.Button(self.frame_basso, text="Conferma", command=self.invio)
         self.btn_salva = ttk.Button(self.frame_basso, text='salva', command=self.salva)
         self.btn_chiudi = ttk.Button(self.frame_basso, text="Chiudi finestra", command=self.destroy)
