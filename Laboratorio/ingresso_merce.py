@@ -110,8 +110,6 @@ class IngressoMerce(tk.Toplevel):
         '''
         BOTTONI salva e chiudi finestra
         '''
-        stile_bottoni = ttk.Style()
-        stile_bottoni.configure('TButton', font='Helvetica')
         self.btn_invio = ttk.Button(self.frame_basso,
                                     text="Invio",
                                     command=self.invio).grid(row=2, column=0, padx=10, pady=10)
