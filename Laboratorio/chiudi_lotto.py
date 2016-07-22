@@ -67,8 +67,6 @@ class ChiudiLotto(tk.Toplevel):
         '''
         BOTTONE ESCI
         '''
-        self.stile = ttk.Style()
-        self.stile.configure('TButton', font='Helvetica')
         self.btn_esci = ttk.Button(self.frame_lotti_chiusi,
                                    text="Chiudi finestra",
                                    command=self.destroy)
