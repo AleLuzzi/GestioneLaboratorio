@@ -85,9 +85,6 @@ class NuovoLottoCucina(tk.Toplevel):
         '''
         BOTTONE ESCI E SALVA
         '''
-        self.stile = ttk.Style()
-        self.stile.configure('TButton', font='Helvetica')
-
         self.btn_invia = ttk.Button(self.frame_basso, text="Invio", command=self.invia)
         self.btn_esci = ttk.Button(self.frame_basso, text="Chiudi finestra", command=self.destroy)
         self.btn_esci_salva = ttk.Button(self.frame_basso, text="Esci e salva", command=self.esci_salva)
