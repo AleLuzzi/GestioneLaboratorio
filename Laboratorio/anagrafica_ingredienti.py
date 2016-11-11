@@ -22,23 +22,25 @@ class Ingredienti(tk.Frame):
         self.frame_sx = ttk.Frame(self)
         self.frame_dx = ttk.Frame(self)
         '''
-        Treeview per tab Fornitori
+        Treeview per tab Ingredienti base
         '''
         self.tree_ingredienti = ttk.Treeview(self.frame_sx, height=23)
-        self.tree_ingredienti['columns'] = ('Id', 'Ingrediente')
+        self.tree_ingredienti['columns'] = ('Id', 'Ingrediente', 'cod_ean')
         self.tree_ingredienti['show'] = 'headings'
         self.tree_ingredienti.heading('Id', text="Id")
         self.tree_ingredienti.heading('Ingrediente', text="Ingrediente")
+        self.tree_ingredienti.heading('cod_ean', text="cod EAN")
 
         self.tree_ingredienti.column("Id", width=10)
         self.tree_ingredienti.column("Ingrediente", width=200)
+        self.tree_ingredienti.column("cod_ean", width=100)
 
         self.tree_ingredienti.bind("<Double-1>", self.ondoubleclick)
 
         '''
         Lista campi del record
         '''
-        self.campi = ['ingrediente_base']
+        self.campi = ['ingrediente_base', 'cod_ean']
         self.attributi = ['Allergene']
         self.label = {}
         self.ckbutton = {}
@@ -112,7 +114,7 @@ class Ingredienti(tk.Frame):
             lista_da_salvare.append(self.entry[campo].get())
         for attributo in self.attributi:
             lista_da_salvare.append(self.valore_flag[attributo].get())
-        self.c.execute('INSERT INTO ingredienti_base(ingrediente_base,flag1_allergene) VALUES (?,?)', lista_da_salvare)
+        self.c.execute('INSERT INTO ingredienti_base(ingrediente_base,cod_ean,flag1_allergene) VALUES (?,?,?)', lista_da_salvare)
         self.conn.commit()
         self.aggiorna()
 
@@ -134,7 +136,7 @@ class Ingredienti(tk.Frame):
     def aggiorna(self):
         self.tree_ingredienti.delete(*self.tree_ingredienti.get_children())
         for lista in self.c.execute("SELECT * FROM ingredienti_base "):
-            self.tree_ingredienti.insert('', 'end', values=(lista[0], lista[1]))
+            self.tree_ingredienti.insert('', 'end', values=(lista[0], lista[1], lista[2]))
 
         lista = []
 
@@ -150,11 +152,13 @@ class Ingredienti(tk.Frame):
 
         self.item = (self.tree_ingredienti.item(self.tree_ingredienti.selection(), 'values'))
 
+        i = 1
         for self.row in self.c.execute("SELECT * FROM ingredienti_base WHERE ID = ?", (self.item[0],)):
             for campo in self.campi:
-                self.entry[campo].insert(0, self.row[1])
+                self.entry[campo].insert(0, self.row[i])
+                i += 1
 
-            i = 2
+            i = 3
             for attributo in self.attributi:
                 if self.row[i] == 1:
                     self.ckbutton[attributo].select()
