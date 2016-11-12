@@ -19,8 +19,7 @@ class Ingredienti(tk.Toplevel):
         '''
         Connessione al database
         '''
-        self.conn = sqlite3.connect('../Laboratorio/data.db',
-                                    detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+
         '''
         Definizione Frame
         '''
@@ -86,14 +85,7 @@ class Ingredienti(tk.Toplevel):
         '''
         ciclo per creazione bottoni surgelati
         '''
-        self.r, self.c = 1, 0
-        for k, v in sorted(self.lista_surgelati.items()):
-            if self.r % 10 == 0:
-                self.c += 1
-                self.r = 1
-            tk.Radiobutton(self.tab1, text=k.upper(), indicatoron=0, variable=self.value, font='Helvetica', width=20,
-                           value=k+' cod.'+v).grid(row=self.r, column=self.c)
-            self.r += 1
+        self.crea_bottoni_surgelati()
 
         ttk.Separator(self.tab1, orient='vertical').grid(row='1', column='2', rowspan=8, sticky='ns', padx=5)
 
@@ -111,14 +103,8 @@ class Ingredienti(tk.Toplevel):
         '''
         ciclo per creazione bottoni freschi
         '''
-        self.r, self.c = 1, 0
-        for k, v in sorted(self.lista_freschi.items()):
-            if self.r % 10 == 0:
-                self.c += 1
-                self.r = 1
-            tk.Radiobutton(self.tab2, text=k.upper(), indicatoron=0, variable=self.value, font='Helvetica', width=20,
-                           value=k+' cod.'+v).grid(row=self.r, column=self.c)
-            self.r += 1
+        self.crea_bottoni_freschi()
+
         ttk.Separator(self.tab2, orient='vertical').grid(row='1', column='1', rowspan=5, sticky='ns', padx=5)
 
         self.lbl_peso_f = ttk.Label(self.tab2, text='PESO', width=20, anchor='center')
@@ -164,14 +150,7 @@ class Ingredienti(tk.Toplevel):
         '''
         ciclo per creazione bottoni pasta fresca
         '''
-        self.r, self.c = 1, 0
-        for k, v in sorted(self.lista_pasta_fresca.items()):
-            if self.r % 10 == 0:
-                self.c += 1
-                self.r = 1
-            tk.Radiobutton(self.tab4, text=k.upper(), indicatoron=0, variable=self.value, font='Helvetica', width=20,
-                           value=k+' cod.'+v).grid(row=self.r, column=self.c)
-            self.r += 1
+        self.crea_bottoni_pasta_fresca()
 
         self.lbl_peso_pf = ttk.Label(self.tab4, text='PESO', width=20, anchor='center')
         self.lbl_peso_pf.grid(row='1', column='2', columnspan='2')
@@ -187,14 +166,7 @@ class Ingredienti(tk.Toplevel):
         '''
         ciclo per creazione bottoni carne
         '''
-        self.r, self.c = 1, 0
-        for k, v in sorted(self.lista_carne.items()):
-            if self.r % 12 == 0:
-                self.c += 1
-                self.r = 1
-            tk.Radiobutton(self.tab5, text=k.upper(), indicatoron=0, variable=self.value, font='Helvetica', width=20,
-                           value=k+' cod.'+v).grid(row=self.r, column=self.c)
-            self.r += 1
+        self.crea_bottoni_carne()
 
         self.lbl_peso_c = ttk.Label(self.tab5, text='PESO', width=20, anchor='center')
         self.lbl_peso_c.grid(row='1', column='3', columnspan='2')
@@ -212,6 +184,46 @@ class Ingredienti(tk.Toplevel):
         self.btn_salva.grid(row='3', column='1', padx=20, pady=20)
         self.btn_chiudi.grid(row='3', column='2', padx=20, pady=20)
 
+    def crea_bottoni_surgelati(self):
+        r, c = 1, 0
+        for k, v in sorted(self.lista_surgelati.items()):
+            if r % 10 == 0:
+                c += 1
+                r = 1
+            tk.Radiobutton(self.tab1, text=k.upper(), indicatoron=0, variable=self.value, font='Helvetica', width=20,
+                           value=k + ' cod.' + v).grid(row=r, column=c)
+            r += 1
+
+    def crea_bottoni_freschi(self):
+        r, c = 1, 0
+        for k, v in sorted(self.lista_freschi.items()):
+            if r % 10 == 0:
+                c += 1
+                r = 1
+            tk.Radiobutton(self.tab2, text=k.upper(), indicatoron=0, variable=self.value, font='Helvetica', width=20,
+                           value=k + ' cod.' + v).grid(row=r, column=c)
+            r += 1
+
+    def crea_bottoni_pasta_fresca(self):
+        r, c = 1, 0
+        for k, v in sorted(self.lista_pasta_fresca.items()):
+            if r % 10 == 0:
+                c += 1
+                r = 1
+            tk.Radiobutton(self.tab4, text=k.upper(), indicatoron=0, variable=self.value, font='Helvetica', width=20,
+                           value=k + ' cod.' + v).grid(row=r, column=c)
+            r += 1
+
+    def crea_bottoni_carne(self):
+        r, c = 1, 0
+        for k, v in sorted(self.lista_carne.items()):
+            if r % 12 == 0:
+                c += 1
+                r = 1
+            tk.Radiobutton(self.tab5, text=k.upper(), indicatoron=0, variable=self.value, font='Helvetica', width=20,
+                           value=k + ' cod.' + v).grid(row=r, column=c)
+            r += 1
+
     def invio(self):
         if self.value.get() != '':
             self.tree.insert("", 0, text=self.value.get(), values=(self.peso.get()))
@@ -225,11 +237,12 @@ class Ingredienti(tk.Toplevel):
             self.ean.set('')
 
     def salva(self):
-
-        self.c = self.conn.cursor()
-        self.c.executemany('INSERT INTO ingredienti VALUES (?,?,?,?)', self.lista_da_salvare)
-        self.conn.commit()
-        self.conn.close()
+        conn = sqlite3.connect('../Laboratorio/data.db',
+                               detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+        c = conn.cursor()
+        c.executemany('INSERT INTO ingredienti VALUES (?,?,?,?)', self.lista_da_salvare)
+        conn.commit()
+        conn.close()
         self.destroy()
 
 
