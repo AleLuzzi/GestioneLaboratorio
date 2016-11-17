@@ -52,6 +52,11 @@ class Ingredienti(tk.Frame):
         self.lbl_frame_dettagli_selezionato = ttk.LabelFrame(self.frame_dx, text='Dettagli ingrediente selezionato')
         self.lbl_frame_attributi_ingrediente = ttk.LabelFrame(self.frame_dx, text='Attributi ingrediente selezionato')
         '''
+        Combobox per gestire merceologia prodotti
+        '''
+        self.box_merceologia = tk.StringVar()
+        self.box = ttk.Combobox(self.lbl_frame_attributi_ingrediente, textvariable=self.box_merceologia)
+        '''
         Labelframe scegli ingrediente
         '''
         self.lbl_frame_scegli = ttk.LabelFrame(self.frame_dx, text='Azioni')
@@ -66,6 +71,7 @@ class Ingredienti(tk.Frame):
         self.tree_ingredienti.grid(row=1, column=0, columnspan=3, sticky='we')
         self.lbl_frame_dettagli_selezionato.grid(row=1, column=0, sticky='n')
         self.lbl_frame_attributi_ingrediente.grid(row=2, column=0)
+        self.box.grid(columnspan=2)
 
         self.lbl_frame_scegli.grid(row=3, column=0)
         self.btn_modifica.grid()
@@ -74,6 +80,14 @@ class Ingredienti(tk.Frame):
         self.aggiorna()
         self.crea_label_entry()
         self.crea_attributi()
+        self.riempi_combo_merceologia()
+
+    def riempi_combo_merceologia(self):
+        lista_merceologie = []
+
+        for row in self.c.execute("SELECT merceologia From merceologie WHERE flag3_ing_base = 1 "):
+            lista_merceologie.extend(row)
+        self.box['values'] = lista_merceologie
 
     def crea_label_entry(self):
         r = 1
