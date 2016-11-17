@@ -40,7 +40,7 @@ class MerceologieCucina(tk.Frame):
         Lista campi del record
         '''
         self.campi = ['merceologia']
-        self.attributi = ['Mostra nel modulo Inventario', 'Mostra nel Tab gTagli']
+        self.attributi = ['Mostra nel modulo Inventario', 'Mostra nel Tab Tagli', 'Mostra nel Tab ingredienti base']
         self.label = {}
         self.ckbutton = {}
         self.entry = {}
@@ -121,8 +121,8 @@ class MerceologieCucina(tk.Frame):
         for attributo in self.attributi:
             valori_da_salvare.append(self.valore_flag[attributo].get())
 
-        stringa = 'UPDATE merceologie SET flag1_inv=? , flag2_taglio=? WHERE ID = ?'
-        self.c.execute(stringa, (valori_da_salvare[0], valori_da_salvare[1], (self.item[0])))
+        stringa = 'UPDATE merceologie SET flag1_inv=? , flag2_taglio=? , flag3_ing_base=? WHERE ID = ?'
+        self.c.execute(stringa, (valori_da_salvare[0], valori_da_salvare[1], valori_da_salvare[2], (self.item[0])))
         self.conn.commit()
         self.aggiorna()
 
@@ -132,7 +132,8 @@ class MerceologieCucina(tk.Frame):
             lista_da_salvare.append(self.entry[campo].get())
         for attributo in self.attributi:
             lista_da_salvare.append(self.valore_flag[attributo].get())
-        self.c.execute('INSERT INTO merceologie(merceologia,flag1_inv,flag2_taglio) VALUES (?,?,?)', lista_da_salvare)
+        self.c.execute('INSERT INTO merceologie(merceologia,flag1_inv,flag2_taglio,flag3_ing_base) VALUES (?,?,?,?)',
+                       lista_da_salvare)
         self.conn.commit()
         self.aggiorna()
 
