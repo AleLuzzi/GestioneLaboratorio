@@ -80,6 +80,14 @@ class Ingredienti(tk.Frame):
         self.aggiorna()
         self.crea_label_entry()
         self.crea_attributi()
+        self.riempi_combo_merceologia()
+
+    def riempi_combo_merceologia(self):
+        lista_merceologie = []
+
+        for row in self.c.execute("SELECT merceologia From merceologie WHERE flag3_ing_base = 1 "):
+            lista_merceologie.extend(row)
+        self.box['values'] = lista_merceologie
 
     def crea_label_entry(self):
         r = 1
