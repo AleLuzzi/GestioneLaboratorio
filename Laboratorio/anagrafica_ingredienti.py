@@ -128,9 +128,12 @@ class Ingredienti(tk.Frame):
             lista_da_salvare.append(self.entry[campo].get())
         for attributo in self.attributi:
             lista_da_salvare.append(self.valore_flag[attributo].get())
-        self.c.execute('INSERT INTO ingredienti_base(ingrediente_base,cod_ean,flag1_allergene) VALUES (?,?,?)', lista_da_salvare)
+        lista_da_salvare.append(self.box_merceologia.get())
+        self.c.execute('INSERT INTO ingredienti_base(ingrediente_base,cod_ean,flag1_allergene,merceologia) '
+                       'VALUES (?,?,?,?)', lista_da_salvare)
         self.conn.commit()
         self.aggiorna()
+        del lista_da_salvare[0:]
 
     def modifica(self):
         valori_da_salvare = []
@@ -145,6 +148,11 @@ class Ingredienti(tk.Frame):
         stringa = 'UPDATE ingredienti_base SET flag1_allergene=? WHERE ID = ?'
         self.c.execute(stringa, (valori_da_salvare[0], (self.item[0])))
         self.conn.commit()
+
+        stringa = 'UPDATE ingredienti_base SET merceologia=? WHERE ID = ?'
+        self.c.execute(stringa, (self.box_merceologia.get(), (self.item[0])))
+        self.conn.commit()
+
         self.aggiorna()
 
     def aggiorna(self):
@@ -177,6 +185,7 @@ class Ingredienti(tk.Frame):
                 if self.row[i] == 1:
                     self.ckbutton[attributo].select()
                 i += 1
+            self.box_merceologia.set(self.row[i])
 
 
 if __name__ == '__main__':
