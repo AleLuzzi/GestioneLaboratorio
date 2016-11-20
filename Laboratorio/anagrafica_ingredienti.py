@@ -32,10 +32,10 @@ class Ingredienti(tk.Frame):
         self.tree_ingredienti.heading('cod_ean', text="cod EAN")
         self.tree_ingredienti.heading('merceologia', text='Merceologia')
 
-        self.tree_ingredienti.column("Id", width=10)
-        self.tree_ingredienti.column("Ingrediente", width=200)
+        self.tree_ingredienti.column("Id", width=30)
+        self.tree_ingredienti.column("Ingrediente", width=150)
         self.tree_ingredienti.column("cod_ean", width=100)
-        self.tree_ingredienti.column("merceologia", width=50)
+        self.tree_ingredienti.column("merceologia", width=100)
 
         self.tree_ingredienti.bind("<Double-1>", self.ondoubleclick)
 
@@ -66,6 +66,7 @@ class Ingredienti(tk.Frame):
         Combobox per filtro
         '''
         self.box_filtro = ttk.Combobox(self.lbl_frame_filtro)
+        self.btn_applica_filtro = ttk.Button(self.lbl_frame_filtro, text='Applica', command=self.filtra)
         '''
         Labelframe scegli ingrediente
         '''
@@ -81,25 +82,30 @@ class Ingredienti(tk.Frame):
         self.tree_ingredienti.grid(row=1, column=0, columnspan=3, sticky='we')
         self.lbl_frame_dettagli_selezionato.grid(row=1, column=0, sticky='n')
         self.lbl_frame_attributi_ingrediente.grid(row=2, column=0)
-        self.lbl_frame_filtro.grid(row=3, column=0)
+
+        ttk.Separator(self.frame_dx, orient='horizontal').grid(row=3, sticky='we', pady=5)
+
+        self.lbl_frame_filtro.grid(row=4, column=0)
         self.box_filtro.grid()
+        self.btn_applica_filtro.grid(row=5, column=0)
         self.box.grid(columnspan=2)
 
-        self.lbl_frame_scegli.grid(row=4, column=0)
+        self.lbl_frame_scegli.grid(row=5, column=0)
         self.btn_modifica.grid()
         self.btn_inserisci.grid()
 
         self.aggiorna()
         self.crea_label_entry()
         self.crea_attributi()
-        self.riempi_combo_merceologia()
+        self.riempi_combo_merceologia_e_filtro()
 
-    def riempi_combo_merceologia(self):
+    def riempi_combo_merceologia_e_filtro(self):
         lista_merceologie = []
 
         for row in self.c.execute("SELECT merceologia From merceologie WHERE flag3_ing_base = 1 "):
             lista_merceologie.extend(row)
         self.box['values'] = lista_merceologie
+        self.box_filtro['values'] = lista_merceologie
 
     def crea_label_entry(self):
         r = 1
@@ -198,6 +204,12 @@ class Ingredienti(tk.Frame):
                     self.ckbutton[attributo].select()
                 i += 1
             self.box_merceologia.set(self.row[i])
+
+    def filtra(self):
+        self.tree_ingredienti.delete(*self.tree_ingredienti.get_children())
+        stringa = self.box_filtro.get()
+        for lista in self.c.execute("SELECT * FROM ingredienti_base WHERE merceologia like ?", ('%'+stringa+'%',)):
+            self.tree_ingredienti.insert('', 'end', values=(lista[0], lista[1], lista[2], lista[4]))
 
 
 if __name__ == '__main__':
