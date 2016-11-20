@@ -25,15 +25,17 @@ class Ingredienti(tk.Frame):
         Treeview per tab Ingredienti base
         '''
         self.tree_ingredienti = ttk.Treeview(self.frame_sx, height=23)
-        self.tree_ingredienti['columns'] = ('Id', 'Ingrediente', 'cod_ean')
+        self.tree_ingredienti['columns'] = ('Id', 'Ingrediente', 'cod_ean', 'merceologia')
         self.tree_ingredienti['show'] = 'headings'
         self.tree_ingredienti.heading('Id', text="Id")
         self.tree_ingredienti.heading('Ingrediente', text="Ingrediente")
         self.tree_ingredienti.heading('cod_ean', text="cod EAN")
+        self.tree_ingredienti.heading('merceologia', text='Merceologia')
 
         self.tree_ingredienti.column("Id", width=10)
         self.tree_ingredienti.column("Ingrediente", width=200)
         self.tree_ingredienti.column("cod_ean", width=100)
+        self.tree_ingredienti.column("merceologia", width=50)
 
         self.tree_ingredienti.bind("<Double-1>", self.ondoubleclick)
 
@@ -158,7 +160,7 @@ class Ingredienti(tk.Frame):
     def aggiorna(self):
         self.tree_ingredienti.delete(*self.tree_ingredienti.get_children())
         for lista in self.c.execute("SELECT * FROM ingredienti_base "):
-            self.tree_ingredienti.insert('', 'end', values=(lista[0], lista[1], lista[2]))
+            self.tree_ingredienti.insert('', 'end', values=(lista[0], lista[1], lista[2], lista[4]))
 
         lista = []
 
