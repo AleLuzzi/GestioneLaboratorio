@@ -59,6 +59,14 @@ class Ingredienti(tk.Frame):
         self.box_merceologia = tk.StringVar()
         self.box = ttk.Combobox(self.lbl_frame_attributi_ingrediente, textvariable=self.box_merceologia)
         '''
+        Labelframe per filtro
+        '''
+        self.lbl_frame_filtro = ttk.LabelFrame(self.frame_dx, text='Filtra Lista Ingredienti')
+        '''
+        Combobox per filtro
+        '''
+        self.box_filtro = ttk.Combobox(self.lbl_frame_filtro)
+        '''
         Labelframe scegli ingrediente
         '''
         self.lbl_frame_scegli = ttk.LabelFrame(self.frame_dx, text='Azioni')
@@ -73,9 +81,11 @@ class Ingredienti(tk.Frame):
         self.tree_ingredienti.grid(row=1, column=0, columnspan=3, sticky='we')
         self.lbl_frame_dettagli_selezionato.grid(row=1, column=0, sticky='n')
         self.lbl_frame_attributi_ingrediente.grid(row=2, column=0)
+        self.lbl_frame_filtro.grid(row=3, column=0)
+        self.box_filtro.grid()
         self.box.grid(columnspan=2)
 
-        self.lbl_frame_scegli.grid(row=3, column=0)
+        self.lbl_frame_scegli.grid(row=4, column=0)
         self.btn_modifica.grid()
         self.btn_inserisci.grid()
 
