@@ -68,6 +68,10 @@ class Ingredienti(tk.Frame):
         self.box_filtro = ttk.Combobox(self.lbl_frame_filtro)
         self.btn_applica_filtro = ttk.Button(self.lbl_frame_filtro, text='Applica', command=self.filtra)
         '''
+        Bottone per reset filtro
+        '''
+        self.btn_reset_filtro = ttk.Button(self.lbl_frame_filtro, text='Reset Lista ingredienti', command=self.aggiorna)
+        '''
         Labelframe scegli ingrediente
         '''
         self.lbl_frame_scegli = ttk.LabelFrame(self.frame_dx, text='Azioni')
@@ -88,6 +92,7 @@ class Ingredienti(tk.Frame):
         self.lbl_frame_filtro.grid(row=4, column=0)
         self.box_filtro.grid()
         self.btn_applica_filtro.grid(row=5, column=0)
+        self.btn_reset_filtro.grid(row=6, column=0)
         self.box.grid(columnspan=2)
 
         self.lbl_frame_scegli.grid(row=5, column=0)
