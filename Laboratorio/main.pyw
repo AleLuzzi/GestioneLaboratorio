@@ -19,7 +19,8 @@ class Main(tk.Frame):
         self.parent = parent
         
         self.frm_alto = tk.Frame(self, bd=1, relief="raised", bg="yellow")
-        self.frm_centrale = tk.Frame(self, height=400, width=self.winfo_screenwidth(), bd=1, relief="raised", bg="white")
+        self.frm_centrale = tk.Frame(self, height=400, width=self.winfo_screenwidth(),
+                                     bd=1, relief="raised", bg="white")
         self.frm_basso = tk.Frame(self, bd=1, relief="raised")
         
         self.frm_alto.grid(row=0, column=0)
@@ -77,7 +78,7 @@ class Main(tk.Frame):
         bottone9.grid(row=0, column=8, padx=4, pady=4)
     
         bottone10 = ttk.Button(self.frm_alto, text="Uscita", compound='bottom',
-                              image=self.img_btn10, command=self.quit)
+                               image=self.img_btn10, command=self.quit)
         bottone10.grid(row=0, column=9, padx=4, pady=4)
 
         self.frm_centrale.grid_propagate(False)
