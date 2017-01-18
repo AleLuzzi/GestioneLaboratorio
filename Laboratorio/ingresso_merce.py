@@ -35,7 +35,7 @@ class IngressoMerce(tk.Toplevel):
             self.lista_fornitori.extend(row)
         self.lista_tagli = ('Mezzena', 'Costarelle', 'Lombo', 'Carnetta', 'Collo', 'Busto',
                             'Sogna', 'Pancia', 'Maialino', 'Arista', 'Filetto', 'Spalla', 'Guanciale',
-                            'Teste', 'Tronchetto')
+                            'Teste', 'Tronchetto', 'Corata')
         '''
         Layouto dei frame per impaginazione
         '''
@@ -136,7 +136,7 @@ class IngressoMerce(tk.Toplevel):
     def crea_bottoni_tagli(self):
         row, col = 1, 0
         for i in range(0, len(self.lista_tagli)):
-            if row % 6 == 0:
+            if row % 7 == 0:
                 col += 1
                 row = 1
             tk.Radiobutton(self.labelframe_taglio, text=self.lista_tagli[i], indicatoron=0,
