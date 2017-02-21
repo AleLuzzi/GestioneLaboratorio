@@ -129,9 +129,12 @@ class LottiInVendita(tk.Toplevel):
                                           variable=self.filtro_mese, value=2)
         self.rdbtn_3mesi = tk.Radiobutton(self.lblframe_box, text='Ultimi 90 giorni',
                                           variable=self.filtro_mese, value=3)
+        self.rdbtn_6mesi = tk.Radiobutton(self.lblframe_box, text='Ultimi 180 giorni',
+                                          variable=self.filtro_mese, value=6)
         self.rdbtn_1mese.grid(row=1, column=0, padx=5)
         self.rdbtn_2mesi.grid(row=1, column=1, padx=5)
         self.rdbtn_3mesi.grid(row=1, column=2, padx=5)
+        self.rdbtn_6mesi.grid(row=1, column=3, padx=5)
         '''
         Combobox per gestire rimpimento tramite lista prodotti
         '''
