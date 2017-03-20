@@ -5,6 +5,7 @@ from anagrafica_ingredienti import *
 from anagrafica_produzione import *
 from merceologie_cucina import *
 from anagrafica_tagli import *
+from anagrafica_impostazioni import *
 from report_cucina_note import ReportCucina
 import tkinter as tk
 import tkinter.ttk as ttk
@@ -69,7 +70,11 @@ class Anagrafica(tk.Toplevel):
         '''
         self.tab8 = ReportCucina(self.notebook)
         self.notebook.add(self.tab8, text='Report Cucina', compound='left', image=self.img_btn1)
-        
+        '''
+        TAB 9 per impostazioni
+        '''
+        self.tab9 = Impostazioni(self.notebook)
+        self.notebook.add(self.tab9, text='Impostazioni', compound='left', image=self.img_btn1)
 
 if __name__ == '__main__':
     root = tk.Tk()
