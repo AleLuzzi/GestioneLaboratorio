@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, filedialog
 import sqlite3
 
 
@@ -19,6 +19,20 @@ class Impostazioni(tk.Frame):
         self.frame_sx = ttk.Frame(self)
         self.frame_centrale = ttk.Frame(self)
         self.frame_dx = ttk.Frame(self)
+
+        self.btn1 = ttk.Button(self.frame_sx, text='Seleziona la cartella di Winswgx-net', command=self.open_dir)
+        self.lbl_dir_name = ttk.Label(self.frame_sx, text='')
+
+        self.frame_sx.grid()
+        self.btn1.grid(row=1, column=1)
+        self.lbl_dir_name.grid(row=2, column=1)
+
+        self.dirname = ''
+
+    def open_dir(self):
+        self.dirname = filedialog.askdirectory(parent=self.frame_centrale, initialdir='c:\\')
+        self.lbl_dir_name.config(text=self.dirname)
+
 
 if __name__ == '__main__':
     root = tk.Tk()
