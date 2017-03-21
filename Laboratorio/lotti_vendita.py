@@ -12,7 +12,7 @@ class LottiInVendita(tk.Toplevel):
         self.geometry("+0+0")
         self.title('Lotti in vendita')
 
-        self.conn_v = sqlite3.connect('../laboratorio/data.db',
+        self.conn_v = sqlite3.connect('data.db',
                                       detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
         self.c_v = self.conn_v.cursor()
 
