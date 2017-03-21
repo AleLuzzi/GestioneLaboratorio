@@ -15,7 +15,7 @@ class Ingredienti(tk.Toplevel):
         self.value = tk.StringVar()
         self.peso = tk.StringVar()
         self.peso.set('')
-        self.img_btn1 = tk.PhotoImage(file="..//Laboratorio//immagini//logo_piccolo.gif")
+        self.img_btn1 = tk.PhotoImage(file=".//immagini//logo_piccolo.gif")
         '''
         Connessione al database
         '''
@@ -135,11 +135,11 @@ class Ingredienti(tk.Toplevel):
         self.entry_pezzi = ttk.Entry(self.tab3, textvariable=self.pezzi)
         self.entry_pezzi.grid(row='4', column='0')
 
-        self.img_btn_focus_ean = tk.PhotoImage(file="..//Laboratorio//immagini//modifica.gif")
+        self.img_btn_focus_ean = tk.PhotoImage(file=".//immagini//modifica.gif")
         self.btn_focus_ean = ttk.Button(self.tab3, image=self.img_btn_focus_ean, command=self.entry_ean.focus)
         self.btn_focus_ean.grid(row=2, column=1, padx=10)
 
-        self.img_btn_focus_pezzi = tk.PhotoImage(file="..//Laboratorio//immagini//modifica.gif")
+        self.img_btn_focus_pezzi = tk.PhotoImage(file=".//immagini//modifica.gif")
         self.btn_focus_pezzi = ttk.Button(self.tab3, image=self.img_btn_focus_pezzi, command=self.entry_pezzi.focus)
         self.btn_focus_pezzi.grid(row=4, column=1, padx=10)
         '''
