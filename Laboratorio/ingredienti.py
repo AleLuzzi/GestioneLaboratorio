@@ -237,7 +237,7 @@ class Ingredienti(tk.Toplevel):
             self.ean.set('')
 
     def salva(self):
-        conn = sqlite3.connect('../Laboratorio/data.db',
+        conn = sqlite3.connect('data.db',
                                detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
         c = conn.cursor()
         c.executemany('INSERT INTO ingredienti VALUES (?,?,?,?)', self.lista_da_salvare)
