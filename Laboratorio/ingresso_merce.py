@@ -110,14 +110,14 @@ class IngressoMerce(tk.Toplevel):
         '''
         BOTTONI salva e chiudi finestra
         '''
-        self.btn_invio = ttk.Button(self.frame_basso,
-                                    text="Invio",
+        self.btn_invio = tk.Button(self.frame_basso,
+                                    text="Invio", font=('comic sans', 20), width=20,
                                     command=self.invio).grid(row=2, column=0, padx=10, pady=10)
-        self.btn_salva_esci = ttk.Button(self.frame_basso,
-                                         text="Salva ed esci",
+        self.btn_salva_esci = tk.Button(self.frame_basso,
+                                         text="Salva ed esci", font=('Times new roman', 20), width=20,
                                          command=self.salva_esci).grid(row=2, column=1, padx=10, pady=10)
-        self.btn_chiudi_finestra = ttk.Button(self.frame_basso,
-                                              text='Chiudi finestra',
+        self.btn_chiudi_finestra = tk.Button(self.frame_basso,
+                                              text='Chiudi finestra', font=('Times new roman', 20), width=20,
                                               command=self.chiudi).grid(row=2, column=2, padx=10, pady=10)
         self.crea_bottoni_tagli()
         self.crea_bottoni_fornitori()
