@@ -8,7 +8,7 @@ class NuovoLotto(tk.Toplevel):
     def __init__(self):
         tk.Toplevel.__init__(self)
         self.title("Nuovo Lotto")
-        self.geometry("900x680+5+5")
+        self.geometry("1024x525+0+0")
 
         self.data = dt.date.today()
 
@@ -21,18 +21,19 @@ class NuovoLotto(tk.Toplevel):
 
         self.lista_da_salvare = []
         self.lista_nuova_produzione = []
+        self.nuova_produzione = tk.StringVar()
+        self.peso_da_inserire = tk.StringVar()
         '''
         DISPOSIZIONE FRAME
         '''
-        self.frame_treeview = ttk.Frame(self)
-        self.frame_treeview.grid(row='0', column='0', sticky='n')
-
-        self.frame_nuovolotto = ttk.Frame(self)
-        self.frame_nuovolotto.grid(row='0', column='1', sticky='n')
+        self.frame_sx = tk.Frame(self)
+        self.frame_sx_alto = tk.Frame(self.frame_sx)
+        self.frame_sx_basso = tk.Frame(self.frame_sx, background='white')
+        self.frame_dx = tk.Frame(self)
         '''
         Treeview per riepilogo immissioni
         '''
-        self.tree = ttk.Treeview(self.frame_treeview, height=25)
+        self.tree = ttk.Treeview(self.frame_sx_alto, height=20)
         self.tree['columns'] = ('data ingresso', 'fornitore', 'peso', 'residuo')
 
         self.tree.column("data ingresso", width=80)
@@ -48,70 +49,99 @@ class NuovoLotto(tk.Toplevel):
         self.tree.tag_configure('odd', background='light green')
 
         self.tree.bind("<Double-1>", self.ondoubleclick)
-
-        self.tree.grid(row='1', column='0', columnspan=2, sticky='w')
         '''
         LABEL nuovo lotto vendita
         '''
-        self.lbl_nuovo_lotto = ttk.Label(self.frame_nuovolotto, text='NUOVO LOTTO VENDITA', font=('Helvetica', 20))
-        self.lbl_prog_lotto_vendita = ttk.Label(self.frame_nuovolotto, text=str(self.prog_lotto_ven) + 'V',
+        self.lbl_nuovo_lotto = ttk.Label(self.frame_dx, text='NUOVO LOTTO VENDITA',
+                                         foreground='blue', font=('Helvetica', 20))
+        self.lbl_prog_lotto_vendita = ttk.Label(self.frame_dx, text=str(self.prog_lotto_ven) + 'V',
                                                 font=('Helvetica', 40))
-        self.lbl_nuovo_lotto.grid(row='1', column='0')
-        self.lbl_prog_lotto_vendita.grid(row='2', column='0')
+        '''
+        LABEL quantita' prodotta
+        '''
+        self.lbl_qta_prodotto = ttk.Label(self.frame_dx, text='Quantita prodotta',
+                                          foreground='blue', font=('Helvetica', 20))
         '''
         Treeview per lotti selezionati
         '''
-        self.tree_lotti_selezionati = ttk.Treeview(self.frame_nuovolotto, height=5)
-        self.tree_lotti_selezionati['columns'] = 'taglio'
-        self.tree_lotti_selezionati.column("taglio", width=70)
+        self.tree_lotti_selezionati = ttk.Treeview(self.frame_dx, height=5)
+        self.tree_lotti_selezionati['columns'] = ('lotto ingresso', 'taglio')
+        self.tree_lotti_selezionati['show'] = 'headings'
+        self.tree_lotti_selezionati.column("lotto ingresso", width=100)
+        self.tree_lotti_selezionati.column("taglio", width=100)
+        self.tree_lotti_selezionati.heading("lotto ingresso", text="lotto ingresso")
         self.tree_lotti_selezionati.heading("taglio", text="taglio")
-        self.tree_lotti_selezionati.grid(row='3', column='0')
         '''
         LabelFrame nuova produzione
         '''
-        self.labelframe = ttk.Labelframe(self.frame_nuovolotto, text="Nuova Produzione")
-        self.labelframe.grid(row='4', column='0')
+        self.labelframe = ttk.Labelframe(self.frame_dx, text="Nuova Produzione")
 
+        '''
+        ENTRY per inserimento del peso
+        '''
+        self.entry_peso = ttk.Entry(self.frame_dx, font=('Helvetica', 20), width=7, textvariable=self.peso_da_inserire)
+        self.entry_peso.focus()
+        '''
+        BOTTONE ESCI E SALVA
+        '''
+        self.btn_esci = tk.Button(self.frame_sx_basso,
+                                  text="Chiudi finestra",
+                                  font=('comic sans', 20),
+                                  width=14,
+                                  command=self.destroy)
+
+        self.btn_esci_salva = tk.Button(self.frame_sx_basso,
+                                        text="Esci e salva",
+                                        font=('comic sans', 20),
+                                        width=14,
+                                        command=self.esci_salva)
+        '''
+        LAYOUT
+        '''
+        self.frame_sx.grid(row=0, column=0, sticky='n')
+        self.frame_sx_alto.grid()
+        self.frame_sx_basso.grid(sticky='ew')
+        self.frame_dx.grid(row=0, column=1, sticky='n')
+
+        self.tree.grid(row=0, column=0, columnspan=2, sticky='w')
+
+        self.lbl_nuovo_lotto.grid(row=1, column=0, padx=20)
+        self.lbl_prog_lotto_vendita.grid(row=1, column=1, padx=20)
+
+        self.lbl_qta_prodotto.grid(row=2, column=0)
+        self.entry_peso.grid(row=2, column=1)
+
+        self.tree_lotti_selezionati.grid(row=3, column=0, columnspan=2, pady=15)
+
+        self.labelframe.grid(row=4, column=0, columnspan=2)
+
+        self.btn_esci.grid(row=2, column=0, padx=10, pady=10)
+        self.btn_esci_salva.grid(row=2, column=1, padx=10, pady=10)
+
+        self.lotti_acq_aperti()
+        self.riempi_lista_produzione()
+
+    def riempi_lista_produzione(self):
+        # Lista articoli per nuova produzione
         for row in self.c.execute("SELECT prodotto FROM prodotti WHERE reparto = 'Macelleria'"):
             self.lista_nuova_produzione.extend(row)
 
-        '''
-        Lista articoli per nuova produzione
-        '''
-        self.nuova_produzione = tk.StringVar()
-        self.row, self.col = 1, 0
+        row, col = 1, 0
         for i in range(0, len(self.lista_nuova_produzione)):
-            if self.row % 8 == 0:
-                self.col += 1
-                self.row = 1
+            if row % 8 == 0:
+                col += 1
+                row = 1
             tk.Radiobutton(self.labelframe,
                            text=str(self.lista_nuova_produzione[i]).upper(),
                            variable=self.nuova_produzione,
                            width=20,
                            indicatoron=0,
                            value=self.lista_nuova_produzione[i],
-                           font='Helvetica').grid(row=self.row, column=self.col, sticky="w", pady=2)
-            self.row += 1
-        '''
-        SEPARATORE
-        '''
-        self.sep = ttk.Separator(self.frame_nuovolotto, orient='horizontal')
-        self.sep.grid(row='5', column='0', columnspan='1', sticky='ew', pady=10)
-        '''
-        LABELFRAME per peso da inserire
-        '''
-        self.lblframe_peso = ttk.LabelFrame(self.frame_nuovolotto, text='Peso')
-        self.lblframe_peso.grid(row='6', column='0')
-        '''
-        ENTRY per inserimento del peso
-        '''
-        self.peso_da_inserire = tk.StringVar()
-        self.entry_peso = ttk.Entry(self.lblframe_peso, textvariable=self.peso_da_inserire)
-        self.entry_peso.focus()
-        self.entry_peso.grid()
-        '''
-        Ciclo per inserire i lotti in acquisto da utilizzare
-        '''
+                           font='Helvetica').grid(row=row, column=col, sticky="w", pady=2)
+            row += 1
+
+    def lotti_acq_aperti(self):
+        # Ciclo per inserire i lotti in acquisto da utilizzare
         for lista in self.c.execute("SELECT * from ingresso_merce WHERE lotto_chiuso = 'no'"):
             try:
                 self.tree.insert('', 'end', lista[0], text=lista[0], tags=('odd',))
@@ -122,14 +152,6 @@ class NuovoLotto(tk.Toplevel):
                 self.tree.insert(lista[0], 'end', text=lista[4],
                                  values=(dt.date.strftime(lista[1], '%d/%m/%y'), lista[3], lista[5]))
                 self.tree.item(lista[0], open='true')
-        '''
-        BOTTONE ESCI E SALVA
-        '''
-        self.btn_esci = ttk.Button(self.frame_treeview, text="Chiudi finestra", command=self.destroy)
-        self.btn_esci_salva = ttk.Button(self.frame_treeview, text="Esci e salva", command=self.esci_salva)
-
-        self.btn_esci.grid(row='2', column='0', padx='10', pady=20)
-        self.btn_esci_salva.grid(row='2', column='1', padx='10', pady=20)
 
     def esci_salva(self):
         if (self.nuova_produzione.get() != '') \
@@ -148,7 +170,7 @@ class NuovoLotto(tk.Toplevel):
         if (self.nuova_produzione.get() != '') and (self.peso_da_inserire.get() != ''):
             item = self.tree.selection()[0]
             self.tree_lotti_selezionati.insert('', 'end', text=self.tree.parent(item),
-                                               values=(self.tree.item(item, 'text')))
+                                               values=(self.tree.parent(item), self.tree.item(item, 'text')))
             self.lista_da_salvare.append(((str(self.prog_lotto_ven) + 'V'),
                                          self.data, (self.tree.parent(item)),
                                          (self.nuova_produzione.get()),
