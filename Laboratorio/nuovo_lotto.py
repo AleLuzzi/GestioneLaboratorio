@@ -113,7 +113,7 @@ class NuovoLotto(tk.Toplevel):
 
         self.tree_lotti_selezionati.grid(row=3, column=0, columnspan=2, pady=15)
 
-        self.labelframe.grid(row=4, column=0, columnspan=2)
+        self.labelframe.grid(row=4, column=0, columnspan=2, sticky='ew')
 
         self.btn_esci.grid(row=2, column=0, padx=10, pady=10)
         self.btn_esci_salva.grid(row=2, column=1, padx=10, pady=10)
@@ -134,7 +134,7 @@ class NuovoLotto(tk.Toplevel):
             tk.Radiobutton(self.labelframe,
                            text=str(self.lista_nuova_produzione[i]).upper(),
                            variable=self.nuova_produzione,
-                           width=20,
+                           width=27,
                            indicatoron=0,
                            value=self.lista_nuova_produzione[i],
                            font='Helvetica').grid(row=row, column=col, sticky="w", pady=2)
