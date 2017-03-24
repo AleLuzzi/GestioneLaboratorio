@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import ttk
-# from time import strftime
 import datetime
 import sqlite3
 
@@ -26,10 +25,12 @@ class Ingredienti(tk.Toplevel):
         Treeview per riepilogo ingredienti inseriti
         '''
         self.tree = ttk.Treeview(self.frame_sx)
-        self.tree['columns'] = 'quantita'
+        self.tree['columns'] = ('articolo', 'quantita')
+        self.tree['show'] = 'headings'
+        self.tree.column("articolo", width=200)
         self.tree.column("quantita", width=100)
+        self.tree.heading("articolo", text="articolo")
         self.tree.heading("quantita", text="quantita")
-
         '''
         Label che mostra il numero della settimana
         '''
@@ -241,12 +242,12 @@ class Ingredienti(tk.Toplevel):
 
     def invio(self):
         if self.value.get() != '':
-            self.tree.insert("", 0, text=self.value.get(), values=(self.peso.get()))
+            self.tree.insert("", 0, values=(self.value.get(), self.peso.get()))
             self.lista_da_salvare.append((self.n_sett, (self.value.get()), (self.peso.get()), self.data))
             self.entry_peso_s.delete(0, tk.END)
             self.value.set('')
         elif self.ean.get() != '':
-            self.tree.insert("", 0, text=self.ean.get(), values=(self.pezzi.get()))
+            self.tree.insert("", 0, values=(self.ean.get(), self.pezzi.get()))
             self.lista_da_salvare.append((self.n_sett, (self.ean.get()), (self.pezzi.get()), self.data))
             self.entry_pezzi.delete(0, tk.END)
             self.ean.set('')
