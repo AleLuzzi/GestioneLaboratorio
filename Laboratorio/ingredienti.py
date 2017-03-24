@@ -9,7 +9,7 @@ class Ingredienti(tk.Toplevel):
     def __init__(self):
         tk.Toplevel.__init__(self)
         self.title("Ingredienti")
-        self.geometry("%dx525+0+0" % self.winfo_screenwidth())
+        self.geometry("1024x525+0+0")
 
         self.lista_da_salvare = []
         self.value = tk.StringVar()
@@ -17,18 +17,11 @@ class Ingredienti(tk.Toplevel):
         self.peso.set('')
         self.img_btn1 = tk.PhotoImage(file=".//immagini//logo_piccolo.gif")
         '''
-        Connessione al database
-        '''
-
-        '''
         Definizione Frame
         '''
         self.frame_sx = tk.Frame(self, bd=3, relief='groove')
         self.frame_dx = tk.Frame(self, bd=3, relief='groove')
         self.frame_basso = tk.Frame(self, background='white')
-        self.frame_sx.grid(row=0, column=0, sticky='ns')
-        self.frame_dx.grid(row=0, column=1)
-        self.frame_basso.grid(row=1, column=0, columnspan=2, sticky='we')
         '''
         Treeview per riepilogo ingredienti inseriti
         '''
@@ -36,7 +29,7 @@ class Ingredienti(tk.Toplevel):
         self.tree['columns'] = 'quantita'
         self.tree.column("quantita", width=100)
         self.tree.heading("quantita", text="quantita")
-        self.tree.grid(row=3, column=0, columnspan=2)
+
         '''
         Label che mostra il numero della settimana
         '''
@@ -48,14 +41,10 @@ class Ingredienti(tk.Toplevel):
                                              text="Data Utilizzo Merce", foreground='blue', font=('Helvetica', 20))
         self.label_data = ttk.Label(self.frame_sx, anchor='center',
                                     text=self.data.strftime('%d/%m/%y'), font=('Helvetica', 20))
-        self.lbl_settimana.grid(row=0, column=0, columnspan=2)
-        self.label_data_utilizzo.grid(row=1, column=0)
-        self.label_data.grid(row=1, column=1)
         '''
         Notebook e posizione
         '''
         self.notebook = ttk.Notebook(self.frame_dx)
-        self.notebook.grid(row=0, column=0)
         '''
         Definizione dizionari per ingredienti
         '''
@@ -177,12 +166,38 @@ class Ingredienti(tk.Toplevel):
         '''
         BOTTONI per inserimento salvataggio e chiusura finestra
         '''
-        self.btn_invio = ttk.Button(self.frame_basso, text="Conferma", command=self.invio)
-        self.btn_salva = ttk.Button(self.frame_basso, text='salva', command=self.salva)
-        self.btn_chiudi = ttk.Button(self.frame_basso, text="Chiudi finestra", command=self.destroy)
-        self.btn_invio.grid(row='3', column='0', padx=20, pady=20)
-        self.btn_salva.grid(row='3', column='1', padx=20, pady=20)
-        self.btn_chiudi.grid(row='3', column='2', padx=20, pady=20)
+        self.btn_invio = tk.Button(self.frame_basso,
+                                   text="Conferma",
+                                   font=('Helvetica', 15),
+                                   width=25,
+                                   command=self.invio)
+        self.btn_salva = tk.Button(self.frame_basso,
+                                   text='salva',
+                                   font=('Helvetica', 15),
+                                   width=25,
+                                   command=self.salva)
+        self.btn_chiudi = tk.Button(self.frame_basso,
+                                    text="Chiudi finestra",
+                                    font=('Helvetica', 15),
+                                    width=25,
+                                    command=self.destroy)
+        self.btn_invio.grid(row='3', column='0', padx=20, pady=17)
+        self.btn_salva.grid(row='3', column='1', padx=20, pady=17)
+        self.btn_chiudi.grid(row='3', column='2', padx=20, pady=17)
+        '''
+        LAYOUT
+        '''
+        self.frame_sx.grid(row=0, column=0, sticky='ns')
+        self.frame_dx.grid(row=0, column=1)
+        self.frame_basso.grid(row=1, column=0, columnspan=2, sticky='we')
+
+        self.tree.grid(row=3, column=0, columnspan=2)
+
+        self.label_data.grid(row=1, column=1)
+
+        self.notebook.grid(row=0, column=0)
+        self.lbl_settimana.grid(row=0, column=0, columnspan=2)
+        self.label_data_utilizzo.grid(row=1, column=0)
 
     def crea_bottoni_surgelati(self):
         r, c = 1, 0
@@ -217,7 +232,7 @@ class Ingredienti(tk.Toplevel):
     def crea_bottoni_carne(self):
         r, c = 1, 0
         for k, v in sorted(self.lista_carne.items()):
-            if r % 12 == 0:
+            if r % 15 == 0:
                 c += 1
                 r = 1
             tk.Radiobutton(self.tab5, text=k.upper(), indicatoron=0, variable=self.value, font='Helvetica', width=20,
