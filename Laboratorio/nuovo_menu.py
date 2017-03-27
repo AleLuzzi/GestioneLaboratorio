@@ -9,7 +9,7 @@ class NuovoMenu(tk.Toplevel):
     def __init__(self):
         tk.Toplevel.__init__(self)
         self.title("Nuovo Lotto Cucina")
-        self.geometry("%dx525+0+0" % self.winfo_screenwidth())
+        self.geometry("1024x525+0+0")
 
         self.data = dt.date.today()
 
@@ -29,13 +29,9 @@ class NuovoMenu(tk.Toplevel):
         DISPOSIZIONE FRAME
         '''
         self.frame_treeview = tk.Frame(self, bd='3', relief='groove')
-        self.frame_treeview.grid(row='0', column='0', padx='10', sticky='n')
-
         self.frame_nuovolotto = tk.Frame(self, bd='3', relief='groove')
-        self.frame_nuovolotto.grid(row=0, column=1, sticky='n')
+        self.frame_basso = tk.Frame(self, bd='3', background='white', relief='groove')
 
-        self.frame_basso = tk.Frame(self, bd='3', relief='groove')
-        self.frame_basso.grid(row=1, column=0, columnspan=3, sticky='w')
         '''
         Treeview per riepilogo immissioni
         '''
@@ -51,52 +47,80 @@ class NuovoMenu(tk.Toplevel):
         self.tree.heading("peso", text="peso")
 
         self.tree.tag_configure('odd', background='light green')
-
-        self.tree.grid(row=3, column=0, sticky='we')
         '''
         LABEL nuovo lotto vendita
         '''
-        self.lbl_nuovo_lotto = ttk.Label(self.frame_treeview, text='NUOVO LOTTO VENDITA', font=('Helvetica', 20))
-        self.lbl_prog_lotto_vendita = ttk.Label(self.frame_treeview, text=str(self.prog_lotto_ven) + 'V',
+        self.lbl_nuovo_lotto = ttk.Label(self.frame_treeview,
+                                         text='NUOVO LOTTO VENDITA',
+                                         font=('Helvetica', 20))
+
+        self.lbl_prog_lotto_vendita = ttk.Label(self.frame_treeview,
+                                                text=str(self.prog_lotto_ven) + 'V',
                                                 font=('Helvetica', 40))
-        self.lbl_nuovo_lotto.grid(row=0, column=0)
-        self.lbl_prog_lotto_vendita.grid(row=1, column=0)
         '''
         LabelFrame nuova produzione
         '''
-        self.labelframe_primi_piatti = ttk.Labelframe(self.frame_nuovolotto, text="Primi piatti")
-        self.labelframe_primi_piatti.grid(row=2, column=0)
-
-        self.labelframe_secondi_piatti = ttk.Labelframe(self.frame_nuovolotto, text="secondi piatti")
-        self.labelframe_secondi_piatti.grid(row=2, column=1)
-
-        self.labelframe_contorni = ttk.Labelframe(self.frame_nuovolotto, text="contorni")
-        self.labelframe_contorni.grid(row=2, column=2)
+        self.labelframe_primi_piatti = ttk.Labelframe(self.frame_nuovolotto,
+                                                      text="Primi piatti")
+        self.labelframe_secondi_piatti = ttk.Labelframe(self.frame_nuovolotto,
+                                                        text="secondi piatti")
+        self.labelframe_contorni = ttk.Labelframe(self.frame_nuovolotto,
+                                                  text="contorni")
         '''
         LABELFRAME per peso da inserire
         '''
-        self.lblframe_peso = ttk.LabelFrame(self.frame_basso, text='Peso')
-        self.lblframe_peso.grid(row=0, column=0, sticky='w')
+        self.lblframe_peso = ttk.LabelFrame(self.frame_basso,
+                                            text='Peso')
         '''
         ENTRY per inserimento del peso
         '''
         self.peso_da_inserire = tk.StringVar()
-        self.entry_peso = ttk.Entry(self.lblframe_peso, textvariable=self.peso_da_inserire)
+        self.entry_peso = ttk.Entry(self.lblframe_peso,
+                                    font=('Helvetica', 20),
+                                    textvariable=self.peso_da_inserire)
         self.entry_peso.focus()
-        self.entry_peso.grid()
         '''
         BOTTONE ESCI E SALVA
         '''
-        self.btn_invia = ttk.Button(self.frame_basso, text="Invio", command=self.invia)
-        self.btn_esci = ttk.Button(self.frame_basso, text="Chiudi finestra", command=self.destroy)
-        self.btn_esci_salva = ttk.Button(self.frame_basso, text="Esci e salva", command=self.esci_salva)
-        self.btn_nuovo_menu = ttk.Button(self.frame_basso, text="Nuovo Menu",
-                                         command=self.crea_nuovo_menu)
+        self.btn_invia = tk.Button(self.frame_basso,
+                                   text="Invio",
+                                   font=('Helvetica', 20),
+                                   command=self.invia)
+        self.btn_esci = tk.Button(self.frame_basso,
+                                  text="Chiudi finestra",
+                                  font=('Helvetica', 20),
+                                  command=self.destroy)
+        self.btn_esci_salva = tk.Button(self.frame_basso,
+                                        text="Esci e salva",
+                                        font=('Helvetica', 20),
+                                        command=self.esci_salva)
+        self.btn_nuovo_menu = tk.Button(self.frame_basso,
+                                        text="Nuovo Menu",
+                                        font=('Helvetica', 20),
+                                        command=self.crea_nuovo_menu)
+        '''
+        LAYOUT
+        '''
+        self.frame_nuovolotto.grid(row=0, column=0, sticky='n')
+        self.frame_treeview.grid(row=0, column=1, padx=10, sticky='n')
+        self.frame_basso.grid(row=1, column=0, columnspan=3, sticky='w')
+
+        self.labelframe_primi_piatti.grid(row=0, column=0)
+        self.labelframe_secondi_piatti.grid(row=1, column=0)
+        self.labelframe_contorni.grid(row=2, column=0)
+
+        self.lbl_nuovo_lotto.grid(row=0, column=0)
+        self.lbl_prog_lotto_vendita.grid(row=1, column=0)
+
+        self.tree.grid(row=3, column=0, sticky='we')
+
+        self.lblframe_peso.grid(row=0, column=0, sticky='w')
+        self.entry_peso.grid()
 
         self.btn_invia.grid(row=0, column=1, padx=10, pady=20)
-        self.btn_esci.grid(row=0, column=2, padx=10, pady=20)
+        self.btn_nuovo_menu.grid(row=0, column=2, padx=10, pady=20)
         self.btn_esci_salva.grid(row=0, column=3, padx=10, pady=20)
-        self.btn_nuovo_menu.grid(row=0, column=4, padx=10, pady=20)
+        self.btn_esci.grid(row=0, column=4, padx=10, pady=20)
 
         self.crea_nuovo_menu()
 
