@@ -9,7 +9,7 @@ import shutil
 class LottiInVendita(tk.Toplevel):
     def __init__(self):
         super(LottiInVendita, self).__init__()
-        self.geometry("+0+0")
+        self.geometry("1024x525+0+0")
         self.title('Lotti in vendita')
 
         self.conn_v = sqlite3.connect('data.db',
@@ -21,20 +21,15 @@ class LottiInVendita(tk.Toplevel):
         self.item = ''
         self.tot_qta = 0
 
-        '''
-        Disposizione Frame e LabelFrame
-        '''
-        self.frame_sx = ttk.Frame(self)
-        self.frame_dx = ttk.Frame(self)
-        self.frame_sx.grid(row=0, column=0)
-        self.frame_dx.grid(row=0, column=1)
+        # Disposizione Frame e LabelFrame
+        self.frame_sx = tk.Frame(self)
+        self.frame_dx = tk.Frame(self)
+        self.frame_dx_basso = tk.Frame(self, background='white')
 
         self.lblframe_box = ttk.LabelFrame(self.frame_dx, text='visualizza lotti per articolo')
-        self.lblframe_box.grid(row=5, column=0, columnspan='2')
-        '''
-        Treeview con lotti disponibili
-        '''
-        self.tree = ttk.Treeview(self.frame_sx, height=25)
+
+        # Treeview con lotti disponibili
+        self.tree = ttk.Treeview(self.frame_sx, height=23)
         self.tree['columns'] = ('data', 'peso')
 
         self.tree.heading('data', text="data")
@@ -47,29 +42,24 @@ class LottiInVendita(tk.Toplevel):
 
         self.tree.bind("<Double-1>", self.ondoubleclick)
 
-        '''
-        Label
-        '''
-        self.label = ttk.Label(self.frame_sx, text='Lotti disponibili alla vendita', font="Helvetica,40")
-        self.label_selezionato = ttk.Label(self.frame_dx, text='Lotto selezionato', font='Helvetica')
-        self.label_dettagli = ttk.Label(self.frame_dx, text='Dettagli lotto selezionato', font='Helvetica')
-        '''
-        Posizionamento Label
-        '''
-        self.label.grid(row='0', column='0')
+        # Label
+        self.label = ttk.Label(self.frame_sx, text='Lotti disponibili alla vendita', font=('Helvetica', 20))
+        self.label_selezionato = ttk.Label(self.frame_dx, text='Lotto selezionato', font=('Helvetica', 20))
+        self.label_dettagli = ttk.Label(self.frame_dx, text='Dettagli lotto selezionato', font=('Helvetica', 20))
+
+        # Posizionamento Label
+
         self.label_selezionato.grid(row='1', column='0', columnspan=2)
         self.label_dettagli.grid(row='3', column='0', columnspan='2')
-        '''
-        Treeview con lotto selezionato
-        '''
+
+        # Treeview con lotto selezionato
         self.tree_selezionato = ttk.Treeview(self.frame_dx, height=1)
         self.tree_selezionato['columns'] = ('lotto', 'prodotto')
         self.tree_selezionato['show'] = 'headings'
         self.tree_selezionato.heading('lotto', text="lotto")
         self.tree_selezionato.heading('prodotto', text="prodotto")
-        '''
-        Treeview con DETTAGLI lotto selezionato
-        '''
+
+        # Treeview con DETTAGLI lotto selezionato
         self.tree_dettagli = ttk.Treeview(self.frame_dx, height=5)
         self.tree_dettagli['columns'] = ('prod_origine', 'lotto_acq', 'fornitore', 'documento', 'data_acq')
         self.tree_dettagli['show'] = 'headings'
@@ -85,32 +75,30 @@ class LottiInVendita(tk.Toplevel):
         self.tree_dettagli.column("documento", width=90)
         self.tree_dettagli.column("data_acq", width=90)
 
-        '''
-        Posizionamento Treeview
-        '''
-        self.tree.grid(row='1', column='0')
-        self.tree_selezionato.grid(row='2', column='0', columnspan=2)
-        self.tree_dettagli.grid(row='4', column='0', columnspan='2')
-        '''
-        Label quantita totale
-        '''
-        self.lbl_txt_quantita = ttk.Label(self.frame_dx, text='Quantita prodotta nel periodo selezionato KG       ')
-        self.lbl_peso_totale = ttk.Label(self.frame_dx, text='0')
-        self.lbl_txt_quantita.grid(row=6, column=0, pady=20, padx=20, columnspan=2)
-        self.lbl_peso_totale.grid(row=6, column=1, padx=20)
-        '''
-        Bottone uscita
-        '''
-        self.btn_uscita = ttk.Button(self.frame_dx, text='Chiudi finestra', command=self.destroy)
-        self.btn_uscita.grid(row=7, column=1, pady='20')
-        '''
-        Bottone manda in bilancia
-        '''
-        self.btn_in_bilancia = ttk.Button(self.frame_dx, text='Invia in bilancia', command=self.crea_file)
-        self.btn_in_bilancia.grid(row=7, column=0)
-        '''
-        RADIOBUTTON
-        '''
+        # LABEL quantita totale
+        self.lbl_txt_quantita = ttk.Label(self.frame_dx,
+                                          text='Quantita prodotta nel periodo selezionato KG :',
+                                          font=('Helvetica', 15))
+        self.lbl_peso_totale = ttk.Label(self.frame_dx,
+                                         text='0',
+                                         font=('Helvetica', 20))
+
+        self.lbl_txt_quantita.grid(row=6, column=0, pady=5, padx=20)
+        self.lbl_peso_totale.grid(row=7, column=0, padx=20)
+
+        # BUTTON uscita
+        self.btn_uscita = tk.Button(self.frame_dx_basso,
+                                    text='Chiudi finestra',
+                                    font=('Helvetica', 20),
+                                    command=self.destroy)
+
+        # BUTTON manda in bilancia
+        self.btn_in_bilancia = tk.Button(self.frame_dx_basso,
+                                        text='Invia in bilancia',
+                                        font=('Helvetica', 20),
+                                        command=self.crea_file)
+
+        # RADIOBUTTON
         self.filtro = tk.StringVar()
         self.filtro.set('Macelleria')
         self.rdbtn_macelleria = tk.Radiobutton(self.lblframe_box, text='Macelleria',
@@ -135,18 +123,31 @@ class LottiInVendita(tk.Toplevel):
         self.rdbtn_2mesi.grid(row=1, column=1, padx=5)
         self.rdbtn_3mesi.grid(row=1, column=2, padx=5)
         self.rdbtn_6mesi.grid(row=1, column=3, padx=5)
-        '''
-        Combobox per gestire rimpimento tramite lista prodotti
-        '''
+
+        # Combobox per gestire rimpimento tramite lista prodotti
         self.box_value = tk.StringVar()
         self.box = ttk.Combobox(self.lblframe_box, textvariable=self.box_value)
 
         self.box.grid(row=0, column=2)
-        '''
-        BOTTONE Filtra
-        '''
+
+        # BOTTONE Filtra
         self.btn_filtra = ttk.Button(self.lblframe_box, text='Filtra', command=self.filtra)
         self.btn_filtra.grid(row=0, column=3, padx=20)
+
+        # LAYOUT
+        self.frame_sx.grid(row=0, column=0, rowspan=2)
+        self.frame_dx.grid(row=0, column=1)
+        self.frame_dx_basso.grid(row=1, column=1)
+        self.lblframe_box.grid(row=5, column=0, columnspan=2)
+
+        self.label.grid(row=0, column=0)
+        self.tree.grid(row=1, column=0)
+
+        self.tree_selezionato.grid(row=2, column='0', columnspan=2)
+        self.tree_dettagli.grid(row=4, column='0', columnspan='2')
+
+        self.btn_uscita.grid(row=0, column=1, padx=20,pady=20)
+        self.btn_in_bilancia.grid(row=0, column=0, padx=20, pady=20)
 
         self.riempi_combo()
         self.riempi_tutti()
