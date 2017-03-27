@@ -8,27 +8,22 @@ class ChiudiLotto(tk.Toplevel):
     def __init__(self):
         tk.Toplevel.__init__(self)
         self.title("Chiudi Lotto")
-        self.geometry("%dx525+0+0" % self.winfo_screenwidth())
-        '''
-        Connessione al database
-        '''
+        self.geometry("1024x525+0+0")
+
+        # Connessione al database
         self.conn = sqlite3.connect('data.db',
                                     detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
         self.c = self.conn.cursor()
 
         self.lotti_da_chiudere = []
-        '''
-        Disposizione Frame
-        '''
-        self.frame_treeview = ttk.Frame(self)
-        self.frame_treeview.grid(row='1', column='0')
 
-        self.frame_lotti_chiusi = ttk.Frame(self)
-        self.frame_lotti_chiusi.grid(row='1', column='1')
-        '''
-        Treeview con riepilogo lotti aperti
-        '''
-        self.tree = ttk.Treeview(self.frame_treeview, height=25)
+        # Disposizione Frame
+        self.frame_sx = tk.Frame(self)
+        self.frame_dx = tk.Frame(self)
+        self.frame_dx_basso = tk.Frame(self, background='white')
+
+        # Treeview con riepilogo lotti aperti
+        self.tree = ttk.Treeview(self.frame_sx, height=25)
         self.tree['columns'] = ('data ingresso', 'fornitore', 'peso', 'residuo')
 
         self.tree.column("data ingresso", width=80)
@@ -45,37 +40,40 @@ class ChiudiLotto(tk.Toplevel):
 
         self.tree.bind("<Double-1>", self.ondoubleclick)
 
-        self.tree.grid(row='1', column='0', sticky='w')
-        '''
-        LABEL lotti da chiudere
-        '''
-        self.lbl_nuovo_lotto = ttk.Label(self.frame_lotti_chiusi,
+        # LABEL lotti da chiudere
+        self.lbl_nuovo_lotto = ttk.Label(self.frame_dx,
                                          text='LOTTI DA CHIUDERE',
                                          font=('Helvetica', 20))
-        self.lbl_nuovo_lotto.grid(row='1', column='0')
-        '''
-        Treeview per lotti scelti da chiudere
-        '''
-        self.tree_lotti_selezionati = ttk.Treeview(self.frame_lotti_chiusi)
+
+        # Treeview per lotti scelti da chiudere
+        self.tree_lotti_selezionati = ttk.Treeview(self.frame_dx)
         self.tree_lotti_selezionati['columns'] = 'taglio'
 
         self.tree_lotti_selezionati.column("taglio", width=70)
         self.tree_lotti_selezionati.heading("taglio", text="taglio")
 
-        self.tree_lotti_selezionati.grid(row='2', column='0')
+        # BOTTONE ESCI
+        self.btn_esci = tk.Button(self.frame_dx_basso,
+                                  text="Chiudi finestra",
+                                  font=('Helvetica', 20),
+                                  command=self.destroy)
 
-        '''
-        BOTTONE ESCI
-        '''
-        self.btn_esci = ttk.Button(self.frame_lotti_chiusi,
-                                   text="Chiudi finestra",
-                                   command=self.destroy)
-        self.btn_esci.grid(row='4', column='0', pady=20)
+        self.btn_salva = tk.Button(self.frame_dx_basso,
+                                   text='salva dati',
+                                   font=('Helvetica', 20),
+                                   command=self.salva)
 
-        self.btn_salva = ttk.Button(self.frame_lotti_chiusi,
-                                    text='salva dati',
-                                    command=self.salva)
-        self.btn_salva.grid(row='3', column='0', pady=20)
+        # LAYOUT
+        self.frame_sx.grid(row=0, column=0, rowspan=2)
+        self.frame_dx.grid(row=0, column=1, columnspan=2, padx=30)
+        self.frame_dx_basso.grid(row=1, column=1)
+
+        self.tree.grid(row=0, column=0, sticky='w')
+        self.lbl_nuovo_lotto.grid(row=0, column=0)
+        self.tree_lotti_selezionati.grid(row=1, column=0)
+
+        self.btn_esci.grid(row=2, column=0, pady=20, padx=20)
+        self.btn_salva.grid(row=2, column=1, pady=20, padx=20)
 
         self.aggiorna()
 
