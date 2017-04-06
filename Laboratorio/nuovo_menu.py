@@ -3,6 +3,7 @@ from tkinter import ttk
 import datetime as dt
 import sqlite3
 import random
+import facebook
 
 
 class NuovoMenu(tk.Toplevel):
@@ -98,6 +99,10 @@ class NuovoMenu(tk.Toplevel):
                                         text="Nuovo Menu",
                                         font=('Helvetica', 20),
                                         command=self.crea_nuovo_menu)
+        self.btn_pubblica = tk.Button(self.frame_treeview,
+                                      text='Pubblica',
+                                      font=('Helvetica', 20),
+                                      command=self.pubblica)
         '''
         LAYOUT
         '''
@@ -113,6 +118,7 @@ class NuovoMenu(tk.Toplevel):
         self.lbl_prog_lotto_vendita.grid(row=1, column=0)
 
         self.tree.grid(row=3, column=0, sticky='we')
+        self.btn_pubblica.grid(row=4, column=0)
 
         self.lblframe_peso.grid(row=0, column=0, sticky='w')
         self.entry_peso.grid()
@@ -125,9 +131,10 @@ class NuovoMenu(tk.Toplevel):
         self.crea_nuovo_menu()
 
     def crea_nuovo_menu(self):
-        self.crea_articoli_nuova_produzione_primi_piatti()
+        self.primi = self.crea_articoli_nuova_produzione_primi_piatti()
         self.crea_articoli_nuova_produzione_secondi_piatti()
         self.crea_articoli_nuova_produzione_contorni()
+        print(self.primi)
 
     def crea_articoli_nuova_produzione_primi_piatti(self):
         for label in self.labelframe_primi_piatti.grid_slaves():
@@ -153,6 +160,8 @@ class NuovoMenu(tk.Toplevel):
                            value=lista_primi_piatti[i],
                            font='Helvetica').grid(row=row, column=col, sticky="w", pady=2)
             row += 1
+
+        return lista_primi_piatti
 
     def crea_articoli_nuova_produzione_secondi_piatti(self):
         for label in self.labelframe_secondi_piatti.grid_slaves():
@@ -226,6 +235,11 @@ class NuovoMenu(tk.Toplevel):
             self.destroy()
         else:
             pass
+
+    def pubblica(self):
+
+        graph = facebook.GraphAPI(access_token='token', version='2.7')
+        graph.put_wall_post(message=self.primi)
 
 if __name__ == '__main__':
     root = tk.Tk()

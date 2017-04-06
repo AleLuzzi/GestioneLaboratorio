@@ -9,31 +9,20 @@ class Dipendenti(tk.Frame):
 
         self.item = ''
 
-        '''
-        Connessione al Database
-        '''
+        # Connessione al Database
         self.conn = sqlite3.connect('data.db',
                                     detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
         self.c = self.conn.cursor()
-        '''
-        Definizione Frame
-        '''
+
+        # Definizione Frame
         self.frame_sx = ttk.Frame(self)
-        self.frame_sx.grid(row='1', column='0', sticky='n')
-
         self.frame_centrale = ttk.Frame(self)
-        self.frame_centrale.grid(row='1', column='1', sticky='n')
-
         self.frame_dx = ttk.Frame(self)
-        self.frame_dx.grid(row='1', column='2', sticky='n')
-        '''
-        LabelFrame gestione Dipendenti
-        '''
+
+        # LabelFrame gestione Dipendenti
         self.lbl_gest_dipendenti = ttk.LabelFrame(self.frame_sx, text='Gestione Dipendenti')
-        self.lbl_gest_dipendenti.grid(row='1', column='0', sticky='n')
-        '''
-        Treeview per tab Dipendenti
-        '''
+
+        # Treeview per tab Dipendenti
         self.tree_dipendenti = ttk.Treeview(self.lbl_gest_dipendenti, height=23)
         self.tree_dipendenti['columns'] = ('Id', 'Nome', 'Cognome', 'Reparto', 'email')
         self.tree_dipendenti['show'] = 'headings'
@@ -51,22 +40,15 @@ class Dipendenti(tk.Frame):
 
         self.tree_dipendenti.bind("<Double-1>", self.ondoubleclick)
 
-        self.tree_dipendenti.grid(row='1', column='0', columnspan='3')
-
-        '''
-        Lista campi del record
-        '''
+        # Lista campi del record
         self.campi = ['nome', 'cognome', 'reparto', 'email']
         self.label = {}
         self.entry = {}
-        '''
-        Labelframe dettagli prodotto selezionato
-        '''
-        self.lbl_frame_dettagli_selezionato = ttk.LabelFrame(self.frame_centrale, text='Dettagli prodotto selezionato')
-        self.lbl_frame_dettagli_selezionato.grid(row='1', column='0', sticky='n')
-        '''
-        Label ed entry per mostrare dettagli prodotto selezionato
-        '''
+
+        # LABELFRAME dettagli prodotto selezionato
+        self.lbl_frame_dettagli_selezionato = ttk.LabelFrame(self.frame_centrale, text='Dettagli riga selezionata')
+
+        # LABEL ed entry per mostrare dettagli prodotto selezionato
         r = 1
         c = 0
         for campo in self.campi:
@@ -81,17 +63,33 @@ class Dipendenti(tk.Frame):
             ent.grid(row=r, column=c+1)
             self.entry[campo] = ent
             r += 1
-        '''
-        Labelframe scegli prodotto
-        '''
-        self.lbl_frame_scegli = ttk.LabelFrame(self.frame_dx, text='Seleziona prodotto')
-        self.lbl_frame_scegli.grid(row='1', column='0')
 
-        self.btn_modifica = ttk.Button(self.lbl_frame_scegli, text='Modifica', command=self.modifica)
-        self.btn_modifica.grid(row='3', column='0', columnspan='2')
+        # LABELFRAME scegli prodotto
+        self.lbl_frame_scegli = ttk.LabelFrame(self.frame_dx)
 
-        self.btn_inserisci = ttk.Button(self.lbl_frame_scegli, text='Inserisci', command=self.inserisci)
-        self.btn_inserisci.grid(row='4', column='0', columnspan='2')
+        # BOTTONI per azioni
+        self.btn_modifica = tk.Button(self.lbl_frame_scegli,
+                                      text='Salva Modifiche',
+                                      font=('Helvetica', 10),
+                                      command=self.modifica)
+        self.btn_inserisci = tk.Button(self.lbl_frame_scegli,
+                                       text='Inserisci Dati',
+                                       font=('Helvetica', 10),
+                                       command=self.inserisci)
+
+        # LAYOUT
+        self.frame_sx.grid(row=1, column=0, sticky='n')
+        self.frame_centrale.grid(row=1, column=1, sticky='n')
+        self.frame_dx.grid(row=1, column=2, sticky='n')
+
+        self.lbl_gest_dipendenti.grid(row=1, column=0, sticky='n')
+        self.tree_dipendenti.grid(row=1, column=0, columnspan=3)
+
+        self.lbl_frame_dettagli_selezionato.grid(row=1, column=0, sticky='n')
+
+        self.lbl_frame_scegli.grid(row=1, column=0)
+        self.btn_modifica.grid(row=1, column=0, columnspan=2, sticky='we')
+        self.btn_inserisci.grid(row=2, column=0, columnspan=2, sticky='we')
 
         self.aggiorna()
 
@@ -127,7 +125,7 @@ class Dipendenti(tk.Frame):
         self.item = (self.tree_dipendenti.item(self.tree_dipendenti.selection(), 'values'))
 
         i = 1
-        for self.row in self.c.execute("SELECT * FROM dipendenti WHERE ID = ?", ((self.item[0],))):
+        for self.row in self.c.execute("SELECT * FROM dipendenti WHERE ID = ?", (self.item[0],)):
             for campo in self.campi:
                 self.entry[campo].insert(0, self.row[i])
                 i += 1
