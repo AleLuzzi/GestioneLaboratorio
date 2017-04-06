@@ -10,57 +10,51 @@ class Fornitori(tk.Frame):
         self.item = ''
         self.valore_flag = dict()
 
-        '''
-        Connessione al Database
-        '''
+        # Connessione al Database
         self.conn = sqlite3.connect('data.db',
                                     detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
         self.c = self.conn.cursor()
-        '''
-        Definizione Frame
-        '''
+
+        # Definizione FRAME
         self.frame_sx = ttk.Frame(self)
         self.frame_centrale = ttk.Frame(self)
         self.frame_dx = ttk.Frame(self)
 
-        '''
-        Treeview per tab Fornitori
-        '''
+        # TREEVIEW per tab Fornitori
         self.tree_fornitori = ttk.Treeview(self.frame_sx, height=23)
         self.tree_fornitori['columns'] = ('Id', 'Azienda')
         self.tree_fornitori['show'] = 'headings'
         self.tree_fornitori.heading('Id', text="Id")
         self.tree_fornitori.heading('Azienda', text="Azienda")
 
-        self.tree_fornitori.column("Id", width=10)
-        self.tree_fornitori.column("Azienda", width=100)
+        self.tree_fornitori.column("Id", width=20)
+        self.tree_fornitori.column("Azienda", width=150)
 
         self.tree_fornitori.bind("<Double-1>", self.ondoubleclick)
 
-        '''
-        Lista campi del record
-        '''
+        # Lista campi del record
         self.campi = ['azienda']
         self.attributi = ['Ingresso Merce']
         self.label = {}
         self.ckbutton = {}
         self.entry = {}
-        '''
-        Labelframe dettagli fornitore selezionato
-        '''
+
+        # LABELFRAME dettagli fornitore selezionato
         self.lbl_frame_dettagli_selezionato = ttk.LabelFrame(self.frame_centrale, text='Dettagli fornitore selezionato')
         self.lbl_frame_attributi_fornitori = ttk.LabelFrame(self.frame_centrale, text='Attributi fornitore selezionato')
 
-        '''
-        Labelframe scegli prodotto
-        '''
-        self.lbl_frame_scegli = ttk.LabelFrame(self.frame_centrale, text='Azioni')
-        self.btn_modifica = ttk.Button(self.lbl_frame_scegli, text='Modifica', command=self.modifica)
-        self.btn_inserisci = ttk.Button(self.lbl_frame_scegli, text='Inserisci', command=self.inserisci)
+        # LABELFRAME scegli prodotto
+        self.lbl_frame_scegli = ttk.LabelFrame(self.frame_dx)
+        self.btn_modifica = tk.Button(self.lbl_frame_scegli,
+                                      text='Salva modifiche',
+                                      font=('Helvetica', 10),
+                                      command=self.modifica)
+        self.btn_inserisci = tk.Button(self.lbl_frame_scegli,
+                                       text='Inserisci Dati',
+                                       font=('Helvetica', 10),
+                                       command=self.inserisci)
 
-        '''
-        LAYOUT
-        '''
+        # LAYOUT
         self.frame_sx.grid(row=1, column=0, sticky='n')
         self.frame_centrale.grid(row=1, column=1, sticky='n')
         self.frame_dx.grid(row=1, column=2, sticky='n')
@@ -69,8 +63,8 @@ class Fornitori(tk.Frame):
         self.lbl_frame_dettagli_selezionato.grid(row=1, column=0, sticky='n')
         self.lbl_frame_attributi_fornitori.grid(row=2, column=0)
         self.lbl_frame_scegli.grid(row=3, column=0)
-        self.btn_modifica.grid()
-        self.btn_inserisci.grid()
+        self.btn_modifica.grid(sticky='we')
+        self.btn_inserisci.grid(sticky='we')
 
         self.aggiorna()
         self.crea_label_entry()
