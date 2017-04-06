@@ -3,6 +3,7 @@ from tkinter import ttk
 import datetime as dt
 import sqlite3
 import random
+import os
 import facebook
 
 
@@ -26,16 +27,15 @@ class NuovoMenu(tk.Toplevel):
         self.nuova_produzione = tk.StringVar()
         self.genera_progressivo()
 
-        '''
-        DISPOSIZIONE FRAME
-        '''
+        # DISPOSIZIONE FRAME
         self.frame_treeview = tk.Frame(self, bd='3', relief='groove')
         self.frame_nuovolotto = tk.Frame(self, bd='3', relief='groove')
         self.frame_basso = tk.Frame(self, bd='3', background='white', relief='groove')
 
-        '''
-        Treeview per riepilogo immissioni
-        '''
+        # IMMAGINI
+        self.img_sync = tk.PhotoImage(file=os.path.join('immagini', 'sync.gif'))
+
+        # TREEVIEW per riepilogo immissioni
         self.tree = ttk.Treeview(self.frame_treeview, height=5)
         self.tree['columns'] = ('prodotto', 'peso')
 
@@ -48,9 +48,8 @@ class NuovoMenu(tk.Toplevel):
         self.tree.heading("peso", text="peso")
 
         self.tree.tag_configure('odd', background='light green')
-        '''
-        LABEL nuovo lotto vendita
-        '''
+
+        # LABEL nuovo lotto vendita
         self.lbl_nuovo_lotto = ttk.Label(self.frame_treeview,
                                          text='NUOVO LOTTO VENDITA',
                                          font=('Helvetica', 20))
@@ -58,31 +57,27 @@ class NuovoMenu(tk.Toplevel):
         self.lbl_prog_lotto_vendita = ttk.Label(self.frame_treeview,
                                                 text=str(self.prog_lotto_ven) + 'V',
                                                 font=('Helvetica', 40))
-        '''
-        LabelFrame nuova produzione
-        '''
+
+        # LABELFRAME nuova produzione
         self.labelframe_primi_piatti = ttk.Labelframe(self.frame_nuovolotto,
                                                       text="Primi piatti")
         self.labelframe_secondi_piatti = ttk.Labelframe(self.frame_nuovolotto,
                                                         text="secondi piatti")
         self.labelframe_contorni = ttk.Labelframe(self.frame_nuovolotto,
                                                   text="contorni")
-        '''
-        LABELFRAME per peso da inserire
-        '''
+
+        # LABELFRAME per peso da inserire
         self.lblframe_peso = ttk.LabelFrame(self.frame_basso,
                                             text='Peso')
-        '''
-        ENTRY per inserimento del peso
-        '''
+
+        # ENTRY per inserimento del peso
         self.peso_da_inserire = tk.StringVar()
         self.entry_peso = ttk.Entry(self.lblframe_peso,
                                     font=('Helvetica', 20),
                                     textvariable=self.peso_da_inserire)
         self.entry_peso.focus()
-        '''
-        BOTTONE ESCI E SALVA
-        '''
+
+        # BOTTONE ESCI E SALVA
         self.btn_invia = tk.Button(self.frame_basso,
                                    text="Invio",
                                    font=('Helvetica', 20),
@@ -100,15 +95,28 @@ class NuovoMenu(tk.Toplevel):
                                         font=('Helvetica', 20),
                                         command=self.crea_nuovo_menu)
         self.btn_pubblica = tk.Button(self.frame_treeview,
-                                      text='Pubblica',
+                                      text='Pubblica su FB',
                                       font=('Helvetica', 20),
                                       command=self.pubblica)
-        '''
-        LAYOUT
-        '''
+        self.btn_rigenera_primi = tk.Button(self.frame_nuovolotto,
+                                            image=self.img_sync,
+                                            command=self.crea_articoli_nuova_produzione_primi_piatti)
+        self.btn_rigenera_secondi = tk.Button(self.frame_nuovolotto,
+                                              image=self.img_sync,
+                                              command=self.crea_articoli_nuova_produzione_secondi_piatti)
+        self.btn_rigenera_contorni = tk.Button(self.frame_nuovolotto,
+                                               image=self.img_sync,
+                                               command=self.crea_articoli_nuova_produzione_contorni)
+
+        # LAYOUT
         self.frame_nuovolotto.grid(row=0, column=0, sticky='n')
         self.frame_treeview.grid(row=0, column=1, padx=10, sticky='n')
         self.frame_basso.grid(row=1, column=0, columnspan=3, sticky='w')
+
+        self.tree.grid(row=1, column=0, sticky='we')
+        self.btn_rigenera_primi.grid(row=0, column=1, padx=15)
+        self.btn_rigenera_secondi.grid(row=1, column=1, padx=15)
+        self.btn_rigenera_contorni.grid(row=2, column=1, padx=15)
 
         self.labelframe_primi_piatti.grid(row=0, column=0)
         self.labelframe_secondi_piatti.grid(row=1, column=0)
@@ -117,7 +125,6 @@ class NuovoMenu(tk.Toplevel):
         self.lbl_nuovo_lotto.grid(row=0, column=0)
         self.lbl_prog_lotto_vendita.grid(row=1, column=0)
 
-        self.tree.grid(row=3, column=0, sticky='we')
         self.btn_pubblica.grid(row=4, column=0)
 
         self.lblframe_peso.grid(row=0, column=0, sticky='w')
