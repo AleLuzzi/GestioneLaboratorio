@@ -10,20 +10,15 @@ class Ingredienti(tk.Frame):
         self.item = ''
         self.valore_flag = dict()
 
-        '''
-        Connessione al Database
-        '''
+        # Connessione al Database
         self.conn = sqlite3.connect('data.db',
                                     detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
         self.c = self.conn.cursor()
-        '''
-        Definizione Frame
-        '''
+        # Definizione Frame
         self.frame_sx = ttk.Frame(self)
         self.frame_dx = ttk.Frame(self)
-        '''
-        Treeview per tab Ingredienti base
-        '''
+
+        # TREEVIEW per tab Ingredienti base
         self.tree_ingredienti = ttk.Treeview(self.frame_sx, height=23)
         self.tree_ingredienti['columns'] = ('Id', 'Ingrediente', 'cod_ean', 'merceologia')
         self.tree_ingredienti['show'] = 'headings'
@@ -39,49 +34,54 @@ class Ingredienti(tk.Frame):
 
         self.tree_ingredienti.bind("<Double-1>", self.ondoubleclick)
 
-        '''
-        Lista campi del record
-        '''
+        # Lista campi del record
         self.campi = ['ingrediente_base', 'cod_ean']
         self.attributi = ['Allergene']
         self.label = {}
         self.ckbutton = {}
         self.entry = {}
 
-        '''
-        Labelframe dettagli fornitore selezionato
-        '''
+        # LABELFRAME dettagli ingrediente selezionato
         self.lbl_frame_dettagli_selezionato = ttk.LabelFrame(self.frame_dx, text='Dettagli ingrediente selezionato')
         self.lbl_frame_attributi_ingrediente = ttk.LabelFrame(self.frame_dx, text='Attributi ingrediente selezionato')
-        '''
-        Combobox per gestire merceologia prodotti
-        '''
+
+        # COMBOBOX per gestire merceologia prodotti
         self.box_merceologia = tk.StringVar()
         self.box = ttk.Combobox(self.lbl_frame_attributi_ingrediente, textvariable=self.box_merceologia)
-        '''
-        Labelframe per filtro
-        '''
-        self.lbl_frame_filtro = ttk.LabelFrame(self.frame_dx, text='Filtra Lista Ingredienti')
-        '''
-        Combobox per filtro
-        '''
+
+        # LABELFRAME per filtro
+        self.lbl_frame_filtro = ttk.LabelFrame(self.frame_dx,
+                                               text='Filtra Lista Ingredienti')
+
+        # COMBOBOX e BOTTONE per filtro
         self.box_filtro = ttk.Combobox(self.lbl_frame_filtro)
-        self.btn_applica_filtro = ttk.Button(self.lbl_frame_filtro, text='Applica', command=self.filtra)
-        '''
-        Bottone per reset filtro
-        '''
-        self.btn_reset_filtro = ttk.Button(self.lbl_frame_filtro, text='Reset Lista ingredienti', command=self.aggiorna)
-        '''
-        Labelframe scegli ingrediente
-        '''
-        self.lbl_frame_scegli = ttk.LabelFrame(self.frame_dx, text='Azioni')
-        self.btn_modifica = ttk.Button(self.lbl_frame_scegli, text='Modifica', command=self.modifica)
-        self.btn_inserisci = ttk.Button(self.lbl_frame_scegli, text='Inserisci', command=self.inserisci)
-        '''
-        LAYOUT
-        '''
-        self.frame_sx.grid(row='1', column='0', sticky='n')
-        self.frame_dx.grid(row='1', column='1', sticky='n')
+        self.btn_applica_filtro = tk.Button(self.lbl_frame_filtro,
+                                             text='Applica',
+                                             font=('Helvetica', 10),
+                                             command=self.filtra)
+
+        # BOTTONE per reset filtro
+        self.btn_reset_filtro = tk.Button(self.lbl_frame_filtro,
+                                          text='Reset Lista ingredienti',
+                                          font=('Helvetica', 10),
+                                          command=self.aggiorna)
+
+        # LABELFRAME scegli ingrediente
+        self.lbl_frame_scegli = ttk.LabelFrame(self.frame_dx, text='')
+
+        # BOTTONI per azioni
+        self.btn_modifica = tk.Button(self.lbl_frame_scegli,
+                                      text='Salva Modifiche',
+                                      font=('Helvetica', 10),
+                                      command=self.modifica)
+        self.btn_inserisci = tk.Button(self.lbl_frame_scegli,
+                                       text='Inserisci Dati',
+                                       font=('Helvetica', 10),
+                                       command=self.inserisci)
+
+        # LAYOUT
+        self.frame_sx.grid(row=1, column=0, sticky='n')
+        self.frame_dx.grid(row=1, column=1, sticky='n')
 
         self.tree_ingredienti.grid(row=1, column=0, columnspan=3, sticky='we')
         self.lbl_frame_dettagli_selezionato.grid(row=1, column=0, sticky='n')
@@ -89,15 +89,15 @@ class Ingredienti(tk.Frame):
 
         ttk.Separator(self.frame_dx, orient='horizontal').grid(row=3, sticky='we', pady=5)
 
-        self.lbl_frame_filtro.grid(row=4, column=0)
+        self.lbl_frame_filtro.grid(row=4, column=0, sticky='we')
         self.box_filtro.grid()
-        self.btn_applica_filtro.grid(row=5, column=0)
-        self.btn_reset_filtro.grid(row=6, column=0)
+        self.btn_applica_filtro.grid(row=5, column=0, sticky='we')
+        self.btn_reset_filtro.grid(row=6, column=0, sticky='we')
         self.box.grid(columnspan=2)
 
-        self.lbl_frame_scegli.grid(row=5, column=0)
-        self.btn_modifica.grid()
-        self.btn_inserisci.grid()
+        self.lbl_frame_scegli.grid(row=1, column=1)
+        self.btn_modifica.grid(sticky='we')
+        self.btn_inserisci.grid(sticky='we')
 
         self.aggiorna()
         self.crea_label_entry()
