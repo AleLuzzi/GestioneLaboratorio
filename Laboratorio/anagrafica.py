@@ -3,7 +3,7 @@ from anagrafica_dipendenti import *
 from anagrafica_fornitori import *
 from anagrafica_ingredienti import *
 from anagrafica_produzione import *
-from merceologie_cucina import *
+from anagrafica_merceologie import *
 from anagrafica_tagli import *
 from anagrafica_impostazioni import *
 from report_cucina_note import ReportCucina
