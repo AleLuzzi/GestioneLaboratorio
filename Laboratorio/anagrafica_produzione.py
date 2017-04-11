@@ -22,24 +22,21 @@ class Produzione(tk.Frame):
         self.filtro_merceologia = tk.StringVar()
         self.valore_ckb_flag1 = tk.StringVar()
         self.valore_ckb_flag1.set(0)
-        '''
-        Connessione al Database
-        '''
+
+        # Connessione al Database
         self.conn = sqlite3.connect('data.db',
                                     detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
         self.c = self.conn.cursor()
-        '''
-        Definizione Frame
-        '''
+
+        # Definizione Frame
         self.frame_sx = tk.Frame(self, bd=1, relief="raised")
         self.frame_centrale_alto = tk.Frame(self, bd=1, relief="raised")
         self.frame_centrale_basso = tk.Frame(self, bd=1, relief="raised")
         self.frame_dx = tk.Frame(self, bd=1, relief="raised")
 
         self.lbl_lista_prodotti = ttk.LabelFrame(self.frame_sx, text='Lista Prodotti')
-        '''
-        Treeview per tab lista prodotti
-        '''
+
+        # TRREVIEW per tab lista prodotti
         self.tree_produzione = ttk.Treeview(self.lbl_lista_prodotti, height=23)
         self.tree_produzione['columns'] = ('Id', 'Prodotto')
         self.tree_produzione['show'] = 'headings'
@@ -51,23 +48,55 @@ class Produzione(tk.Frame):
 
         self.tree_produzione.bind("<Double-1>", self.ondoubleclick)
 
+        # LABELFRAME nome prodotto
         self.lbl_frame_nome_prodotto = ttk.Labelframe(self.frame_centrale_alto, text='Prodotto')
         self.ent_nome_prodotto = ttk.Entry(self.lbl_frame_nome_prodotto, width=30)
+
+        # LABELFRAME e COMBOBOX reparto prodotto
         self.lbl_frame_reparto_prodotto = ttk.Labelframe(self.frame_centrale_alto, text='Reparto')
-        self.lbl_frame_merceologia = ttk.Labelframe(self.frame_centrale_alto, text='Merceologia')
         self.box_reparto = ttk.Combobox(self.lbl_frame_reparto_prodotto, textvariable=self.box_reparto_value)
+
+        # LABELFRAME e COMBOBOX merceologia
+        self.lbl_frame_merceologia = ttk.Labelframe(self.frame_centrale_alto, text='Merceologia')
         self.box_merceologia = ttk.Combobox(self.lbl_frame_merceologia, textvariable=self.box_merceologia_value)
+
+        # CHECKBOX
         self.ckb_flag1 = tk.Checkbutton(self.lbl_frame_merceologia, text='Usa in produzione',
                                         variable=self.valore_ckb_flag1)
+
+        # LABELFRAME dettagli prodotto selezionato
         self.lbl_frame_dettagli_selezionato = ttk.LabelFrame(self.frame_centrale_alto,
                                                              text='Dettagli prodotto selezionato')
+
+        # LABEL ingredienti
         self.lbl_ingredienti = ttk.Label(self.frame_centrale_basso, text='INGREDIENTI')
-        self.lbl_frame_scegli = ttk.LabelFrame(self.frame_dx, text='Seleziona prodotto')
-        self.btn_modifica = ttk.Button(self.lbl_frame_scegli, text='Modifica', command=self.modifica)
-        self.btn_inserisci = ttk.Button(self.lbl_frame_scegli, text='Inserisci', command=self.inserisci)
-        self.box_merceologia_filtro = ttk.Combobox(self.lbl_frame_scegli, textvariable=self.filtro_merceologia)
-        self.btn_filtra = ttk.Button(self.lbl_frame_scegli, text='Filtra', command=self.filtra)
-        self.btn_reset = ttk.Button(self.lbl_frame_scegli, text='Reset Lista Prodotti', command=self.aggiorna)
+
+        # LABELFRAME
+        self.lbl_frame_scegli = ttk.LabelFrame(self.frame_dx, text='')
+        self.btn_modifica = tk.Button(self.lbl_frame_scegli,
+                                      text='Salva Modifiche',
+                                      font=('Helvetica', 10),
+                                      command=self.modifica)
+        self.btn_inserisci = tk.Button(self.lbl_frame_scegli,
+                                       text='Inserisci Dati',
+                                       font=('Helvetica', 10),
+                                       command=self.inserisci)
+
+        # LABELFRAME filtro
+        self.lbl_frame_filtro = ttk.LabelFrame(self.frame_dx, text='Filtro Articoli')
+
+        # COMBOBOX filtro merceologia
+        self.box_merceologia_filtro = ttk.Combobox(self.lbl_frame_filtro, textvariable=self.filtro_merceologia)
+
+        # BOTTONI per filtro
+        self.btn_filtra = tk.Button(self.lbl_frame_filtro,
+                                    text='Filtra',
+                                    font=('Helvetica', 10),
+                                    command=self.filtra)
+        self.btn_reset = tk.Button(self.lbl_frame_filtro,
+                                   text='Reset Lista Prodotti',
+                                   font=('Helvetica', 10),
+                                   command=self.aggiorna)
 
         self.crea_layout()
         self.aggiorna()
@@ -98,12 +127,13 @@ class Produzione(tk.Frame):
         self.lbl_ingredienti.grid(row=1, column=0, columnspan=4, pady=10)
 
         self.lbl_frame_scegli.grid(row=1, column=0)
-        self.btn_modifica.grid(row=1, column=0, columnspan=2)
-        self.btn_inserisci.grid(row=2, column=0, columnspan=2)
+        self.btn_modifica.grid(sticky='we')
+        self.btn_inserisci.grid(sticky='we')
 
-        self.box_merceologia_filtro.grid(row=3, column=0)
-        self.btn_filtra.grid(row=4, column=0)
-        self.btn_reset.grid(row=5, column=0)
+        self.lbl_frame_filtro.grid(row=2, column=0)
+        self.box_merceologia_filtro.grid()
+        self.btn_filtra.grid(sticky='we')
+        self.btn_reset.grid(sticky='we')
 
     def crea_label_entry(self):
         r = 1
