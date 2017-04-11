@@ -10,21 +10,17 @@ class Reparti(tk.Frame):
         self.item = ''
         self.valore_flag = dict()
 
-        '''
-        Connessione al Database
-        '''
+        # Connessione al Database
         self.conn = sqlite3.connect('data.db',
                                     detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
         self.c = self.conn.cursor()
-        '''
-        Definizione Frame
-        '''
+
+        # Definizione Frame
         self.frame_sx = ttk.Frame(self)
         self.frame_centrale = ttk.Frame(self)
         self.frame_dx = ttk.Frame(self)
-        '''
-        Treeview per tab Reparti
-        '''
+
+        # TREEVIEW per tab Reparti
         self.tree_reparti = ttk.Treeview(self.frame_sx, height=23)
         self.tree_reparti['columns'] = ('Id', 'Reparto')
         self.tree_reparti['show'] = 'headings'
@@ -36,45 +32,49 @@ class Reparti(tk.Frame):
 
         self.tree_reparti.bind("<Double-1>", self.ondoubleclick)
 
-        '''
-        Lista campi del record
-        '''
+        # Lista campi del record
         self.campi = ['reparto']
         self.attributi = ['Mostra nel tab dipendenti', 'Mostra nel tab produzione']
         self.label = {}
         self.ckbutton = {}
         self.entry = {}
-        '''
-        Labelframe dettagli reparto selezionato
-        '''
-        self.lbl_frame_dettagli_selezionato = ttk.LabelFrame(self.frame_centrale, text='Dettagli reparto selezionato')
+
+        # LABELFRAME dettagli reparto selezionato
+        self.lbl_frame_dettagli_selezionato = ttk.LabelFrame(self.frame_centrale,
+                                                             text='Dettagli reparto selezionato')
 
         self.lbl_frame_attributi_reparto = ttk.LabelFrame(self.frame_centrale,
                                                           text='Attributi reparto selezionato')
-        '''
-        Labelframe scegli prodotto
-        '''
-        self.lbl_frame_scegli = ttk.LabelFrame(self.frame_centrale, text='Azioni')
-        self.btn_modifica = ttk.Button(self.lbl_frame_scegli, text='Modifica', command=self.modifica)
-        self.btn_inserisci = ttk.Button(self.lbl_frame_scegli, text='Inserisci', command=self.inserisci)
+
+        # LABELFRAME scegli prodotto
+        self.lbl_frame_scegli = ttk.LabelFrame(self.frame_dx, text='')
+        self.btn_modifica = tk.Button(self.lbl_frame_scegli,
+                                      text='Salva Modifiche',
+                                      font=('Helvetica', 10),
+                                      command=self.modifica)
+        self.btn_inserisci = tk.Button(self.lbl_frame_scegli,
+                                       text='Inserisci Dati',
+                                       font=('Helvetica', 10),
+                                       command=self.inserisci)
 
         self.aggiorna()
         self.crea_label_entry()
         self.crea_attributi()
 
-        '''
-        LAYOUT
-        '''
-        self.frame_sx.grid(row='1', column='0', sticky='n')
-        self.frame_centrale.grid(row='1', column='1', sticky='n')
-        self.frame_dx.grid(row='1', column='2', sticky='n')
+        # LAYOUT
+        self.frame_sx.grid(row=1, column=0, sticky='n')
+        self.frame_centrale.grid(row=1, column=1, sticky='n')
+        self.frame_dx.grid(row=1, column=2, sticky='n')
 
         self.tree_reparti.grid(row=1, column=0, columnspan=3, sticky='we')
+
         self.lbl_frame_dettagli_selezionato.grid(row=1, column=0, sticky='n')
+
         self.lbl_frame_attributi_reparto.grid(row=2, column=0)
+
         self.lbl_frame_scegli.grid(row=3, column=0)
-        self.btn_modifica.grid()
-        self.btn_inserisci.grid()
+        self.btn_modifica.grid(sticky='we')
+        self.btn_inserisci.grid(sticky='we')
 
     def crea_label_entry(self):
         r = 1
