@@ -23,6 +23,7 @@ class NuovoMenu(tk.Toplevel):
         self.lista_nuova_produzione_primi_piatti = []
         self.lista_nuova_produzione_secondi_piatti = []
         self.lista_nuova_produzione_contorni = []
+        self.lista_nuova_produzione_piatti_freddi = []
         self.prog_lotto_ven = ''
         self.nuova_produzione = tk.StringVar()
         self.genera_progressivo()
@@ -65,6 +66,8 @@ class NuovoMenu(tk.Toplevel):
                                                         text="secondi piatti")
         self.labelframe_contorni = ttk.Labelframe(self.frame_nuovolotto,
                                                   text="contorni")
+        self.labelframe_piatti_freddi = ttk.Labelframe(self.frame_nuovolotto,
+                                                       text='Piatti Freddi')
 
         # LABELFRAME per peso da inserire
         self.lblframe_peso = ttk.LabelFrame(self.frame_basso,
@@ -73,7 +76,7 @@ class NuovoMenu(tk.Toplevel):
         # ENTRY per inserimento del peso
         self.peso_da_inserire = tk.StringVar()
         self.entry_peso = ttk.Entry(self.lblframe_peso,
-                                    font=('Helvetica', 20),
+                                    font=('Helvetica', 10),
                                     textvariable=self.peso_da_inserire)
         self.entry_peso.focus()
 
@@ -83,17 +86,13 @@ class NuovoMenu(tk.Toplevel):
                                    font=('Helvetica', 20),
                                    command=self.invia)
         self.btn_esci = tk.Button(self.frame_basso,
-                                  text="Chiudi finestra",
+                                  text="Chiudi",
                                   font=('Helvetica', 20),
                                   command=self.destroy)
         self.btn_esci_salva = tk.Button(self.frame_basso,
                                         text="Esci e salva",
                                         font=('Helvetica', 20),
                                         command=self.esci_salva)
-        self.btn_nuovo_menu = tk.Button(self.frame_basso,
-                                        text="Nuovo Menu",
-                                        font=('Helvetica', 20),
-                                        command=self.crea_nuovo_menu)
         self.btn_pubblica = tk.Button(self.frame_treeview,
                                       text='Pubblica su FB',
                                       font=('Helvetica', 20),
@@ -107,20 +106,25 @@ class NuovoMenu(tk.Toplevel):
         self.btn_rigenera_contorni = tk.Button(self.frame_nuovolotto,
                                                image=self.img_sync,
                                                command=self.crea_articoli_nuova_produzione_contorni)
+        self.btn_rigenera_piatti_freddi = tk.Button(self.frame_nuovolotto,
+                                                    image=self.img_sync,
+                                                    command=self.crea_articoli_nuova_produzione_piatti_freddi)
 
         # LAYOUT
-        self.frame_nuovolotto.grid(row=0, column=0, sticky='n')
+        self.frame_nuovolotto.grid(row=0, column=0, rowspan=2, sticky='n')
         self.frame_treeview.grid(row=0, column=1, padx=10, sticky='n')
-        self.frame_basso.grid(row=1, column=0, columnspan=3, sticky='w')
+        self.frame_basso.grid(row=1, column=1, sticky='w')
 
         self.tree.grid(row=1, column=0, sticky='we')
         self.btn_rigenera_primi.grid(row=0, column=1, padx=15)
         self.btn_rigenera_secondi.grid(row=1, column=1, padx=15)
         self.btn_rigenera_contorni.grid(row=2, column=1, padx=15)
+        self.btn_rigenera_piatti_freddi.grid(row=3, column=1, padx=15)
 
         self.labelframe_primi_piatti.grid(row=0, column=0)
         self.labelframe_secondi_piatti.grid(row=1, column=0)
         self.labelframe_contorni.grid(row=2, column=0)
+        self.labelframe_piatti_freddi.grid(row=3, column=0)
 
         self.lbl_nuovo_lotto.grid(row=0, column=0)
         self.lbl_prog_lotto_vendita.grid(row=1, column=0)
@@ -131,7 +135,6 @@ class NuovoMenu(tk.Toplevel):
         self.entry_peso.grid()
 
         self.btn_invia.grid(row=0, column=1, padx=10, pady=20)
-        self.btn_nuovo_menu.grid(row=0, column=2, padx=10, pady=20)
         self.btn_esci_salva.grid(row=0, column=3, padx=10, pady=20)
         self.btn_esci.grid(row=0, column=4, padx=10, pady=20)
 
@@ -141,7 +144,7 @@ class NuovoMenu(tk.Toplevel):
         self.primi = self.crea_articoli_nuova_produzione_primi_piatti()
         self.crea_articoli_nuova_produzione_secondi_piatti()
         self.crea_articoli_nuova_produzione_contorni()
-        print(self.primi)
+        self.crea_articoli_nuova_produzione_piatti_freddi()
 
     def crea_articoli_nuova_produzione_primi_piatti(self):
         for label in self.labelframe_primi_piatti.grid_slaves():
@@ -220,6 +223,31 @@ class NuovoMenu(tk.Toplevel):
                            font='Helvetica').grid(row=row, column=col, sticky="w", pady=2)
             row += 1
 
+    def crea_articoli_nuova_produzione_piatti_freddi(self):
+        for label in self.labelframe_piatti_freddi.grid_slaves():
+            if int(label.grid_info()["row"]) > 1:
+                label.grid_forget()
+
+        for row in self.c.execute("SELECT prodotto FROM prodotti "
+                                  "WHERE reparto = 'Gastronomia' AND merceologia = 'Piatti freddi' "):
+            self.lista_nuova_produzione_piatti_freddi.extend(row)
+
+        lista_freddi = (random.sample(self.lista_nuova_produzione_piatti_freddi, 3))
+
+        row, col = 1, 0
+        for i in range(0, len(lista_freddi)):
+            if row % 8 == 0:
+                col += 1
+                row = 1
+            tk.Radiobutton(self.labelframe_piatti_freddi,
+                           text=str(lista_freddi[i]).upper(),
+                           variable=self.nuova_produzione,
+                           width=35,
+                           indicatoron=0,
+                           value=lista_freddi[i],
+                           font='Helvetica').grid(row=row, column=col, sticky="w", pady=2)
+            row += 1
+
     def genera_progressivo(self):
         self.c.execute("SELECT prog_ven FROM progressivi")
         self.prog_lotto_ven = self.c.fetchone()[0]
@@ -244,7 +272,6 @@ class NuovoMenu(tk.Toplevel):
             pass
 
     def pubblica(self):
-
         graph = facebook.GraphAPI(access_token='token', version='2.7')
         graph.put_wall_post(message=self.primi)
 
