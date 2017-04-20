@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import sqlite3
+import mysql.connector
 
 
 class Dipendenti(tk.Frame):
@@ -10,8 +11,10 @@ class Dipendenti(tk.Frame):
         self.item = ''
 
         # Connessione al Database
-        self.conn = sqlite3.connect('data.db',
-                                    detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+        self.conn = mysql.connector.connect(host='192.168.0.100',
+                                            database='db_prova',
+                                            user='root',
+                                            password='')
         self.c = self.conn.cursor()
 
         # Definizione Frame
@@ -95,7 +98,7 @@ class Dipendenti(tk.Frame):
 
     def modifica(self):
         for campo in self.campi:
-            stringa = 'UPDATE dipendenti SET {}=? WHERE ID = ?'.format(campo)
+            stringa = 'UPDATE dipendenti SET {}=%s WHERE ID = %s'.format(campo)
             self.c.execute(stringa, (self.entry[campo].get(), (self.item[0])))
             self.conn.commit()
         self.aggiorna()
@@ -104,18 +107,20 @@ class Dipendenti(tk.Frame):
         lista_da_salvare = []
         for campo in self.campi:
             lista_da_salvare.append(self.entry[campo].get())
-        self.c.execute('INSERT INTO dipendenti(nome,cognome,reparto,email) VALUES (?,?,?,?)', lista_da_salvare)
+        self.c.execute('INSERT INTO dipendenti(nome,cognome,reparto,email) VALUES (%s,%s,%s,%s)', lista_da_salvare)
         self.conn.commit()
         self.aggiorna()
 
     def aggiorna(self):
         self.tree_dipendenti.delete(*self.tree_dipendenti.get_children())
-        for lista in self.c.execute("SELECT * From dipendenti "):
+        self.c.execute("SELECT * From dipendenti ")
+        for lista in self.c:
             self.tree_dipendenti.insert('', 'end', values=(lista[0], lista[1], lista[2], lista[3], lista[4]))
 
         lista = []
 
-        for row in self.c.execute("SELECT ID From dipendenti"):
+        self.c.execute("SELECT ID From dipendenti")
+        for row in self.c:
             lista.extend(row)
 
     def ondoubleclick(self, event):
@@ -125,7 +130,8 @@ class Dipendenti(tk.Frame):
         self.item = (self.tree_dipendenti.item(self.tree_dipendenti.selection(), 'values'))
 
         i = 1
-        for self.row in self.c.execute("SELECT * FROM dipendenti WHERE ID = ?", (self.item[0],)):
+        self.c.execute("SELECT * FROM dipendenti WHERE ID = %s", (self.item[0],))
+        for self.row in self.c:
             for campo in self.campi:
                 self.entry[campo].insert(0, self.row[i])
                 i += 1
