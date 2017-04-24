@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-import sqlite3
+import mysql.connector
 
 
 class Fornitori(tk.Frame):
@@ -11,8 +11,10 @@ class Fornitori(tk.Frame):
         self.valore_flag = dict()
 
         # Connessione al Database
-        self.conn = sqlite3.connect('data.db',
-                                    detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+        self.conn = mysql.connector.connect(host='192.168.0.100',
+                                            database='data',
+                                            user='root',
+                                            password='')
         self.c = self.conn.cursor()
 
         # Definizione FRAME
@@ -106,14 +108,14 @@ class Fornitori(tk.Frame):
     def modifica(self):
         valori_da_salvare = []
         for campo in self.campi:
-            stringa = 'UPDATE fornitori SET {}=? WHERE ID = ?'.format(campo)
+            stringa = 'UPDATE fornitori SET {}=%s WHERE ID = %s'.format(campo)
             self.c.execute(stringa, (self.entry[campo].get(), (self.item[0])))
             self.conn.commit()
 
         for attributo in self.attributi:
             valori_da_salvare.append(self.valore_flag[attributo].get())
 
-        stringa = 'UPDATE fornitori SET flag1_ing_merce=? WHERE ID = ?'
+        stringa = 'UPDATE fornitori SET flag1_ing_merce=%s WHERE ID = %s'
         self.c.execute(stringa, (valori_da_salvare[0], (self.item[0])))
         self.conn.commit()
         self.aggiorna()
@@ -124,18 +126,20 @@ class Fornitori(tk.Frame):
             lista_da_salvare.append(self.entry[campo].get())
         for attributo in self.attributi:
             lista_da_salvare.append(self.valore_flag[attributo].get())
-        self.c.execute('INSERT INTO fornitori(azienda,flag1_ing_merce) VALUES (?,?)', lista_da_salvare)
+        self.c.execute('INSERT INTO fornitori(azienda,flag1_ing_merce) VALUES (%s,%s)', lista_da_salvare)
         self.conn.commit()
         self.aggiorna()
 
     def aggiorna(self):
         self.tree_fornitori.delete(*self.tree_fornitori.get_children())
-        for lista in self.c.execute("SELECT * From fornitori "):
+        self.c.execute("SELECT * From fornitori ")
+        for lista in self.c:
             self.tree_fornitori.insert('', 'end', values=(lista[0], lista[1]))
 
         lista = []
 
-        for row in self.c.execute("SELECT ID From fornitori"):
+        self.c.execute("SELECT ID From fornitori")
+        for row in self.c:
             lista.extend(row)
 
     def ondoubleclick(self, event):
@@ -147,7 +151,8 @@ class Fornitori(tk.Frame):
 
         self.item = (self.tree_fornitori.item(self.tree_fornitori.selection(), 'values'))
 
-        for self.row in self.c.execute("SELECT * FROM fornitori WHERE ID = ?", (self.item[0],)):
+        self.c.execute("SELECT * FROM fornitori WHERE ID = %s", (self.item[0],))
+        for self.row in self.c:
             for campo in self.campi:
                 self.entry[campo].insert(0, self.row[1])
 
