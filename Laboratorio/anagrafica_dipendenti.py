@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import ttk
-import sqlite3
 import mysql.connector
 
 
@@ -12,7 +11,7 @@ class Dipendenti(tk.Frame):
 
         # Connessione al Database
         self.conn = mysql.connector.connect(host='192.168.0.100',
-                                            database='db_prova',
+                                            database='data',
                                             user='root',
                                             password='')
         self.c = self.conn.cursor()
