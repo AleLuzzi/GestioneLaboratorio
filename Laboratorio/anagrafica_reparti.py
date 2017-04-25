@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-import sqlite3
+import mysql.connector
 
 
 class Reparti(tk.Frame):
@@ -11,8 +11,10 @@ class Reparti(tk.Frame):
         self.valore_flag = dict()
 
         # Connessione al Database
-        self.conn = sqlite3.connect('data.db',
-                                    detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+        self.conn = mysql.connector.connect(host='192.168.0.100',
+                                            database='data',
+                                            user='root',
+                                            password='')
         self.c = self.conn.cursor()
 
         # Definizione Frame
@@ -112,14 +114,14 @@ class Reparti(tk.Frame):
     def modifica(self):
         valori_da_salvare = []
         for campo in self.campi:
-            stringa = 'UPDATE reparti SET {}=? WHERE ID = ?'.format(campo)
+            stringa = 'UPDATE reparti SET {}=%s WHERE ID = %s'.format(campo)
             self.c.execute(stringa, (self.entry[campo].get(), (self.item[0])))
             self.conn.commit()
 
         for attributo in self.attributi:
             valori_da_salvare.append(self.valore_flag[attributo].get())
 
-        stringa = 'UPDATE reparti SET flag1_dip=? , flag2_prod=? WHERE ID = ?'
+        stringa = 'UPDATE reparti SET flag1_dip=%s , flag2_prod=%s WHERE ID = %s'
         self.c.execute(stringa, (valori_da_salvare[0], valori_da_salvare[1], (self.item[0])))
         self.conn.commit()
         self.aggiorna()
@@ -128,17 +130,19 @@ class Reparti(tk.Frame):
         lista_da_salvare = []
         for campo in self.campi:
             lista_da_salvare.append(self.entry[campo].get())
-        self.c.execute('INSERT INTO reparti(reparto) VALUES (?)', lista_da_salvare)
+        self.c.execute('INSERT INTO reparti(reparto) VALUES (%s)', lista_da_salvare)
         self.conn.commit()
         self.aggiorna()
 
     def aggiorna(self):
         self.tree_reparti.delete(*self.tree_reparti.get_children())
-        for lista in self.c.execute("SELECT * From reparti "):
+        self.c.execute("SELECT * From reparti ")
+        for lista in self.c:
             self.tree_reparti.insert('', 'end', values=(lista[0], lista[1]))
         lista = []
 
-        for row in self.c.execute("SELECT ID From reparti"):
+        self.c.execute("SELECT ID From reparti")
+        for row in self.c:
             lista.extend(row)
 
     def ondoubleclick(self, event):
@@ -151,7 +155,8 @@ class Reparti(tk.Frame):
         self.item = (self.tree_reparti.item(self.tree_reparti.selection(), 'values'))
 
         i = 1
-        for self.row in self.c.execute("SELECT * FROM reparti WHERE ID = ?", (self.item[0],)):
+        self.c.execute("SELECT * FROM reparti WHERE ID = %s", (self.item[0],))
+        for self.row in self.c:
             for campo in self.campi:
                 self.entry[campo].insert(0, self.row[i])
                 i += 1

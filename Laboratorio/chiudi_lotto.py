@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import datetime as dt
-import sqlite3
+import mysql.connector
 
 
 class ChiudiLotto(tk.Toplevel):
@@ -11,8 +11,10 @@ class ChiudiLotto(tk.Toplevel):
         self.geometry("1024x525+0+0")
 
         # Connessione al database
-        self.conn = sqlite3.connect('data.db',
-                                    detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+        self.conn = mysql.connector.connect(host='192.168.0.100',
+                                            database='data',
+                                            user='root',
+                                            password='')
         self.c = self.conn.cursor()
 
         self.lotti_da_chiudere = []
@@ -85,7 +87,7 @@ class ChiudiLotto(tk.Toplevel):
 
     def salva(self):
 
-        self.c.executemany("UPDATE ingresso_merce SET lotto_chiuso = 'si' WHERE progressivo_acq = ? AND prodotto = ? ",
+        self.c.executemany("UPDATE ingresso_merce SET lotto_chiuso = 'si' WHERE progressivo_acq = %s AND prodotto = %s ",
                            self.lotti_da_chiudere)
         self.conn.commit()
         self.aggiorna()
@@ -94,7 +96,9 @@ class ChiudiLotto(tk.Toplevel):
 
         self.tree.delete(*self.tree.get_children())
         self.tree_lotti_selezionati.delete(*self.tree_lotti_selezionati.get_children())
-        for lista in self.c.execute("SELECT * from ingresso_merce WHERE lotto_chiuso = 'no'"):
+
+        self.c.execute("SELECT * from ingresso_merce WHERE lotto_chiuso = 'no'")
+        for lista in self.c:
             try:
                 self.tree.insert('', 'end', lista[0], text=lista[0], tags=('odd',))
                 self.tree.insert(lista[0], 'end', text=lista[4],

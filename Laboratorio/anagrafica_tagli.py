@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-import sqlite3
+import mysql.connector
 
 
 class Tagli(tk.Frame):
@@ -10,8 +10,10 @@ class Tagli(tk.Frame):
         self.item = ''
 
         # Connessione al Database
-        self.conn = sqlite3.connect('data.db',
-                                    detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+        self.conn = mysql.connector.connect(host='192.168.0.100',
+                                            database='data',
+                                            user='root',
+                                            password='')
         self.c = self.conn.cursor()
 
         # Definizione Frame
@@ -93,13 +95,15 @@ class Tagli(tk.Frame):
     def filtra(self):
         self.tree_tagli.delete(*self.tree_tagli.get_children())
         stringa = self.box_value.get()
-        for lista in self.c.execute("SELECT * FROM tagli WHERE taglio like ?", ('%'+stringa+'%',)):
+        self.c.execute("SELECT * FROM tagli WHERE taglio like %s", ('%' + stringa + '%',))
+        for lista in self.c:
             self.tree_tagli.insert('', 'end', values=(lista[0], lista[1]))
 
     def riempi_combo(self):
         lista = []
 
-        for row in self.c.execute("SELECT merceologia From merceologie WHERE flag2_taglio == '1' "):
+        self.c.execute("SELECT merceologia From merceologie WHERE flag2_taglio = '1' ")
+        for row in self.c:
             lista.extend(row)
         self.box['values'] = lista
 
@@ -123,7 +127,7 @@ class Tagli(tk.Frame):
 
     def modifica(self):
         for campo in self.campi:
-            stringa = 'UPDATE tagli SET {}=? WHERE ID = ?'.format(campo)
+            stringa = 'UPDATE tagli SET {}=%s WHERE ID = %s'.format(campo)
             self.c.execute(stringa, (self.entry[campo].get(), (self.item[0])))
             self.conn.commit()
         self.aggiorna()
@@ -132,13 +136,14 @@ class Tagli(tk.Frame):
         lista_da_salvare = []
         for campo in self.campi:
             lista_da_salvare.append(self.entry[campo].get())
-        self.c.execute('INSERT INTO tagli(taglio) VALUES (?)', lista_da_salvare)
+        self.c.execute('INSERT INTO tagli(taglio) VALUES (%s)', lista_da_salvare)
         self.conn.commit()
         self.aggiorna()
 
     def aggiorna(self):
         self.tree_tagli.delete(*self.tree_tagli.get_children())
-        for lista in self.c.execute("SELECT * From tagli "):
+        self.c.execute("SELECT * From tagli ")
+        for lista in self.c:
             self.tree_tagli.insert('', 'end', values=(lista[0], lista[1]))
 
     def ondoubleclick(self, event):
@@ -148,7 +153,8 @@ class Tagli(tk.Frame):
         self.item = (self.tree_tagli.item(self.tree_tagli.selection(), 'values'))
 
         i = 1
-        for self.row in self.c.execute("SELECT * FROM tagli WHERE ID = ?", (self.item[0],)):
+        self.c.execute("SELECT * FROM tagli WHERE ID = %s", (self.item[0],))
+        for self.row in self.c:
             for campo in self.campi:
                 self.entry[campo].insert(0, self.row[i])
                 i += 1

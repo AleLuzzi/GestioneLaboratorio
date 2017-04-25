@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-import sqlite3
+import mysql.connector
 
 
 class MerceologieCucina(tk.Frame):
@@ -11,8 +11,10 @@ class MerceologieCucina(tk.Frame):
         self.valore_flag = dict()
 
         # Connessione al Database
-        self.conn = sqlite3.connect('data.db',
-                                    detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+        self.conn = mysql.connector.connect(host='192.168.0.100',
+                                            database='data',
+                                            user='root',
+                                            password='')
         self.c = self.conn.cursor()
 
         # Definizione Frame
@@ -49,9 +51,9 @@ class MerceologieCucina(tk.Frame):
         # LABELFRAME scegli prodotto
         self.lbl_frame_scegli = ttk.LabelFrame(self.frame_dx, text='')
         self.btn_modifica = tk.Button(self.lbl_frame_scegli,
-                                       text='Salva Modifiche',
-                                       font=('Helvetica', 10),
-                                       command=self.modifica)
+                                      text='Salva Modifiche',
+                                      font=('Helvetica', 10),
+                                      command=self.modifica)
         self.btn_inserisci = tk.Button(self.lbl_frame_scegli,
                                        text='Inserisci Dati',
                                        font=('Helvetica', 10),
@@ -110,14 +112,14 @@ class MerceologieCucina(tk.Frame):
     def modifica(self):
         valori_da_salvare = []
         for campo in self.campi:
-            stringa = 'UPDATE merceologie SET {}=? WHERE ID = ?'.format(campo)
+            stringa = 'UPDATE merceologie SET {}=%s WHERE ID = %s'.format(campo)
             self.c.execute(stringa, (self.entry[campo].get(), (self.item[0])))
             self.conn.commit()
 
         for attributo in self.attributi:
             valori_da_salvare.append(self.valore_flag[attributo].get())
 
-        stringa = 'UPDATE merceologie SET flag1_inv=? , flag2_taglio=? , flag3_ing_base=? WHERE ID = ?'
+        stringa = 'UPDATE merceologie SET flag1_inv=%s , flag2_taglio=%s , flag3_ing_base=%s WHERE ID = %s'
         self.c.execute(stringa, (valori_da_salvare[0], valori_da_salvare[1], valori_da_salvare[2], (self.item[0])))
         self.conn.commit()
         self.aggiorna()
@@ -128,18 +130,20 @@ class MerceologieCucina(tk.Frame):
             lista_da_salvare.append(self.entry[campo].get())
         for attributo in self.attributi:
             lista_da_salvare.append(self.valore_flag[attributo].get())
-        self.c.execute('INSERT INTO merceologie(merceologia,flag1_inv,flag2_taglio,flag3_ing_base) VALUES (?,?,?,?)',
+        self.c.execute('INSERT INTO merceologie(merceologia,flag1_inv,flag2_taglio,flag3_ing_base) VALUES (%s,%s,%s,%s)',
                        lista_da_salvare)
         self.conn.commit()
         self.aggiorna()
 
     def aggiorna(self):
         self.tree_merceologie.delete(*self.tree_merceologie.get_children())
-        for lista in self.c.execute("SELECT * From merceologie "):
+        self.c.execute("SELECT * From merceologie ")
+        for lista in self.c:
             self.tree_merceologie.insert('', 'end', values=(lista[0], lista[1]))
         lista = []
 
-        for row in self.c.execute("SELECT ID From merceologie"):
+        self.c.execute("SELECT ID From merceologie")
+        for row in self.c:
             lista.extend(row)
 
     def ondoubleclick(self, event):
@@ -151,7 +155,8 @@ class MerceologieCucina(tk.Frame):
 
         self.item = (self.tree_merceologie.item(self.tree_merceologie.selection(), 'values'))
 
-        for self.row in self.c.execute("SELECT * FROM merceologie WHERE ID = ?", (self.item[0],)):
+        self.c.execute("SELECT * FROM merceologie WHERE ID = %s", (self.item[0],))
+        for self.row in self.c:
             for campo in self.campi:
                 self.entry[campo].insert(0, self.row[1])
 

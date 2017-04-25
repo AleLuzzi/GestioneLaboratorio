@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, filedialog
-import sqlite3
+import mysql.connector
 
 
 class Impostazioni(tk.Frame):
@@ -10,8 +10,10 @@ class Impostazioni(tk.Frame):
         '''
         Connessione al Database
         '''
-        self.conn = sqlite3.connect('data.db',
-                                    detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+        self.conn = mysql.connector.connect(host='192.168.0.100',
+                                            database='data',
+                                            user='root',
+                                            password='')
         self.c = self.conn.cursor()
         '''
         Definizione Frame

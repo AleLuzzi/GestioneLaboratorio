@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-import sqlite3
+import mysql.connector
 
 
 class Ingredienti(tk.Frame):
@@ -11,8 +11,10 @@ class Ingredienti(tk.Frame):
         self.valore_flag = dict()
 
         # Connessione al Database
-        self.conn = sqlite3.connect('data.db',
-                                    detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+        self.conn = mysql.connector.connect(host='192.168.0.100',
+                                            database='data',
+                                            user='root',
+                                            password='')
         self.c = self.conn.cursor()
         # Definizione Frame
         self.frame_sx = ttk.Frame(self)
@@ -56,9 +58,9 @@ class Ingredienti(tk.Frame):
         # COMBOBOX e BOTTONE per filtro
         self.box_filtro = ttk.Combobox(self.lbl_frame_filtro)
         self.btn_applica_filtro = tk.Button(self.lbl_frame_filtro,
-                                             text='Applica',
-                                             font=('Helvetica', 10),
-                                             command=self.filtra)
+                                            text='Applica',
+                                            font=('Helvetica', 10),
+                                            command=self.filtra)
 
         # BOTTONE per reset filtro
         self.btn_reset_filtro = tk.Button(self.lbl_frame_filtro,
@@ -107,7 +109,8 @@ class Ingredienti(tk.Frame):
     def riempi_combo_merceologia_e_filtro(self):
         lista_merceologie = []
 
-        for row in self.c.execute("SELECT merceologia From merceologie WHERE flag3_ing_base = 1 "):
+        self.c.execute("SELECT merceologia From merceologie WHERE flag3_ing_base = 1 ")
+        for row in self.c:
             lista_merceologie.extend(row)
         self.box['values'] = lista_merceologie
         self.box_filtro['values'] = lista_merceologie
@@ -153,7 +156,7 @@ class Ingredienti(tk.Frame):
             lista_da_salvare.append(self.valore_flag[attributo].get())
         lista_da_salvare.append(self.box_merceologia.get())
         self.c.execute('INSERT INTO ingredienti_base(ingrediente_base,cod_ean,flag1_allergene,merceologia) '
-                       'VALUES (?,?,?,?)', lista_da_salvare)
+                       'VALUES (%s,%s,%s,%s)', lista_da_salvare)
         self.conn.commit()
         self.aggiorna()
         del lista_da_salvare[0:]
@@ -161,18 +164,18 @@ class Ingredienti(tk.Frame):
     def modifica(self):
         valori_da_salvare = []
         for campo in self.campi:
-            stringa = 'UPDATE ingredienti_base SET {}=? WHERE ID = ?'.format(campo)
+            stringa = 'UPDATE ingredienti_base SET {}=%s WHERE ID = %s'.format(campo)
             self.c.execute(stringa, (self.entry[campo].get(), (self.item[0])))
             self.conn.commit()
 
         for attributo in self.attributi:
             valori_da_salvare.append(self.valore_flag[attributo].get())
 
-        stringa = 'UPDATE ingredienti_base SET flag1_allergene=? WHERE ID = ?'
+        stringa = 'UPDATE ingredienti_base SET flag1_allergene=%s WHERE ID = %s'
         self.c.execute(stringa, (valori_da_salvare[0], (self.item[0])))
         self.conn.commit()
 
-        stringa = 'UPDATE ingredienti_base SET merceologia=? WHERE ID = ?'
+        stringa = 'UPDATE ingredienti_base SET merceologia=%s WHERE ID = %s'
         self.c.execute(stringa, (self.box_merceologia.get(), (self.item[0])))
         self.conn.commit()
 
@@ -180,12 +183,14 @@ class Ingredienti(tk.Frame):
 
     def aggiorna(self):
         self.tree_ingredienti.delete(*self.tree_ingredienti.get_children())
-        for lista in self.c.execute("SELECT * FROM ingredienti_base "):
+        self.c.execute("SELECT * FROM ingredienti_base ")
+        for lista in self.c:
             self.tree_ingredienti.insert('', 'end', values=(lista[0], lista[1], lista[2], lista[4]))
 
         lista = []
 
-        for row in self.c.execute("SELECT ID From fornitori"):
+        self.c.execute("SELECT ID From fornitori")
+        for row in self.c:
             lista.extend(row)
 
     def ondoubleclick(self, event):
@@ -198,7 +203,8 @@ class Ingredienti(tk.Frame):
         self.item = (self.tree_ingredienti.item(self.tree_ingredienti.selection(), 'values'))
 
         i = 1
-        for self.row in self.c.execute("SELECT * FROM ingredienti_base WHERE ID = ?", (self.item[0],)):
+        self.c.execute("SELECT * FROM ingredienti_base WHERE ID = %s", (self.item[0],))
+        for self.row in self.c:
             for campo in self.campi:
                 self.entry[campo].insert(0, self.row[i])
                 i += 1
@@ -213,7 +219,8 @@ class Ingredienti(tk.Frame):
     def filtra(self):
         self.tree_ingredienti.delete(*self.tree_ingredienti.get_children())
         stringa = self.box_filtro.get()
-        for lista in self.c.execute("SELECT * FROM ingredienti_base WHERE merceologia like ?", ('%'+stringa+'%',)):
+        self.c.execute("SELECT * FROM ingredienti_base WHERE merceologia like %s", ('%' + stringa + '%',))
+        for lista in self.c:
             self.tree_ingredienti.insert('', 'end', values=(lista[0], lista[1], lista[2], lista[4]))
 
 

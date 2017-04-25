@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-import sqlite3
+import mysql.connector
 
 
 class Produzione(tk.Frame):
@@ -24,8 +24,10 @@ class Produzione(tk.Frame):
         self.valore_ckb_flag1.set(0)
 
         # Connessione al Database
-        self.conn = sqlite3.connect('data.db',
-                                    detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+        self.conn = mysql.connector.connect(host='192.168.0.100',
+                                            database='data',
+                                            user='root',
+                                            password='')
         self.c = self.conn.cursor()
 
         # Definizione Frame
@@ -185,45 +187,47 @@ class Produzione(tk.Frame):
     def riempi_combo_reparto(self):
         lista_rep = []
 
-        for row in self.conn.execute("SELECT reparto From reparti WHERE flag2_prod = 1 "):
+        self.c.execute("SELECT reparto From reparti WHERE flag2_prod = 1 ")
+        for row in self.c:
             lista_rep.extend(row)
         self.box_reparto['values'] = lista_rep
 
     def riempi_combo_merceologie(self):
         lista_merc = []
 
-        for row in self.conn.execute("SELECT merceologia From merceologie"):
+        self.c.execute("SELECT merceologia From merceologie")
+        for row in self.c:
             lista_merc.extend(row)
         self.box_merceologia['values'] = lista_merc
         self.box_merceologia_filtro['values'] = lista_merc
 
     def modifica(self):
-        stringa = 'UPDATE prodotti SET prodotto = ? WHERE ID = ?'
+        stringa = 'UPDATE prodotti SET prodotto = %s WHERE ID = %s'
         self.c.execute(stringa, (self.ent_nome_prodotto.get(), (self.item[0])))
         self.conn.commit()
-        stringa = 'UPDATE prodotti SET reparto = ? WHERE ID = ?'
+        stringa = 'UPDATE prodotti SET reparto = %s WHERE ID = %s'
         self.c.execute(stringa, (self.box_reparto_value.get(), (self.item[0])))
         self.conn.commit()
-        stringa = 'UPDATE prodotti SET merceologia = ? WHERE ID = ?'
+        stringa = 'UPDATE prodotti SET merceologia = %s WHERE ID = %s'
         self.c.execute(stringa, (self.box_merceologia_value.get(), (self.item[0])))
         self.conn.commit()
 
         for campo in self.campi:
-            stringa = 'UPDATE prodotti SET {}=? WHERE ID = ?'.format(campo)
+            stringa = 'UPDATE prodotti SET {}=%s WHERE ID = %s'.format(campo)
             self.c.execute(stringa, (self.entry[campo].get(), (self.item[0])))
             self.conn.commit()
 
         for campo in self.ingredienti:
-            stringa = 'UPDATE prodotti SET {}=? WHERE ID = ?'.format(campo)
+            stringa = 'UPDATE prodotti SET {}=%s WHERE ID = %s'.format(campo)
             self.c.execute(stringa, (self.entry[campo].get(), (self.item[0])))
             self.conn.commit()
 
         for campo in self.formati:
-            stringa = 'UPDATE prodotti SET {}=? WHERE ID = ?'.format(campo)
+            stringa = 'UPDATE prodotti SET {}=%s WHERE ID = %s'.format(campo)
             self.c.execute(stringa, (self.entry[campo].get(), (self.item[0])))
             self.conn.commit()
 
-        self.c.execute('UPDATE prodotti SET flag1_prod=? WHERE ID = ?', (self.valore_ckb_flag1.get(), (self.item[0])))
+        self.c.execute('UPDATE prodotti SET flag1_prod=%s WHERE ID = %s', (self.valore_ckb_flag1.get(), (self.item[0])))
         self.conn.commit()
         self.aggiorna()
 
@@ -245,7 +249,7 @@ class Produzione(tk.Frame):
                        'testo_agg_3, testo_agg_4, pz_x_scatola, peso_fisso, num_offerta, art_in_pubblic, '
                        'sovrascritt_prezzo, stile_tracc, rich_stm_traccia, riga_1, riga_2, riga_3, riga_4, '
                        'formato_1, formato_2, formato_3, formato_4, merceologia, flag1_prod ) '
-                       'VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                       'VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',
                        self.lista_da_salvare)
         self.conn.commit()
         self.aggiorna()
@@ -253,12 +257,14 @@ class Produzione(tk.Frame):
 
     def aggiorna(self):
         self.tree_produzione.delete(*self.tree_produzione.get_children())
-        for lista in self.c.execute("SELECT * From prodotti "):
+        self.c.execute("SELECT * From prodotti ")
+        for lista in self.c:
             self.tree_produzione.insert('', 'end', values=(lista[0], lista[1]))
 
         lista = []
 
-        for row in self.c.execute("SELECT ID From prodotti"):
+        self.c.execute("SELECT ID From prodotti")
+        for row in self.c:
             lista.extend(row)
 
     def ondoubleclick(self, event):
@@ -273,7 +279,8 @@ class Produzione(tk.Frame):
             self.entry[campo].delete(0, 'end')
         i = 1
 
-        for self.row in self.c.execute("SELECT * FROM prodotti WHERE ID = ?", ((self.item[0],))):
+        self.c.execute("SELECT * FROM prodotti WHERE ID = %s", (self.item[0],))
+        for self.row in self.c:
 
             self.ent_nome_prodotto.insert(0, self.row[i])
             i += 1
@@ -298,7 +305,8 @@ class Produzione(tk.Frame):
 
     def filtra(self):
         self.tree_produzione.delete(*self.tree_produzione.get_children())
-        for lista in self.c.execute("SELECT * FROM prodotti WHERE merceologia = ?", (self.filtro_merceologia.get(),)):
+        self.c.execute("SELECT * FROM prodotti WHERE merceologia = %s", (self.filtro_merceologia.get(),))
+        for lista in self.c:
             self.tree_produzione.insert('', 'end', values=(lista[0], lista[1]))
 
 
