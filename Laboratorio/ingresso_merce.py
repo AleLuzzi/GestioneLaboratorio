@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import datetime
 import sqlite3
+import mysql.connector
 
 
 class IngressoMerce(tk.Toplevel):
@@ -12,8 +13,10 @@ class IngressoMerce(tk.Toplevel):
         '''
         Connessione al database
         '''
-        self.conn = sqlite3.connect('data.db',
-                                    detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+        self.conn = mysql.connector.connect(host='192.168.0.100',
+                                            database='data',
+                                            user='root',
+                                            password='')
         self.c = self.conn.cursor()
         '''
         Lettura progressivo lotto acquisto da file
@@ -31,7 +34,8 @@ class IngressoMerce(tk.Toplevel):
         Creazione liste fornitori e tagli suino
         '''
         self.lista_fornitori = []
-        for row in self.c.execute("SELECT azienda FROM fornitori WHERE flag1_ing_merce = 1"):
+        self.c.execute("SELECT azienda FROM fornitori WHERE flag1_ing_merce = 1")
+        for row in self.c:
             self.lista_fornitori.extend(row)
         self.lista_tagli = ('Mezzena', 'Costarelle', 'Lombo', 'Carnetta', 'Collo', 'Busto',
                             'Sogna', 'Pancia', 'Maialino', 'Arista', 'Filetto', 'Spalla', 'Guanciale',
@@ -152,9 +156,9 @@ class IngressoMerce(tk.Toplevel):
         self.entry.delete(0, tk.END)
 
     def salva_esci(self):
-        self.c.executemany('INSERT INTO ingresso_merce VALUES (?,?,?,?,?,?,?,?)', self.lista_da_salvare)
+        self.c.executemany('INSERT INTO ingresso_merce VALUES (%s,%s,%s,%s,%s,%s,%s,%s)', self.lista_da_salvare)
         self.conn.commit()
-        self.c.execute('UPDATE progressivi SET prog_acq = ?', (self.prog_lotto_acq + 1,))
+        self.c.execute('UPDATE progressivi SET prog_acq = %s', (self.prog_lotto_acq + 1,))
         self.conn.commit()
         self.conn.close()
         self.destroy()

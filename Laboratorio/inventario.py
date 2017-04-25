@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-# import datetime
-import sqlite3
+import mysql.connector
 
 
 class Inventario(tk.Toplevel):
@@ -16,8 +15,10 @@ class Inventario(tk.Toplevel):
         self.classe.set('Agnello')
 
         # Connessione al database
-        self.conn = sqlite3.connect('data.db',
-                                    detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+        self.conn = mysql.connector.connect(host='192.168.0.100',
+                                            database='data',
+                                            user='root',
+                                            password='')
         self.c = self.conn.cursor()
 
         # Frame per impaginazione
@@ -57,7 +58,8 @@ class Inventario(tk.Toplevel):
 
     def crea_bottoni_fornitori(self):
         lista_fornitori = []
-        for row in self.c.execute("SELECT azienda FROM fornitori"):
+        self.c.execute("SELECT azienda FROM fornitori")
+        for row in self.c:
             lista_fornitori.extend(row)
 
         row, col = 1, 0
@@ -80,7 +82,8 @@ class Inventario(tk.Toplevel):
                 label.grid_forget()
         lista_tagli = []
         stringa = self.classe.get()
-        for row in self.c.execute("SELECT taglio FROM tagli WHERE taglio like ?", ('%'+stringa+'%',)):
+        self.c.execute("SELECT taglio FROM tagli WHERE taglio like %s", ('%' + stringa + '%',))
+        for row in self.c:
             lista_tagli.extend(row)
 
         row, col = 1, 0
@@ -99,7 +102,8 @@ class Inventario(tk.Toplevel):
 
     def crea_radiobtn_classe(self):
         lista_classi = []
-        for row in self.c.execute("SELECT merceologia FROM merceologie WHERE flag1_inv = '1'"):
+        self.c.execute("SELECT merceologia FROM merceologie WHERE flag1_inv = '1'")
+        for row in self.c:
             lista_classi.extend(row)
 
         lista_classi.sort()

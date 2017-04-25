@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import datetime
-import sqlite3
+import mysql.connector
 
 
 class Ingredienti(tk.Toplevel):
@@ -253,10 +253,12 @@ class Ingredienti(tk.Toplevel):
             self.ean.set('')
 
     def salva(self):
-        conn = sqlite3.connect('data.db',
-                               detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+        conn = mysql.connector.connect(host='192.168.0.100',
+                                            database='data',
+                                            user='root',
+                                            password='')
         c = conn.cursor()
-        c.executemany('INSERT INTO ingredienti VALUES (?,?,?,?)', self.lista_da_salvare)
+        c.executemany('INSERT INTO ingredienti VALUES (%s,%s,%s,%s)', self.lista_da_salvare)
         conn.commit()
         conn.close()
         self.destroy()
