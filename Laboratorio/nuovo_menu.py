@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import datetime as dt
-import sqlite3
+import mysql.connector
 import random
 import os
 import facebook
@@ -15,8 +15,10 @@ class NuovoMenu(tk.Toplevel):
 
         self.data = dt.date.today()
 
-        self.conn = sqlite3.connect('data.db',
-                                    detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+        self.conn = mysql.connector.connect(host='192.168.0.100',
+                                            database='data',
+                                            user='root',
+                                            password='')
         self.c = self.conn.cursor()
 
         self.lista_da_salvare = []
@@ -151,8 +153,9 @@ class NuovoMenu(tk.Toplevel):
             if int(label.grid_info()["row"]) > 1:
                 label.grid_forget()
 
-        for row in self.c.execute("SELECT prodotto FROM prodotti "
-                                  "WHERE reparto = 'Gastronomia' AND merceologia = 'Primi piatti' "):
+        self.c.execute("SELECT prodotto FROM prodotti "
+                       "WHERE reparto = 'Gastronomia' AND merceologia = 'Primi piatti' ")
+        for row in self.c:
             self.lista_nuova_produzione_primi_piatti.extend(row)
 
         lista_primi_piatti = (random.sample(self.lista_nuova_produzione_primi_piatti, 3))
@@ -178,8 +181,9 @@ class NuovoMenu(tk.Toplevel):
             if int(label.grid_info()["row"]) > 1:
                 label.grid_forget()
 
-        for row in self.c.execute("SELECT prodotto FROM prodotti "
-                                  "WHERE reparto = 'Gastronomia' AND merceologia = 'Secondi piatti' "):
+        self.c.execute("SELECT prodotto FROM prodotti "
+                       "WHERE reparto = 'Gastronomia' AND merceologia = 'Secondi piatti' ")
+        for row in self.c:
             self.lista_nuova_produzione_secondi_piatti.extend(row)
 
         lista_secondi_piatti = (random.sample(self.lista_nuova_produzione_secondi_piatti, 3))
@@ -203,8 +207,9 @@ class NuovoMenu(tk.Toplevel):
             if int(label.grid_info()["row"]) > 1:
                 label.grid_forget()
 
-        for row in self.c.execute("SELECT prodotto FROM prodotti "
-                                  "WHERE reparto = 'Gastronomia' AND merceologia = 'Contorni' "):
+        self.c.execute("SELECT prodotto FROM prodotti "
+                       "WHERE reparto = 'Gastronomia' AND merceologia = 'Contorni' ")
+        for row in self.c:
             self.lista_nuova_produzione_contorni.extend(row)
 
         lista_contorni = (random.sample(self.lista_nuova_produzione_contorni, 3))
@@ -228,8 +233,9 @@ class NuovoMenu(tk.Toplevel):
             if int(label.grid_info()["row"]) > 1:
                 label.grid_forget()
 
-        for row in self.c.execute("SELECT prodotto FROM prodotti "
-                                  "WHERE reparto = 'Gastronomia' AND merceologia = 'Piatti freddi' "):
+        self.c.execute("SELECT prodotto FROM prodotti "
+                       "WHERE reparto = 'Gastronomia' AND merceologia = 'Piatti freddi' ")
+        for row in self.c:
             self.lista_nuova_produzione_piatti_freddi.extend(row)
 
         lista_freddi = (random.sample(self.lista_nuova_produzione_piatti_freddi, 3))
@@ -262,9 +268,9 @@ class NuovoMenu(tk.Toplevel):
         if (self.nuova_produzione.get() != '') \
                 and (self.peso_da_inserire.get() != '') \
                 and (self.lista_da_salvare != []):
-            self.c.executemany('INSERT INTO lotti_vendita VALUES (?,?,?,?,?,?)', self.lista_da_salvare)
+            self.c.executemany('INSERT INTO lotti_vendita VALUES (%s,%s,%s,%s,%s,%s)', self.lista_da_salvare)
             self.conn.commit()
-            self.c.execute('UPDATE progressivi SET prog_ven = ?', (self.prog_lotto_ven + 1,))
+            self.c.execute('UPDATE progressivi SET prog_ven = %s', (self.prog_lotto_ven + 1,))
             self.conn.commit()
             self.conn.close()
             self.destroy()

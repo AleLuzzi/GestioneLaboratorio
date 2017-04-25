@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import datetime as dt
-import sqlite3
+import mysql.connector
 
 
 class NuovoLotto(tk.Toplevel):
@@ -12,8 +12,10 @@ class NuovoLotto(tk.Toplevel):
 
         self.data = dt.date.today()
 
-        self.conn = sqlite3.connect('data.db',
-                                    detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+        self.conn = mysql.connector.connect(host='192.168.0.100',
+                                            database='data',
+                                            user='root',
+                                            password='')
         self.c = self.conn.cursor()
 
         self.c.execute("SELECT prog_ven FROM progressivi")
@@ -123,7 +125,8 @@ class NuovoLotto(tk.Toplevel):
 
     def riempi_lista_produzione(self):
         # Lista articoli per nuova produzione
-        for row in self.c.execute("SELECT prodotto FROM prodotti WHERE reparto = 'Macelleria'"):
+        self.c.execute("SELECT prodotto FROM prodotti WHERE reparto = 'Macelleria'")
+        for row in self.c:
             self.lista_nuova_produzione.extend(row)
 
         row, col = 1, 0
@@ -142,7 +145,8 @@ class NuovoLotto(tk.Toplevel):
 
     def lotti_acq_aperti(self):
         # Ciclo per inserire i lotti in acquisto da utilizzare
-        for lista in self.c.execute("SELECT * from ingresso_merce WHERE lotto_chiuso = 'no'"):
+        self.c.execute("SELECT * from ingresso_merce WHERE lotto_chiuso = 'no'")
+        for lista in self.c:
             try:
                 self.tree.insert('', 'end', lista[0], text=lista[0], tags=('odd',))
                 self.tree.insert(lista[0], 'end', text=lista[4],
@@ -157,9 +161,9 @@ class NuovoLotto(tk.Toplevel):
         if (self.nuova_produzione.get() != '') \
                 and (self.peso_da_inserire.get() != '') \
                 and (self.lista_da_salvare != []):
-            self.c.executemany('INSERT INTO lotti_vendita VALUES (?,?,?,?,?,?)', self.lista_da_salvare)
+            self.c.executemany('INSERT INTO lotti_vendita VALUES (%s,%s,%s,%s,%s,%s)', self.lista_da_salvare)
             self.conn.commit()
-            self.c.execute('UPDATE progressivi SET prog_ven = ?', (self.prog_lotto_ven + 1,))
+            self.c.execute('UPDATE progressivi SET prog_ven = %s', (self.prog_lotto_ven + 1,))
             self.conn.commit()
             self.conn.close()
             self.destroy()

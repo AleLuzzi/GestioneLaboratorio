@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import datetime as dt
-import sqlite3
+import mysql.connector
 
 
 class NuovoLottoCucina(tk.Toplevel):
@@ -12,8 +12,10 @@ class NuovoLottoCucina(tk.Toplevel):
 
         self.data = dt.date.today()
 
-        self.conn = sqlite3.connect('data.db',
-                                    detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+        self.conn = mysql.connector.connect(host='192.168.0.100',
+                                            database='data',
+                                            user='root',
+                                            password='')
         self.c = self.conn.cursor()
 
         self.lista_da_salvare = []
@@ -51,7 +53,8 @@ class NuovoLottoCucina(tk.Toplevel):
         # LABELFRAME nuova produzione
         self.labelframe = ttk.Labelframe(self.frame_sx, text="Nuova Produzione")
 
-        for row in self.c.execute("SELECT prodotto FROM prodotti WHERE flag1_prod = 1 "):
+        self.c.execute("SELECT prodotto FROM prodotti WHERE flag1_prod = 1 ")
+        for row in self.c:
             self.lista_nuova_produzione.extend(row)
 
         # LABELFRAME per peso da inserire e bottoni
@@ -126,9 +129,9 @@ class NuovoLottoCucina(tk.Toplevel):
         if (self.nuova_produzione.get() != '') \
                 and (self.peso_da_inserire.get() != '') \
                 and (self.lista_da_salvare != []):
-            self.c.executemany('INSERT INTO lotti_vendita VALUES (?,?,?,?,?,?)', self.lista_da_salvare)
+            self.c.executemany('INSERT INTO lotti_vendita VALUES (%s,%s,%s,%s,%s,%s)', self.lista_da_salvare)
             self.conn.commit()
-            self.c.execute('UPDATE progressivi SET prog_ven = ?', (self.prog_lotto_ven + 1,))
+            self.c.execute('UPDATE progressivi SET prog_ven = %s', (self.prog_lotto_ven + 1,))
             self.conn.commit()
             self.conn.close()
             self.destroy()

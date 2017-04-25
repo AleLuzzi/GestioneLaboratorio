@@ -5,7 +5,7 @@ from reportlab.lib import colors
 from reportlab.lib.units import inch
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate, Spacer, Table, TableStyle
-import sqlite3
+import mysql.connector
 import os
 
 
@@ -15,8 +15,10 @@ class ReportCucina(tk.Frame):
         '''
         Connessione al database
         '''
-        self.conn = sqlite3.connect('data.db',
-                                    detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+        self.conn = mysql.connector.connect(host='192.168.0.100',
+                                            database='data',
+                                            user='root',
+                                            password='')
         self.c = self.conn.cursor()
         '''
         Treeview per riepilogo immissioni
@@ -67,21 +69,24 @@ class ReportCucina(tk.Frame):
     def inserisci(self):
 
         self.tree.delete(*self.tree.get_children())
-        for row in self.c.execute('SELECT prodotto,SUM(quantita) '
-                                  'FROM ingredienti '
-                                  'WHERE settimana = ? '
-                                  'GROUP BY prodotto',
-                                  (self.settimana.get(),)):
+
+        self.c.execute('SELECT prodotto,SUM(quantita) '
+                       'FROM ingredienti '
+                       'WHERE settimana = %s '
+                       'GROUP BY prodotto',
+                       (self.settimana.get(),))
+        for row in self.c:
             self.tree.insert("", 'end', values=(row[0], row[1]))
 
     def crea_pdf(self):
         data = [('settimana', 'codice', 'prodotto')]
 
-        for i in self.c.execute("SELECT settimana,prodotto,SUM(quantita) "
-                                "FROM ingredienti "
-                                "WHERE settimana = ? "
-                                "GROUP BY prodotto",
-                                (self.settimana.get(),)):
+        self.c.execute("SELECT settimana,prodotto,SUM(quantita) "
+                       "FROM ingredienti "
+                       "WHERE settimana = %s "
+                       "GROUP BY prodotto",
+                       (self.settimana.get(),))
+        for i in self.c:
             data.append(i)
 
         doc = SimpleDocTemplate("./table.pdf", pagesize=A4)
