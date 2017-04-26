@@ -20,7 +20,7 @@ class NuovoLottoCucina(tk.Toplevel):
 
         self.lista_da_salvare = []
         self.lista_nuova_produzione = []
-        self.prog_lotto_ven = ''
+        # self.prog_lotto_ven = ''
         self.nuova_produzione = tk.StringVar()
         self.peso_da_inserire = tk.StringVar()
 
