@@ -153,7 +153,7 @@ class LottiInVendita(tk.Toplevel):
 
         self.btn_in_bilancia.grid(row=0, column=0, padx=20, pady=20)
         self.btn_uscita.grid(row=0, column=1, padx=20, pady=20)
-        self.progress_bar.grid(row=1, column=0, columnspan=2)
+        self.progress_bar.grid(row=1, column=0, columnspan=2, sticky='we')
 
         self.riempi_combo()
         self.riempi_tutti()
