@@ -12,11 +12,11 @@ class LottiInVendita(tk.Toplevel):
         self.geometry("1024x525+0+0")
         self.title('Lotti in vendita')
 
-        self.conn_v = mysql.connector.connect(host='192.168.0.100',
-                                              database='data',
-                                              user='root',
-                                              password='')
-        self.c_v = self.conn_v.cursor()
+        self.conn = mysql.connector.connect(host='192.168.0.100',
+                                            database='data',
+                                            user='root',
+                                            password='')
+        self.c = self.conn.cursor()
 
         self.data = dt.date.today()
 
@@ -136,6 +136,9 @@ class LottiInVendita(tk.Toplevel):
         self.btn_filtra = ttk.Button(self.lblframe_box, text='Filtra', command=self.filtra)
         self.btn_filtra.grid(row=0, column=3, padx=20)
 
+        # PROGRESS BAR
+        self.progress_bar = ttk.Progressbar(self.frame_dx_basso, orient=tk.HORIZONTAL, mode='determinate')
+
         # LAYOUT
         self.frame_sx.grid(row=0, column=0, rowspan=2)
         self.frame_dx.grid(row=0, column=1)
@@ -148,8 +151,9 @@ class LottiInVendita(tk.Toplevel):
         self.tree_selezionato.grid(row=2, column='0', columnspan=2)
         self.tree_dettagli.grid(row=4, column='0', columnspan='2')
 
-        self.btn_uscita.grid(row=0, column=1, padx=20, pady=20)
         self.btn_in_bilancia.grid(row=0, column=0, padx=20, pady=20)
+        self.btn_uscita.grid(row=0, column=1, padx=20, pady=20)
+        self.progress_bar.grid(row=1, column=0, columnspan=2)
 
         self.riempi_combo()
         self.riempi_tutti()
@@ -157,8 +161,8 @@ class LottiInVendita(tk.Toplevel):
     def riempi_combo(self):
         lista = []
 
-        self.c_v.execute("SELECT prodotto From prodotti WHERE reparto = %s", (self.filtro.get(),))
-        for row in self.c_v:
+        self.c.execute("SELECT prodotto From prodotti WHERE reparto = %s", (self.filtro.get(),))
+        for row in self.c:
             lista.extend(row)
         self.box['values'] = lista
 
@@ -169,12 +173,12 @@ class LottiInVendita(tk.Toplevel):
         self.tree.delete(*self.tree.get_children())
         giorni = self.data - dt.timedelta(days=31*int(self.filtro_mese.get()))
 
-        self.c_v.execute("SELECT DISTINCT progressivo_ven,prodotto,data_ven,quantita "
-                         "FROM lotti_vendita "
-                         "WHERE prodotto = %s"
-                         "AND lotti_vendita.data_ven > %s"
-                         "ORDER BY progressivo_ven DESC", (self.box_value.get(), giorni))
-        for lista in self.c_v:
+        self.c.execute("SELECT DISTINCT progressivo_ven,prodotto,data_ven,quantita "
+                       "FROM lotti_vendita "
+                       "WHERE prodotto = %s"
+                       "AND lotti_vendita.data_ven > %s"
+                       "ORDER BY progressivo_ven DESC", (self.box_value.get(), giorni))
+        for lista in self.c:
             self.tot_qta += int(lista[3])
             try:
                 self.tree.insert('', 'end', lista[0], text=lista[0], tags=('odd',))
@@ -190,10 +194,10 @@ class LottiInVendita(tk.Toplevel):
     def riempi_tutti(self):
         self.tree.delete(*self.tree.get_children())
 
-        self.c_v.execute("SELECT DISTINCT progressivo_ven,prodotto,data_ven,quantita "
-                         "FROM lotti_vendita "
-                         "ORDER BY progressivo_ven DESC")
-        for lista in self.c_v:
+        self.c.execute("SELECT DISTINCT progressivo_ven,prodotto,data_ven,quantita "
+                       "FROM lotti_vendita "
+                       "ORDER BY progressivo_ven DESC")
+        for lista in self.c:
             try:
                 self.tree.insert('', 'end', lista[0], text=lista[0], tags=('odd',))
                 self.tree.insert(lista[0], 'end', text=lista[1],
@@ -211,26 +215,30 @@ class LottiInVendita(tk.Toplevel):
         self.tree_selezionato.insert('', 'end',
                                      values=(self.tree.parent(self.item), (self.tree.item(self.item, 'text'))))
 
-        self.c_v.execute("SELECT DISTINCT prod_origine, lotto_acq,fornitore,documento,data_acq "
-                         "FROM lotti_vendita  JOIN ingresso_merce "
-                         "WHERE progressivo_ven = %s "
-                         "AND lotti_vendita.lotto_acq = ingresso_merce.progressivo_acq",
-                         (self.tree.parent(self.item),))
-        for lista in self.c_v:
+        self.c.execute("SELECT DISTINCT prod_origine, lotto_acq,fornitore,documento,data_acq "
+                       "FROM lotti_vendita  JOIN ingresso_merce "
+                       "WHERE progressivo_ven = %s "
+                       "AND lotti_vendita.lotto_acq = ingresso_merce.progressivo_acq",
+                       (self.tree.parent(self.item),))
+        for lista in self.c:
             self.tree_dettagli.insert('', 'end', values=(lista[0], lista[1], lista[2], lista[3],
                                                          dt.date.strftime(lista[4], '%d/%m/%y')))
 
     def crea_file(self):
         self.crea_bz00varp()
+        self.progress_bar['value'] = 25
         self.crea_bz00vate()
+        self.progress_bar['value'] = 50
         shutil.move('../laboratorio/bz00varp.dat', '//192.168.0.224/c/WinSwGx-NET//bizvar/LABORATORIO/')
+        self.progress_bar['value'] = 75
         shutil.move('../laboratorio/bz00vate.dat', '//192.168.0.224/c/WinSwGx-NET//bizvar/LABORATORIO/')
+        self.progress_bar['value'] = 100
         # os.startfile("//192.168.0.224/C/WinSwGx-NET/cofraggpscon.exe")
 
     def crea_bz00varp(self):
-        self.c_v.execute("SELECT * FROM prodotti "
-                         "WHERE prodotto = %s", (self.tree.item(self.item, 'text'),))
-        for self.row in self.c_v:
+        self.c.execute("SELECT * FROM prodotti "
+                       "WHERE prodotto = %s", (self.tree.item(self.item, 'text'),))
+        for self.row in self.c:
             pass
         campo1 = ('0' + str(self.row[3]))
         campo2 = ('000' + str(self.row[9]))
@@ -240,12 +248,12 @@ class LottiInVendita(tk.Toplevel):
         campo6 = ('0'*(4-len(str(self.row[11]))) + str(self.row[11]))
         campo7 = ('0'*6)
         campo8 = ('0'*3)
-        campo9 = ('0')
-        campo10 = ('00')
-        campo11 = ('1')
-        campo12 = ('0')
-        campo13 = ('0')
-        campo14 = ('@')
+        campo9 = '0'
+        campo10 = '00'
+        campo11 = '1'
+        campo12 = '0'
+        campo13 = '0'
+        campo14 = '@'
         campo15 = (self.data.strftime('%d%m%y'))
         campo16 = ('A' + '\n')
         stringa = (campo1 + campo2 + campo3 + campo4 + campo5 + campo6 + campo7 + campo8 + campo9 + campo10 + campo11 +
@@ -255,14 +263,14 @@ class LottiInVendita(tk.Toplevel):
         f.close()
 
     def crea_bz00vate(self):
-        self.c_v.execute("SELECT * FROM prodotti "
-                         "WHERE prodotto = %s", (self.tree.item(self.item, 'text'),))
-        for self.row in self.c_v:
+        self.c.execute("SELECT * FROM prodotti "
+                       "WHERE prodotto = %s", (self.tree.item(self.item, 'text'),))
+        for self.row in self.c:
             pass
         campo1 = ('0' + str(self.row[3]))
-        campo2 = ('4')
+        campo2 = '4'
         campo3 = (str(self.row[1]).upper() + ' '*(50-(len(self.row[1]))))
-        campo4 = ('4')
+        campo4 = '4'
         campo5 = ('Ingredienti' + ' '*39)
         campo6 = (str(self.row[29]))
         campo7 = (str(self.row[25]) + ' '*(50-(len(self.row[25]))))
