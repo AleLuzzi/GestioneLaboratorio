@@ -18,23 +18,19 @@ class NuovoLotto(tk.Toplevel):
                                             password='')
         self.c = self.conn.cursor()
 
-        self.c.execute("SELECT prog_ven FROM progressivi")
-        self.prog_lotto_ven = self.c.fetchone()[0]
-
         self.lista_da_salvare = []
         self.lista_nuova_produzione = []
         self.nuova_produzione = tk.StringVar()
         self.peso_da_inserire = tk.StringVar()
-        '''
-        DISPOSIZIONE FRAME
-        '''
+        self.prog_lotto_ven = self.genera_prog_vendita()
+
+        # DISPOSIZIONE FRAME
         self.frame_sx = tk.Frame(self)
         self.frame_sx_alto = tk.Frame(self.frame_sx)
         self.frame_sx_basso = tk.Frame(self.frame_sx, background='white')
         self.frame_dx = tk.Frame(self)
-        '''
-        Treeview per riepilogo immissioni
-        '''
+
+        # TREEVIEW per riepilogo immissioni
         self.tree = ttk.Treeview(self.frame_sx_alto, height=20)
         self.tree['columns'] = ('data ingresso', 'fornitore', 'peso', 'residuo')
 
@@ -51,41 +47,47 @@ class NuovoLotto(tk.Toplevel):
         self.tree.tag_configure('odd', background='light green')
 
         self.tree.bind("<Double-1>", self.ondoubleclick)
-        '''
-        LABEL nuovo lotto vendita
-        '''
-        self.lbl_nuovo_lotto = ttk.Label(self.frame_dx, text='NUOVO LOTTO VENDITA',
+
+        # LABEL nuovo lotto vendita
+        self.lbl_nuovo_lotto = ttk.Label(self.frame_dx, text='NUOVO LOTTO',
                                          foreground='blue', font=('Helvetica', 20))
         self.lbl_prog_lotto_vendita = ttk.Label(self.frame_dx, text=str(self.prog_lotto_ven) + 'V',
                                                 font=('Helvetica', 40))
-        '''
-        LABEL quantita' prodotta
-        '''
+
+        # LABEL quantita' prodotta
         self.lbl_qta_prodotto = ttk.Label(self.frame_dx, text='Quantita prodotta',
                                           foreground='blue', font=('Helvetica', 20))
-        '''
-        Treeview per lotti selezionati
-        '''
+
+        # TREEVIEW per lotti selezionati
         self.tree_lotti_selezionati = ttk.Treeview(self.frame_dx, height=5)
-        self.tree_lotti_selezionati['columns'] = ('lotto ingresso', 'taglio')
+        self.tree_lotti_selezionati['columns'] = ('progressivo_v',
+                                                  'data',
+                                                  'lotto ingresso',
+                                                  'nuova_produzione',
+                                                  'peso',
+                                                  'taglio')
+        self.tree_lotti_selezionati['displaycolumns'] = ('lotto ingresso',
+                                                         'taglio')
+
         self.tree_lotti_selezionati['show'] = 'headings'
+
         self.tree_lotti_selezionati.column("lotto ingresso", width=100)
         self.tree_lotti_selezionati.column("taglio", width=100)
+
         self.tree_lotti_selezionati.heading("lotto ingresso", text="lotto ingresso")
         self.tree_lotti_selezionati.heading("taglio", text="taglio")
-        '''
-        LabelFrame nuova produzione
-        '''
+
+        # LABELFRAME nuova produzione
         self.labelframe = ttk.Labelframe(self.frame_dx, text="Nuova Produzione")
 
-        '''
-        ENTRY per inserimento del peso
-        '''
+        # ENTRY per inserimento del peso
         self.entry_peso = ttk.Entry(self.frame_dx, font=('Helvetica', 20), width=7, textvariable=self.peso_da_inserire)
         self.entry_peso.focus()
-        '''
-        BOTTONE ESCI E SALVA
-        '''
+
+        # BOTTONE ESCI E SALVA
+        self.btn_elimina_riga = tk.Button(self.frame_dx,
+                                          text='Elimina riga',
+                                          command=self.rimuovi_riga_selezionata)
         self.btn_esci = tk.Button(self.frame_sx_basso,
                                   text="Chiudi finestra",
                                   font=('comic sans', 20),
@@ -97,9 +99,8 @@ class NuovoLotto(tk.Toplevel):
                                         font=('comic sans', 20),
                                         width=14,
                                         command=self.esci_salva)
-        '''
-        LAYOUT
-        '''
+
+        # LAYOUT
         self.frame_sx.grid(row=0, column=0, sticky='n')
         self.frame_sx_alto.grid()
         self.frame_sx_basso.grid(sticky='ew')
@@ -107,13 +108,14 @@ class NuovoLotto(tk.Toplevel):
 
         self.tree.grid(row=0, column=0, columnspan=2, sticky='w')
 
-        self.lbl_nuovo_lotto.grid(row=1, column=0, padx=20)
-        self.lbl_prog_lotto_vendita.grid(row=1, column=1, padx=20)
+        self.lbl_nuovo_lotto.grid(row=1, column=0)
+        self.lbl_prog_lotto_vendita.grid(row=1, column=1, sticky='w')
 
         self.lbl_qta_prodotto.grid(row=2, column=0)
-        self.entry_peso.grid(row=2, column=1)
+        self.entry_peso.grid(row=2, column=1, sticky='w')
 
-        self.tree_lotti_selezionati.grid(row=3, column=0, columnspan=2, pady=15)
+        self.tree_lotti_selezionati.grid(row=3, column=0, pady=15, sticky='e')
+        self.btn_elimina_riga.grid(row=3, column=1, pady=15, sticky='nw')
 
         self.labelframe.grid(row=4, column=0, columnspan=2, sticky='ew')
 
@@ -122,6 +124,15 @@ class NuovoLotto(tk.Toplevel):
 
         self.lotti_acq_aperti()
         self.riempi_lista_produzione()
+
+    def rimuovi_riga_selezionata(self):
+            curitem = self.tree_lotti_selezionati.selection()[0]
+            self.tree_lotti_selezionati.delete(curitem)
+
+    def genera_prog_vendita(self):
+        self.c.execute("SELECT prog_ven FROM progressivi")
+        prog = self.c.fetchone()[0]
+        return prog
 
     def riempi_lista_produzione(self):
         # Lista articoli per nuova produzione
@@ -158,28 +169,24 @@ class NuovoLotto(tk.Toplevel):
                 self.tree.item(lista[0], open='true')
 
     def esci_salva(self):
-        if (self.nuova_produzione.get() != '') \
-                and (self.peso_da_inserire.get() != '') \
-                and (self.lista_da_salvare != []):
-            self.c.executemany('INSERT INTO lotti_vendita VALUES (%s,%s,%s,%s,%s,%s)', self.lista_da_salvare)
-            self.conn.commit()
-            self.c.execute('UPDATE progressivi SET prog_ven = %s', (self.prog_lotto_ven + 1,))
-            self.conn.commit()
-            self.conn.close()
-            self.destroy()
-        else:
-            pass
+        for child in self.tree_lotti_selezionati.get_children():
+            self.lista_da_salvare.append(self.tree_lotti_selezionati.item(child)['values'])
+        self.c.executemany('INSERT INTO lotti_vendita VALUES (%s,%s,%s,%s,%s,%s)', self.lista_da_salvare)
+        self.conn.commit()
+        self.c.execute('UPDATE progressivi SET prog_ven = %s', (self.prog_lotto_ven + 1,))
+        self.conn.commit()
+        self.conn.close()
+        self.destroy()
 
     def ondoubleclick(self, event):
         if (self.nuova_produzione.get() != '') and (self.peso_da_inserire.get() != ''):
             item = self.tree.selection()[0]
-            self.tree_lotti_selezionati.insert('', 'end', text=self.tree.parent(item),
-                                               values=(self.tree.parent(item), self.tree.item(item, 'text')))
-            self.lista_da_salvare.append(((str(self.prog_lotto_ven) + 'V'),
-                                         self.data, (self.tree.parent(item)),
-                                         (self.nuova_produzione.get()),
-                                         (self.peso_da_inserire.get()),
-                                         (self.tree.item(item, 'text'))))
+            self.tree_lotti_selezionati.insert('', 'end', values=((str(self.prog_lotto_ven) + 'V'),
+                                                                  self.data,
+                                                                  self.tree.parent(item),
+                                                                  (self.nuova_produzione.get()),
+                                                                  (self.peso_da_inserire.get()),
+                                                                  (self.tree.item(item, 'text'))))
         else:
             pass
 
