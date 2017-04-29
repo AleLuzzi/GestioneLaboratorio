@@ -20,11 +20,9 @@ class NuovoLottoCucina(tk.Toplevel):
 
         self.lista_da_salvare = []
         self.lista_nuova_produzione = []
-        # self.prog_lotto_ven = ''
         self.nuova_produzione = tk.StringVar()
         self.peso_da_inserire = tk.StringVar()
-
-        self.genera_progressivo()
+        self.prog_lotto_ven = self.genera_progressivo()
 
         # DISPOSIZIONE FRAME
         self.frame_sx = tk.Frame(self, bd='3', relief='groove')
@@ -33,11 +31,12 @@ class NuovoLottoCucina(tk.Toplevel):
 
         # TREEVIEW per riepilogo immissioni
         self.tree = ttk.Treeview(self.frame_dx, height=5)
-        self.tree['columns'] = ('prodotto', 'peso')
+        self.tree['columns'] = ('prog_v', 'data', 'lotto_acq', 'prodotto', 'peso', 'prod_origine')
 
+        self.tree['displaycolumns'] = ('prodotto', 'peso')
         self.tree['show'] = 'headings'
 
-        self.tree.column("prodotto", width=120)
+        self.tree.column("prodotto", width=100)
         self.tree.column("peso", width=80)
 
         self.tree.heading("prodotto", text="prodotto")
@@ -79,6 +78,7 @@ class NuovoLottoCucina(tk.Toplevel):
                                         text="Esci e salva",
                                         font=('Helvetica', 20),
                                         command=self.esci_salva)
+        self.btn_elimina_riga = tk.Button(self.frame_dx, text='Elimina riga', command=self.rimuovi_riga_selezionata)
 
         # LAYOUT
         self.frame_sx.grid(row=0, column=0, padx=10, sticky='n')
@@ -86,6 +86,7 @@ class NuovoLottoCucina(tk.Toplevel):
         self.frame_basso.grid(row=1, column=0, columnspan=3, sticky='we')
 
         self.tree.grid(row=3, column=0, sticky='we')
+        self.btn_elimina_riga.grid(row=3, column=1, sticky='n')
 
         self.labelframe.grid(row=2, column=0)
         self.lbl_nuovo_lotto.grid(row=0, column=0)
@@ -99,6 +100,10 @@ class NuovoLottoCucina(tk.Toplevel):
         self.btn_esci_salva.grid(row=0, column=3, padx=10, pady=20)
 
         self.crea_articoli_nuova_produzione()
+
+    def rimuovi_riga_selezionata(self):
+            curitem = self.tree.selection()[0]
+            self.tree.delete(curitem)
 
     def crea_articoli_nuova_produzione(self):
         row, col = 1, 0
@@ -117,26 +122,27 @@ class NuovoLottoCucina(tk.Toplevel):
 
     def genera_progressivo(self):
         self.c.execute("SELECT prog_ven FROM progressivi")
-        self.prog_lotto_ven = self.c.fetchone()[0]
+        prog_lotto_ven = self.c.fetchone()[0]
+        return prog_lotto_ven
 
     def invia(self):
-        if (self.nuova_produzione.get() != '') and (self.peso_da_inserire.get() != ''):
-            self.tree.insert('', 'end', values=(self.nuova_produzione.get(), self.peso_da_inserire.get()))
-            self.lista_da_salvare.append(((str(self.prog_lotto_ven) + 'V'), self.data, '0', self.nuova_produzione.get(),
-                                         self.peso_da_inserire.get(), '0'))
+        self.tree.insert('', 'end', values=((str(self.prog_lotto_ven) + 'V'),
+                                            self.data,
+                                            '0',
+                                            self.nuova_produzione.get(),
+                                            self.peso_da_inserire.get(),
+                                            '0'))
 
     def esci_salva(self):
-        if (self.nuova_produzione.get() != '') \
-                and (self.peso_da_inserire.get() != '') \
-                and (self.lista_da_salvare != []):
-            self.c.executemany('INSERT INTO lotti_vendita VALUES (%s,%s,%s,%s,%s,%s)', self.lista_da_salvare)
-            self.conn.commit()
-            self.c.execute('UPDATE progressivi SET prog_ven = %s', (self.prog_lotto_ven + 1,))
-            self.conn.commit()
-            self.conn.close()
-            self.destroy()
-        else:
-            pass
+        for child in self.tree.get_children():
+            self.lista_da_salvare.append(self.tree.item(child)['values'])
+        self.c.executemany('INSERT INTO lotti_vendita VALUES (%s,%s,%s,%s,%s,%s)', self.lista_da_salvare)
+        self.conn.commit()
+        self.c.execute('UPDATE progressivi SET prog_ven = %s', (self.prog_lotto_ven + 1,))
+        self.conn.commit()
+        self.conn.close()
+        self.destroy()
+
 
 if __name__ == '__main__':
     root = tk.Tk()
