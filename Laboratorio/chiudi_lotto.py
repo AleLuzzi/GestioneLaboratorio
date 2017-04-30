@@ -49,10 +49,14 @@ class ChiudiLotto(tk.Toplevel):
 
         # Treeview per lotti scelti da chiudere
         self.tree_lotti_selezionati = ttk.Treeview(self.frame_dx)
-        self.tree_lotti_selezionati['columns'] = 'taglio'
+        self.tree_lotti_selezionati['columns'] = ('lotto', 'taglio')
 
-        self.tree_lotti_selezionati.column("taglio", width=70)
-        self.tree_lotti_selezionati.heading("taglio", text="taglio")
+        self.tree_lotti_selezionati['show'] = 'headings'
+
+        self.tree_lotti_selezionati.column("lotto", width=70)
+        self.tree_lotti_selezionati.column("taglio", width=170)
+        self.tree_lotti_selezionati.heading("lotto", text="Lotto")
+        self.tree_lotti_selezionati.heading("taglio", text="Taglio")
 
         # BOTTONE ESCI
         self.btn_esci = tk.Button(self.frame_dx_basso,
@@ -64,6 +68,9 @@ class ChiudiLotto(tk.Toplevel):
                                    text='salva dati',
                                    font=('Helvetica', 20),
                                    command=self.salva)
+
+        self.btn_rimuovi_riga = tk.Button(self.frame_dx, text="Rimuovi riga", command=self.rimuovi_riga_selezionata)
+        self.btn_rimuovi_riga.grid(row=1, column=3, sticky='n')
 
         # LAYOUT
         self.frame_sx.grid(row=0, column=0, rowspan=2)
@@ -79,14 +86,19 @@ class ChiudiLotto(tk.Toplevel):
 
         self.aggiorna()
 
+    def rimuovi_riga_selezionata(self):
+            curitem = self.tree_lotti_selezionati.selection()[0]
+            self.tree_lotti_selezionati.delete(curitem)
+
     def ondoubleclick(self, event):
         item = self.tree.selection()[0]
-        self.tree_lotti_selezionati.insert('', 'end', text=self.tree.parent(item),
-                                               values=(self.tree.item(item, 'text')))
-        self.lotti_da_chiudere.append((self.tree.parent(item), (self.tree.item(item, 'text')),))
+        self.tree_lotti_selezionati.insert("", 'end',
+                                           values=(self.tree.parent(item),
+                                                   self.tree.item(item, 'text')))
 
     def salva(self):
-
+        for child in self.tree_lotti_selezionati.get_children():
+            self.lotti_da_chiudere.append(self.tree_lotti_selezionati.item(child)['values'])
         self.c.executemany("UPDATE ingresso_merce SET lotto_chiuso = 'si' WHERE progressivo_acq = %s AND prodotto = %s ",
                            self.lotti_da_chiudere)
         self.conn.commit()
