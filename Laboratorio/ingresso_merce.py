@@ -8,10 +8,11 @@ class IngressoMerce(tk.Toplevel):
     def __init__(self):
         tk.Toplevel.__init__(self)
         self.title("Ingresso Merce")
-        self.geometry("%dx525+0+0" % self.winfo_screenwidth())
+        self.geometry("1024x525+0+0")
 
         # Connessione al database
         self.conn = mysql.connector.connect(host='192.168.0.100',
+                                            port='3306',
                                             database='data',
                                             user='root',
                                             password='')
@@ -30,8 +31,10 @@ class IngressoMerce(tk.Toplevel):
         # Creazione liste fornitori e tagli suino
         self.lista_fornitori = []
         self.c.execute("SELECT azienda FROM fornitori WHERE flag1_ing_merce = 1")
+
         for row in self.c:
             self.lista_fornitori.extend(row)
+
         self.lista_tagli = ('Mezzena', 'Costarelle', 'Lombo', 'Carnetta', 'Collo', 'Busto',
                             'Sogna', 'Pancia', 'Maialino', 'Arista', 'Filetto', 'Spalla', 'Guanciale',
                             'Teste', 'Tronchetto', 'Corata')
@@ -41,14 +44,13 @@ class IngressoMerce(tk.Toplevel):
         self.frame_sx = tk.Frame(self, bd=3)
         self.frame_dx = tk.Frame(self, bd=3)
         self.frame_basso = tk.Frame(self, background='white')
-        self.frame_alto.grid(row=1, column=0, columnspan=2, sticky='we')
-        self.frame_sx.grid(row=2, column=0)
-        self.frame_dx.grid(row=2, column=1, sticky='n')
-        self.frame_basso.grid(row=3, column=0, columnspan=2, sticky='we')
 
         # TREEVIEW per riepilogo inserimenti
         self.tree = ttk.Treeview(self.frame_alto, height=8)
-        self.tree['columns'] = ('prog_acq', 'data', 'num_ddt', 'fornitore', 'taglio', 'peso_i', 'peso_f', 'lotto_chiuso')
+
+        self.tree['columns'] = ('prog_acq', 'data', 'num_ddt', 'fornitore',
+                                'taglio', 'peso_i', 'peso_f', 'lotto_chiuso')
+
         self.tree['displaycolumns'] = ('fornitore', 'taglio', 'peso_i')
         self.tree['show'] = 'headings'
         self.tree.column("fornitore", width=100)
@@ -57,62 +59,113 @@ class IngressoMerce(tk.Toplevel):
         self.tree.heading("fornitore", text="Fornitore")
         self.tree.heading("taglio", text="Prodotto")
         self.tree.heading("peso_i", text="quantità")
-        self.tree.grid(row=0, column=2, rowspan=10, padx=10)
 
         # LABELFRAME per creazione bottoni per scelta fornitore
-        self.labelframe = ttk.Labelframe(self.frame_sx, text="Fornitore")
-        self.labelframe.grid(row=2, column=0, sticky='n')
+        self.labelframe_fornitori = tk.LabelFrame(self.frame_sx,
+                                                  text="Fornitore",
+                                                  font=('Verdana', 15),
+                                                  labelanchor='n')
 
         # LABELFRAME per creazione bottoni per i tagli suino
-        self.labelframe_taglio = ttk.Labelframe(self.frame_dx, text="Taglio")
-        self.labelframe_taglio.grid(row=1, column=0, columnspan=3)
+        self.labelframe_taglio = tk.LabelFrame(self.frame_dx,
+                                               text="Taglio",
+                                               font=('Verdana', 15),
+                                               labelanchor='n')
 
         # LABEL che mostra il progressivo lotto
-        self.label_lotto = ttk.Label(self.frame_alto, text="Progressivo Lotto",
-                                     foreground='blue', font=('Helvetica', 20))
-        self.label_prog_lotto = ttk.Label(self.frame_alto, anchor='center',
-                                          text=str(self.prog_lotto_acq)+'A', font=('Helvetica', 20))
-        self.label_lotto.grid(row=1, column=0)
-        self.label_prog_lotto.grid(row=1, column=1)
+        self.label_lotto = ttk.Label(self.frame_alto,
+                                     text="Progressivo Lotto",
+                                     foreground='blue',
+                                     font=('Verdana', 20))
+
+        self.label_prog_lotto = ttk.Label(self.frame_alto,
+                                          anchor='center',
+                                          text=str(self.prog_lotto_acq)+'A',
+                                          font=('Verdana', 20))
 
         # LABEL che mostra la data ingresso merce
-        # TODO: migliorare con data selezionabile
         self.data = datetime.date.today()
         self.label_data_ingresso = ttk.Label(self.frame_alto,
-                                             text="Data Ingresso Merce", foreground='blue', font=('Helvetica', 20))
-        self.label_data = ttk.Label(self.frame_alto, anchor='center',
-                                    text=self.data.strftime('%d/%m/%y'), font=('Helvetica', 20))
-        self.label_data_ingresso.grid(row=3, column=0)
-        self.label_data.grid(row=3, column=1)
+                                             text="Data Ingresso Merce",
+                                             foreground='blue',
+                                             font=('Verdana', 20))
+
+        self.label_data = ttk.Label(self.frame_alto,
+                                    anchor='center',
+                                    text=self.data.strftime('%d/%m/%y'),
+                                    font=('Verdana', 20))
 
         # ENTRY per immissione numero ddt/fattura
         self.label_num_ddt = ttk.Label(self.frame_alto,
-                                       text='Numero DDT/Fattura', foreground='blue', font=('Helvetica', 15))
-        self.label_num_ddt.grid(row=5, column=0)
+                                       text='Numero DDT/Fattura',
+                                       foreground='blue',
+                                       font=('Verdana', 15))
+
         self.num_ddt = tk.StringVar()
-        self.entry_ddt = ttk.Entry(self.frame_alto, textvariable=self.num_ddt, width=25)
+        self.entry_ddt = ttk.Entry(self.frame_alto,
+                                   textvariable=self.num_ddt,
+                                   width=25)
         self.entry_ddt.focus()
-        self.entry_ddt.grid(row=5, column=1)
 
         # ENTRY per inserimento del peso
-        self.label_peso = ttk.Label(self.frame_alto, text="Inserimento Peso", foreground='blue', font=('Helvetica', 15))
-        self.label_peso.grid(row=7, column=0)
-        self.entry = ttk.Entry(self.frame_alto, textvariable=self.peso, width=25)
-        self.entry.grid(row=7, column=1)
+        self.label_peso = ttk.Label(self.frame_alto,
+                                    text="Inserimento Peso",
+                                    foreground='blue',
+                                    font=('Verdana', 15))
+
+        self.entry = ttk.Entry(self.frame_alto,
+                               textvariable=self.peso,
+                               width=25)
 
         # BOTTONI salva e chiudi finestra
         self.btn_invio = tk.Button(self.frame_basso,
-                                   text="Invio", font=('comic sans', 20), width=20,
-                                   command=self.invio).grid(row=2, column=0, padx=10, pady=10)
+                                   text="Invio",
+                                   font=('Verdana', 20),
+                                   width=18,
+                                   command=self.invio)
+
         self.btn_salva_esci = tk.Button(self.frame_basso,
-                                        text="Salva ed esci", font=('Times new roman', 20), width=20,
-                                        command=self.salva_esci).grid(row=2, column=1, padx=10, pady=10)
+                                        text="Salva ed esci",
+                                        font=('Verdana', 20),
+                                        width=18,
+                                        command=self.salva_esci)
+
         self.btn_chiudi_finestra = tk.Button(self.frame_basso,
-                                             text='Chiudi finestra', font=('Times new roman', 20), width=20,
-                                             command=self.chiudi).grid(row=2, column=2, padx=10, pady=10)
+                                             text='Chiudi finestra',
+                                             font=('Verdana', 20),
+                                             width=18,
+                                             command=self.chiudi)
 
         # BOTTONE rimuovi riga dal treeview riepilogativo
-        self.btn_rimuovi_riga = tk.Button(self.frame_alto, text="Rimuovi riga", command=self.rimuovi_riga_selezionata)
+        self.btn_rimuovi_riga = tk.Button(self.frame_alto,
+                                          text="Rimuovi riga",
+                                          command=self.rimuovi_riga_selezionata)
+
+        # LAYOUT
+        self.frame_alto.grid(row=1, column=0, columnspan=2, sticky='we')
+        self.frame_sx.grid(row=2, column=0)
+        self.frame_dx.grid(row=2, column=1, sticky='n')
+        self.frame_basso.grid(row=3, column=0, columnspan=2, sticky='we')
+
+        self.tree.grid(row=0, column=2, rowspan=10, padx=10)
+
+        self.labelframe_fornitori.grid(row=2, column=0, sticky='n')
+        self.labelframe_taglio.grid(row=1, column=0)
+
+        self.label_lotto.grid(row=1, column=0)
+        self.label_prog_lotto.grid(row=1, column=1)
+        self.label_data_ingresso.grid(row=3, column=0)
+        self.label_data.grid(row=3, column=1)
+
+        self.label_num_ddt.grid(row=5, column=0)
+        self.entry_ddt.grid(row=5, column=1)
+
+        self.label_peso.grid(row=7, column=0)
+        self.entry.grid(row=7, column=1)
+
+        self.btn_invio.grid(row=2, column=0, padx=5, pady=10)
+        self.btn_salva_esci.grid(row=2, column=1, padx=5, pady=10)
+        self.btn_chiudi_finestra.grid(row=2, column=2, padx=5, pady=10)
         self.btn_rimuovi_riga.grid(row=0, column=3)
 
         self.crea_bottoni_tagli()
@@ -128,9 +181,13 @@ class IngressoMerce(tk.Toplevel):
             if row % 6 == 0:
                 col += 1
                 row = 1
-            tk.Radiobutton(self.labelframe, text=str(self.lista_fornitori[i]).upper(), variable=self.fornitore,
-                           width=20, indicatoron=0, value=self.lista_fornitori[i],
-                           font='Helvetica').grid(row=row, column=col, sticky='w')
+            tk.Radiobutton(self.labelframe_fornitori,
+                           text=str(self.lista_fornitori[i]).upper(),
+                           variable=self.fornitore,
+                           width=20,
+                           indicatoron=0,
+                           value=self.lista_fornitori[i],
+                           font='Verdana').grid(row=row, column=col, sticky='w')
             row += 1
 
     def crea_bottoni_tagli(self):
@@ -139,9 +196,13 @@ class IngressoMerce(tk.Toplevel):
             if row % 7 == 0:
                 col += 1
                 row = 1
-            tk.Radiobutton(self.labelframe_taglio, text=self.lista_tagli[i], indicatoron=0,
-                           width=20, variable=self.taglio_s, value=self.lista_tagli[i],
-                           font='Helvetica').grid(row=row, column=col, sticky='w')
+            tk.Radiobutton(self.labelframe_taglio,
+                           text=self.lista_tagli[i],
+                           indicatoron=0,
+                           width=15,
+                           variable=self.taglio_s,
+                           value=self.lista_tagli[i],
+                           font='Verdana').grid(row=row, column=col, sticky='w')
             row += 1
 
     def invio(self):

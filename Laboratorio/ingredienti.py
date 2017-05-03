@@ -58,7 +58,10 @@ class Ingredienti(tk.Toplevel):
                                     font=('Verdana', 10))
 
         # LABELFRAME per inserimento EAN
-        self.lblfr_ins_ean = tk.LabelFrame(self.frame_sx, text='Inserimento ean', font=('Verdana', 15))
+        self.lblfr_ins_ean = tk.LabelFrame(self.frame_sx,
+                                           text='Inserimento ean',
+                                           font=('Verdana', 15),
+                                           labelanchor='n')
 
         # NOTEBOOK e posizione
         self.notebook = ttk.Notebook(self.frame_dx)
