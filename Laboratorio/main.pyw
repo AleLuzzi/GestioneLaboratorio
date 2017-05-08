@@ -22,10 +22,6 @@ class Main(tk.Frame):
         self.frm_centrale = tk.Frame(self, height=400, width=self.winfo_screenwidth(),
                                      bd=1, relief="raised", bg="white")
         self.frm_basso = tk.Frame(self, bd=1, relief="raised")
-        
-        self.frm_alto.grid(row=0, column=0)
-        self.frm_centrale.grid(row=1, column=0)
-        self.frm_basso.grid(row=2, column=0, sticky="we")
 
         self.img_btn1 = tk.PhotoImage(file=os.path.join('immagini', 'lbeef.gif'))
         self.img_btn2 = tk.PhotoImage(file=os.path.join('immagini', 'documentnew.gif'))
@@ -40,58 +36,62 @@ class Main(tk.Frame):
 
         bottone1 = ttk.Button(self.frm_alto, text="Ingresso Merce", compound='bottom',
                               image=self.img_btn1, command=self.ingresso_merce)
-
-        bottone1.grid(row=0, column=0, padx=4, pady=4)
     
         bottone2 = ttk.Button(self.frm_alto, text="Nuovo Lotto", compound='bottom',
                               image=self.img_btn2, command=self.nuovo_lotto)
-        bottone2.grid(row=0, column=1, padx=4, pady=4)
-    
+
         bottone3 = ttk.Button(self.frm_alto, text="Inventario", compound='bottom',
                               image=self.img_btn3, command=self.inventario)
-        bottone3.grid(row=0, column=2, padx=4, pady=4)
-    
+
         bottone4 = ttk.Button(self.frm_alto, text="Lotto Cucina", compound='bottom',
                               image=self.img_btn4, command=self.nuovo_lotto_cucina)
-        bottone4.grid(row=0, column=3, padx=4, pady=4)
-    
+
         bottone5 = ttk.Button(self.frm_alto, text="Ingredienti", compound='bottom',
                               image=self.img_btn5, command=self.ingredienti)
-        bottone5.grid(row=0, column=4, padx=4, pady=4)
-    
+
         bottone6 = ttk.Button(self.frm_alto, text="Chiudi Lotti", compound='bottom',
                               image=self.img_btn6, command=self.chiudi_lotto)
-        bottone6.grid(row=0, column=5, padx=4, pady=4)
-    
+
         bottone7 = ttk.Button(self.frm_alto, text="Vendita", compound='bottom',
                               image=self.img_btn7, command=self.lotti_in_vendita)
-        bottone7.grid(row=0, column=6, padx=4, pady=4)
 
         bottone8 = ttk.Button(self.frm_alto, text="Impostazioni", compound='bottom',
                               image=self.img_btn8, command=self.anagrafica)
 
-        bottone8.grid(row=0, column=7, padx=4, pady=4)
-
         bottone9 = ttk.Button(self.frm_alto, text="Nuovo Menu", compound='bottom',
                               image=self.img_btn9, command=self.nuovo_menu)
 
-        bottone9.grid(row=0, column=8, padx=4, pady=4)
-    
         bottone10 = ttk.Button(self.frm_alto, text="Uscita", compound='bottom',
                                image=self.img_btn10, command=self.quit)
+
+        self.immagine1 = tk.PhotoImage(file=os.path.join('immagini', 'dlogo.gif'))
+
+        label1 = tk.Label(self.frm_centrale, image=self.immagine1, bd=0)
+
+        label1.grid(row=0, column=0)
+
+        label2 = tk.Label(self.frm_basso, text="Barra di stato")
+
+        bottone1.grid(row=0, column=0, padx=4, pady=4)
+        bottone2.grid(row=0, column=1, padx=4, pady=4)
+        bottone3.grid(row=0, column=2, padx=4, pady=4)
+        bottone4.grid(row=0, column=3, padx=4, pady=4)
+        bottone5.grid(row=0, column=4, padx=4, pady=4)
+        bottone6.grid(row=0, column=5, padx=4, pady=4)
+        bottone7.grid(row=0, column=6, padx=4, pady=4)
+        bottone8.grid(row=0, column=7, padx=4, pady=4)
+        bottone9.grid(row=0, column=8, padx=4, pady=4)
         bottone10.grid(row=0, column=9, padx=4, pady=4)
 
         self.frm_centrale.grid_propagate(False)
         self.frm_centrale.grid_rowconfigure(0, weight=2)
         self.frm_centrale.grid_columnconfigure(0, weight=2)
+
+        self.frm_alto.grid(row=0, column=0)
+        self.frm_centrale.grid(row=1, column=0)
+        self.frm_basso.grid(row=2, column=0, sticky="we")
         self.frm_centrale.grid(row=1, column=0)
 
-        self.immagine1 = tk.PhotoImage(file=os.path.join('immagini', 'dlogo.gif'))
-
-        label1 = tk.Label(self.frm_centrale, image=self.immagine1, bd=0)
-        label1.grid(row=0, column=0)
-
-        label2 = tk.Label(self.frm_basso, text="Barra di stato")
         label2.grid(row=0, column=0, padx=4, pady=4)
 
     @staticmethod
