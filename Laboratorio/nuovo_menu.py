@@ -26,9 +26,8 @@ class NuovoMenu(tk.Toplevel):
         self.lista_nuova_produzione_secondi_piatti = []
         self.lista_nuova_produzione_contorni = []
         self.lista_nuova_produzione_piatti_freddi = []
-        self.prog_lotto_ven = ''
+        self.prog_lotto_ven = self.genera_progressivo()
         self.nuova_produzione = tk.StringVar()
-        self.genera_progressivo()
 
         # DISPOSIZIONE FRAME
         self.frame_treeview = tk.Frame(self, bd='3', relief='groove')
@@ -40,8 +39,10 @@ class NuovoMenu(tk.Toplevel):
 
         # TREEVIEW per riepilogo immissioni
         self.tree = ttk.Treeview(self.frame_treeview, height=5)
-        self.tree['columns'] = ('prodotto', 'peso')
+        self.tree['columns'] = ('prog_ven', 'data', 'lotto_acq',
+                                'prodotto', 'peso', 'origine')
 
+        self.tree['displaycolumns'] = ('prodotto', 'peso')
         self.tree['show'] = 'headings'
 
         self.tree.column("prodotto", width=120)
@@ -112,12 +113,16 @@ class NuovoMenu(tk.Toplevel):
                                                     image=self.img_sync,
                                                     command=self.crea_articoli_nuova_produzione_piatti_freddi)
 
+        # BOTTONE rimuovi riga dal treeview riepilogativo
+        self.btn_rimuovi_riga = tk.Button(self.frame_treeview,
+                                          text="Rimuovi riga",
+                                          command=self.rimuovi_riga_selezionata)
+
         # LAYOUT
         self.frame_nuovolotto.grid(row=0, column=0, rowspan=2, sticky='n')
         self.frame_treeview.grid(row=0, column=1, padx=10, sticky='n')
         self.frame_basso.grid(row=1, column=1, sticky='w')
 
-        self.tree.grid(row=1, column=0, sticky='we')
         self.btn_rigenera_primi.grid(row=0, column=1, padx=15)
         self.btn_rigenera_secondi.grid(row=1, column=1, padx=15)
         self.btn_rigenera_contorni.grid(row=2, column=1, padx=15)
@@ -130,8 +135,10 @@ class NuovoMenu(tk.Toplevel):
 
         self.lbl_nuovo_lotto.grid(row=0, column=0)
         self.lbl_prog_lotto_vendita.grid(row=1, column=0)
+        self.tree.grid(row=2, column=0, sticky='we')
+        self.btn_rimuovi_riga.grid(row=2, column=1, sticky='n')
 
-        self.btn_pubblica.grid(row=4, column=0)
+        self.btn_pubblica.grid(row=3, column=0)
 
         self.lblframe_peso.grid(row=0, column=0, sticky='w')
         self.entry_peso.grid()
@@ -142,8 +149,12 @@ class NuovoMenu(tk.Toplevel):
 
         self.crea_nuovo_menu()
 
+    def rimuovi_riga_selezionata(self):
+            curitem = self.tree.selection()[0]
+            self.tree.delete(curitem)
+
     def crea_nuovo_menu(self):
-        self.primi = self.crea_articoli_nuova_produzione_primi_piatti()
+        self.crea_articoli_nuova_produzione_primi_piatti()
         self.crea_articoli_nuova_produzione_secondi_piatti()
         self.crea_articoli_nuova_produzione_contorni()
         self.crea_articoli_nuova_produzione_piatti_freddi()
@@ -256,26 +267,28 @@ class NuovoMenu(tk.Toplevel):
 
     def genera_progressivo(self):
         self.c.execute("SELECT prog_ven FROM progressivi")
-        self.prog_lotto_ven = self.c.fetchone()[0]
+        prog_lotto_ven = self.c.fetchone()[0]
+        return prog_lotto_ven
 
     def invia(self):
-        if (self.nuova_produzione.get() != '') and (self.peso_da_inserire.get() != ''):
-            self.tree.insert('', 'end', values=(self.nuova_produzione.get(), self.peso_da_inserire.get()))
-            self.lista_da_salvare.append(((str(self.prog_lotto_ven) + 'V'), self.data, '0', self.nuova_produzione.get(),
-                                         self.peso_da_inserire.get(), '0'))
+
+        self.tree.insert('', 'end', values=((str(self.prog_lotto_ven) + 'V'),
+                                            self.data,
+                                            '0',
+                                            self.nuova_produzione.get(),
+                                            self.peso_da_inserire.get(),
+                                            '0'))
+        self.entry_peso.delete(0, tk.END)
 
     def esci_salva(self):
-        if (self.nuova_produzione.get() != '') \
-                and (self.peso_da_inserire.get() != '') \
-                and (self.lista_da_salvare != []):
-            self.c.executemany('INSERT INTO lotti_vendita VALUES (%s,%s,%s,%s,%s,%s)', self.lista_da_salvare)
-            self.conn.commit()
-            self.c.execute('UPDATE progressivi SET prog_ven = %s', (self.prog_lotto_ven + 1,))
-            self.conn.commit()
-            self.conn.close()
-            self.destroy()
-        else:
-            pass
+        for child in self.tree.get_children():
+            self.lista_da_salvare.append(self.tree.item(child)['values'])
+        self.c.executemany('INSERT INTO lotti_vendita VALUES (%s,%s,%s,%s,%s,%s)', self.lista_da_salvare)
+        self.conn.commit()
+        self.c.execute('UPDATE progressivi SET prog_ven = %s', (self.prog_lotto_ven + 1,))
+        self.conn.commit()
+        self.conn.close()
+        self.destroy()
 
     def pubblica(self):
         graph = facebook.GraphAPI(access_token='token', version='2.7')
