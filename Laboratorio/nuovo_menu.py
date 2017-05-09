@@ -63,14 +63,26 @@ class NuovoMenu(tk.Toplevel):
                                                 font=('Helvetica', 40))
 
         # LABELFRAME nuova produzione
-        self.labelframe_primi_piatti = ttk.Labelframe(self.frame_nuovolotto,
-                                                      text="Primi piatti")
-        self.labelframe_secondi_piatti = ttk.Labelframe(self.frame_nuovolotto,
-                                                        text="secondi piatti")
-        self.labelframe_contorni = ttk.Labelframe(self.frame_nuovolotto,
-                                                  text="contorni")
-        self.labelframe_piatti_freddi = ttk.Labelframe(self.frame_nuovolotto,
-                                                       text='Piatti Freddi')
+        self.labelframe_primi_piatti = tk.LabelFrame(self.frame_nuovolotto,
+                                                     text="PRIMI",
+                                                     font=('Verdana', 15),
+                                                     foreground='blue',
+                                                     labelanchor='n')
+        self.labelframe_secondi_piatti = tk.LabelFrame(self.frame_nuovolotto,
+                                                       text="SECONDI",
+                                                       font=('Verdana', 15),
+                                                       foreground='blue',
+                                                       labelanchor='n')
+        self.labelframe_contorni = tk.LabelFrame(self.frame_nuovolotto,
+                                                 text="CONTORNI",
+                                                 font=('Verdana', 15),
+                                                 foreground='blue',
+                                                 labelanchor='n')
+        self.labelframe_piatti_freddi = tk.LabelFrame(self.frame_nuovolotto,
+                                                      text='PIATTI FREDDI',
+                                                      font=('Verdana', 15),
+                                                      foreground='blue',
+                                                      labelanchor='n')
 
         # LABELFRAME per peso da inserire
         self.lblframe_peso = ttk.LabelFrame(self.frame_basso,
