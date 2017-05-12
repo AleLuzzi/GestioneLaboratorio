@@ -24,6 +24,9 @@ class Impostazioni(tk.Frame):
         # LABELFRAME winswgx
         self.lblfrm_winswgx = tk.LabelFrame(self, text='Winswgx-net', foreground='blue')
 
+        # LABELFRAME Facebook
+        self.lblfrm_facebook = tk.LabelFrame(self, text='Facebook', foreground='blue')
+
         # LABEL Database
         self.lbl_database = tk.Label(self.lblfrm_imp_database, text='Data Base')
         self.lbl_host = tk.Label(self.lblfrm_imp_database, text='Host')
@@ -45,6 +48,10 @@ class Impostazioni(tk.Frame):
                                     textvariable=self.win_dir,
                                     relief='sunken')
 
+        # LABEL Facebook
+        self.lbl_facebook = tk.Label(self.lblfrm_facebook,
+                                     text='Token Facebook')
+
         # LAYOUT
         self.frame_sx.grid()
 
@@ -63,6 +70,9 @@ class Impostazioni(tk.Frame):
         self.lblfrm_winswgx.grid(row=1, column=0)
         self.lbl_dir_name.grid(row=0, column=0)
         self.lbl_win_loc.grid(row=0, column=1)
+
+        self.lblfrm_facebook.grid(row=2, column=0, sticky='we')
+        self.lbl_facebook.grid()
 
     @staticmethod
     def leggi_file_ini():
