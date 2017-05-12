@@ -8,6 +8,7 @@ class Impostazioni(tk.Frame):
         tk.Frame.__init__(self, parent)
 
         self.config = self.leggi_file_ini()
+        self.token_fb_status = self.controlla_token()
 
         # STRINGVAR
         self.win_dir = tk.StringVar()
@@ -44,13 +45,21 @@ class Impostazioni(tk.Frame):
         self.lbl_dir_name = tk.Button(self.lblfrm_winswgx,
                                       text='Winswgx-Net Folder',
                                       command=self.open_dir)
-        self.lbl_win_loc = tk.Label(self.lblfrm_winswgx,
-                                    textvariable=self.win_dir,
-                                    relief='sunken')
+        self.lbl_win_loc_value = tk.Label(self.lblfrm_winswgx,
+                                          textvariable=self.win_dir,
+                                          relief='sunken')
 
         # LABEL Facebook
-        self.lbl_facebook = tk.Label(self.lblfrm_facebook,
+        self.lbl_token_fb = tk.Label(self.lblfrm_facebook,
                                      text='Token Facebook')
+        self.lbl_token_fb_value = tk.Label(self.lblfrm_facebook,
+                                           text=self.token_fb_status,
+                                           relief='sunken')
+        self.lbl_scad_token = tk.Label(self.lblfrm_facebook,
+                                       text='Scadenza Token')
+        self.lbl_scad_token_value = tk.Label(self.lblfrm_facebook,
+                                             text=self.config['Facebook']['scadenza'],
+                                             relief='sunken')
 
         # LAYOUT
         self.frame_sx.grid()
@@ -67,12 +76,15 @@ class Impostazioni(tk.Frame):
         self.lbl_pwd.grid(row=4, column=0)
         self.lbl_pwd_value.grid(row=4, column=1)
 
-        self.lblfrm_winswgx.grid(row=1, column=0)
+        self.lblfrm_winswgx.grid(row=1, column=0, sticky='we')
         self.lbl_dir_name.grid(row=0, column=0)
-        self.lbl_win_loc.grid(row=0, column=1)
+        self.lbl_win_loc_value.grid(row=0, column=1, padx=15)
 
         self.lblfrm_facebook.grid(row=2, column=0, sticky='we')
-        self.lbl_facebook.grid()
+        self.lbl_token_fb.grid(row=1, column=0)
+        self.lbl_token_fb_value.grid(row=1, column=1)
+        self.lbl_scad_token.grid(row=2, column=0)
+        self.lbl_scad_token_value.grid(row=2, column=1)
 
     @staticmethod
     def leggi_file_ini():
@@ -86,6 +98,12 @@ class Impostazioni(tk.Frame):
         self.config.set('Winswgx', 'dir', new_dirname)
         self.config.write(cfg_file)
         self.win_dir.set(new_dirname)
+        
+    def controlla_token(self):
+        if self.config['Facebook']['token']:
+            return 'Impostato'
+        else:
+            return 'Non Impostato'
 
 
 if __name__ == '__main__':

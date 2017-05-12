@@ -27,7 +27,7 @@ class Anagrafica(tk.Toplevel):
         '''
         Notebook e posizione
         '''
-        self.notebook = ttk.Notebook(self, width='800')
+        self.notebook = ttk.Notebook(self)
         self.notebook.grid(row='1', column='0')
         '''
         TAB 1 per Dipendenti
