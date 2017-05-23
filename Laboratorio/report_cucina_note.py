@@ -7,7 +7,8 @@ from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate, Spacer, Table, TableStyle
 import mysql.connector
 import os
-
+from tkinter import messagebox
+import win32api
 
 class ReportCucina(tk.Frame):
     def __init__(self, parent):
@@ -107,7 +108,8 @@ class ReportCucina(tk.Frame):
         parts.append(Spacer(1, 0.5 * inch))
         parts.append(table_with_style)
         doc.build(parts)
-        os.startfile("table.pdf")
+        if messagebox.askyesno('STAMPA', 'Vuoi stampare il pdf?'):
+            win32api.ShellExecute(None, "print", "table.pdf", None, ".", 0)
 
 
 if __name__ == '__main__':
