@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from datepicker import Datepicker
 import datetime
 import mysql.connector
 
@@ -27,6 +28,9 @@ class IngressoMerce(tk.Toplevel):
         self.fornitore = tk.StringVar()
         self.taglio_s = tk.StringVar()
         self.peso = tk.StringVar()
+        # self.data = datetime.date.today().strftime('%d-%m-%Y')
+        self.data = tk.StringVar()
+        self.data.set(datetime.date.today().strftime('%d-%m-%Y'))
 
         # Creazione liste fornitori e tagli suino
         self.lista_fornitori = []
@@ -84,17 +88,18 @@ class IngressoMerce(tk.Toplevel):
                                           font=('Verdana', 20))
 
         # LABEL che mostra la data ingresso merce
-        self.data = datetime.date.today()
         self.label_data_ingresso = ttk.Label(self.frame_alto,
                                              text="Data Ingresso Merce",
                                              foreground='blue',
                                              font=('Verdana', 20))
-
+        # DATEPICKER
+        self.picker = Datepicker(self.frame_alto, datevar=self.data, dateformat='%d-%m-%Y',)
+        '''
         self.label_data = ttk.Label(self.frame_alto,
                                     anchor='center',
                                     text=self.data.strftime('%d/%m/%y'),
                                     font=('Verdana', 20))
-
+        '''
         # ENTRY per immissione numero ddt/fattura
         self.label_num_ddt = ttk.Label(self.frame_alto,
                                        text='Numero DDT/Fattura',
@@ -155,7 +160,8 @@ class IngressoMerce(tk.Toplevel):
         self.label_lotto.grid(row=1, column=0)
         self.label_prog_lotto.grid(row=1, column=1)
         self.label_data_ingresso.grid(row=3, column=0)
-        self.label_data.grid(row=3, column=1)
+        self.picker.grid(row=3, column=1)
+        # self.label_data.grid(row=3, column=1)
 
         self.label_num_ddt.grid(row=5, column=0)
         self.entry_ddt.grid(row=5, column=1)
@@ -207,7 +213,7 @@ class IngressoMerce(tk.Toplevel):
 
     def invio(self):
         self.tree.insert("", 'end', values=((str(self.prog_lotto_acq)+'A'),
-                                            self.data,
+                                            datetime.datetime.strptime(self.data.get(), "%d-%m-%Y").date(),
                                             self.num_ddt.get(),
                                             self.fornitore.get(),
                                             self.taglio_s.get(),
