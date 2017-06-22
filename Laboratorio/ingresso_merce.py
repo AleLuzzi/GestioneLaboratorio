@@ -28,20 +28,21 @@ class IngressoMerce(tk.Toplevel):
         self.fornitore = tk.StringVar()
         self.taglio_s = tk.StringVar()
         self.peso = tk.StringVar()
-        # self.data = datetime.date.today().strftime('%d-%m-%Y')
         self.data = tk.StringVar()
         self.data.set(datetime.date.today().strftime('%d-%m-%Y'))
 
-        # Creazione liste fornitori e tagli suino
+        # Creazione liste fornitori
         self.lista_fornitori = []
         self.c.execute("SELECT azienda FROM fornitori WHERE flag1_ing_merce = 1")
 
         for row in self.c:
             self.lista_fornitori.extend(row)
+        # Creazione lista tagli suino
+        self.lista_tagli = []
+        self.c.execute("SELECT taglio FROM tagli WHERE taglio LIKE '%Suino'")
 
-        self.lista_tagli = ('Mezzena', 'Costarelle', 'Lombo', 'Carnetta', 'Collo', 'Busto',
-                            'Sogna', 'Pancia', 'Maialino', 'Arista', 'Filetto', 'Spalla', 'Guanciale',
-                            'Teste', 'Tronchetto', 'Corata')
+        for row in self.c:
+            self.lista_tagli.extend(row)
 
         # LAYOUT dei frame per impaginazione
         self.frame_alto = tk.Frame(self, bd=3)
