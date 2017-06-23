@@ -3,7 +3,8 @@ import tkinter.ttk as ttk
 import datetime as dt
 import mysql.connector
 import shutil
-# import os
+import os
+from tkinter import messagebox
 
 
 class LottiInVendita(tk.Toplevel):
@@ -13,8 +14,8 @@ class LottiInVendita(tk.Toplevel):
         self.title('Lotti in vendita')
 
         self.conn = mysql.connector.connect(host='192.168.0.100',
-                                            database='data',
-                                            user='root',
+                                            database='db_prova',
+                                            user='prova',
                                             password='')
         self.c = self.conn.cursor()
 
@@ -225,15 +226,20 @@ class LottiInVendita(tk.Toplevel):
                                                          dt.date.strftime(lista[4], '%d/%m/%y')))
 
     def crea_file(self):
-        self.crea_bz00varp()
-        self.progress_bar['value'] = 25
-        self.crea_bz00vate()
-        self.progress_bar['value'] = 50
-        shutil.move('../laboratorio/bz00varp.dat', '//192.168.0.224/c/WinSwGx-NET//bizvar/LABORATORIO/')
-        self.progress_bar['value'] = 75
-        shutil.move('../laboratorio/bz00vate.dat', '//192.168.0.224/c/WinSwGx-NET//bizvar/LABORATORIO/')
-        self.progress_bar['value'] = 100
-        # os.startfile("//192.168.0.224/C/WinSwGx-NET/cofraggpscon.exe")
+        path = '//192.168.0.224/c/WinSwGx-NET//bizvar/LABORATORIO/'
+        if not os.listdir(path):
+            self.crea_bz00varp()
+            self.progress_bar['value'] = 25
+            self.crea_bz00vate()
+            self.progress_bar['value'] = 50
+            shutil.move('../laboratorio/bz00varp.dat', path)
+            self.progress_bar['value'] = 75
+            shutil.move('../laboratorio/bz00vate.dat', path)
+            self.progress_bar['value'] = 100
+            # os.startfile("//192.168.0.224/C/WinSwGx-NET/cofraggpscon.exe")
+        else:
+            messagebox.showinfo('Attenzione', 'Ci sono file di variazioni presenti nella cartella \n '
+                                              'fare un invio in bilancia ')
 
     def crea_bz00varp(self):
         self.c.execute("SELECT * FROM prodotti "
@@ -251,7 +257,7 @@ class LottiInVendita(tk.Toplevel):
         campo9 = '0'
         campo10 = '00'
         campo11 = '1'
-        campo12 = '0'
+        campo12 = '1'  # campo per la sovrascrittura prezzo
         campo13 = '0'
         campo14 = '@'
         campo15 = (self.data.strftime('%d%m%y'))
