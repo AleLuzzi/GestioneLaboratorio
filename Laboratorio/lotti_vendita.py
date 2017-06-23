@@ -180,7 +180,7 @@ class LottiInVendita(tk.Toplevel):
                        "AND lotti_vendita.data_ven > %s"
                        "ORDER BY progressivo_ven DESC", (self.box_value.get(), giorni))
         for lista in self.c:
-            self.tot_qta += int(lista[3])
+            self.tot_qta += float(lista[3])
             try:
                 self.tree.insert('', 'end', lista[0], text=lista[0], tags=('odd',))
                 self.tree.insert(lista[0], 'end', text=lista[1],
@@ -190,7 +190,7 @@ class LottiInVendita(tk.Toplevel):
                 self.tree.insert(lista[0], 'end', text=lista[1],
                                  values=(dt.date.strftime(lista[2], '%d/%m/%y'), lista[3]))
                 self.tree.item(lista[0], open='true')
-        self.lbl_peso_totale['text'] = self.tot_qta
+        self.lbl_peso_totale['text'] = "{0:.2f}".format(round(self.tot_qta, 2))
 
     def riempi_tutti(self):
         self.tree.delete(*self.tree.get_children())
