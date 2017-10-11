@@ -1,6 +1,10 @@
 import tkinter as tk
 from tkinter import ttk
 import mysql.connector
+import os
+import shutil
+from tkinter import messagebox
+import datetime as dt
 
 
 class Produzione(tk.Frame):
@@ -9,6 +13,7 @@ class Produzione(tk.Frame):
 
         self.item = ''
         self.lista_da_salvare = []
+        self.data = dt.date.today()
         self.campi = ['plu', 'prezzo1', 'prezzo2', 'prezzo3', 'prezzo4', 'prezzo_straord', 'gruppo_merc', 'tara',
                       'gg_cons_1', 'gg_cons_2', 'ean', 'testo_agg_1', 'testo_agg_2', 'testo_agg_3', 'testo_agg_4',
                       'pz_x_scatola', 'peso_fisso', 'num_offerta', 'art_in_pubblic', 'sovrascritt_prezzo',
@@ -100,6 +105,15 @@ class Produzione(tk.Frame):
                                    font=('Helvetica', 10),
                                    command=self.aggiorna)
 
+        # BUTTON manda in bilancia
+        self.btn_in_bilancia = tk.Button(self.lbl_frame_scegli,
+                                         text='Invia in bilancia',
+                                         font=('Helvetica', 20),
+                                         command=self.crea_file)
+
+        # PROGRESS BAR
+        self.progress_bar = ttk.Progressbar(self.lbl_frame_scegli, orient=tk.HORIZONTAL, mode='determinate')
+
         self.crea_layout()
         self.aggiorna()
         self.riempi_combo_reparto()
@@ -131,6 +145,8 @@ class Produzione(tk.Frame):
         self.lbl_frame_scegli.grid(row=1, column=0)
         self.btn_modifica.grid(sticky='we')
         self.btn_inserisci.grid(sticky='we')
+        self.btn_in_bilancia.grid(sticky='we')
+        self.progress_bar.grid(sticky='we')
 
         self.lbl_frame_filtro.grid(row=2, column=0)
         self.box_merceologia_filtro.grid()
@@ -308,6 +324,79 @@ class Produzione(tk.Frame):
         self.c.execute("SELECT * FROM prodotti WHERE merceologia = %s", (self.filtro_merceologia.get(),))
         for lista in self.c:
             self.tree_produzione.insert('', 'end', values=(lista[0], lista[1]))
+
+    def crea_file(self):
+        path = '//192.168.0.224/c/WinSwGx-NET//bizvar/LABORATORIO/'
+        print(self.item[1])
+        if not os.listdir(path):
+            self.crea_bz00varp()
+            self.progress_bar['value'] = 25
+            self.crea_bz00vate()
+            self.progress_bar['value'] = 50
+            shutil.move('../laboratorio/bz00varp.dat', path)
+            self.progress_bar['value'] = 75
+            shutil.move('../laboratorio/bz00vate.dat', path)
+            self.progress_bar['value'] = 100
+            # os.startfile("//192.168.0.224/C/WinSwGx-NET/cofraggpscon.exe")
+        else:
+            messagebox.showinfo('Attenzione', 'Ci sono file di variazioni presenti nella cartella \n '
+                                              'fare un invio in bilancia ')
+
+    def crea_bz00varp(self):
+        self.c.execute("SELECT * FROM prodotti "
+                       "WHERE prodotto = %s", (self.item[1],))
+        for self.row in self.c:
+            pass
+        campo1 = ('0' + str(self.row[3]))
+        campo2 = ('000' + str(self.row[9]))
+        campo3 = ('0'*6)
+        campo4 = (str(self.row[13]) + '000011')
+        campo5 = ('40' + str(self.row[1] + ' '*(41-(len(self.row[1])))).upper())
+        campo6 = ('0'*(4-len(str(self.row[11]))) + str(self.row[11]))
+        campo7 = ('0'*6)
+        campo8 = ('0'*3)
+        campo9 = '0'
+        campo10 = '00'
+        campo11 = '1'
+        campo12 = '1'  # campo per la sovrascrittura prezzo
+        campo13 = '0'
+        campo14 = '@'
+        campo15 = (self.data.strftime('%d%m%y'))
+        campo16 = ('A' + '\n')
+        stringa = (campo1 + campo2 + campo3 + campo4 + campo5 + campo6 + campo7 + campo8 + campo9 + campo10 + campo11 +
+                   campo12 + campo13 + campo14 + campo15 + campo16)
+        f = open('../laboratorio/bz00varp.dat', "w")
+        f.write(stringa)
+        f.close()
+
+    def crea_bz00vate(self):
+        self.c.execute("SELECT * FROM prodotti "
+                       "WHERE prodotto = %s", (self.item[1],))
+        for self.row in self.c:
+            pass
+        campo1 = ('0' + str(self.row[3]))
+        campo2 = '4'
+        campo3 = (str(self.row[1]).upper() + ' '*(50-(len(self.row[1]))))
+        campo4 = '4'
+        campo5 = ('Ingredienti' + ' '*39)
+        campo6 = (str(self.row[29]))
+        campo7 = (str(self.row[25]) + ' '*(50-(len(self.row[25]))))
+        campo8 = (str(self.row[30]))
+        campo9 = (str(self.row[26]) + ' '*(50-(len(self.row[26]))))
+        campo10 = (str(self.row[31]))
+        campo11 = (str(self.row[27]) + ' '*(50-(len(self.row[27]))))
+        campo12 = (str(self.row[32]))
+        campo13 = (str(self.row[28]) + ' '*(50-(len(self.row[28]))))
+        campo14_15 = ('0' + ' '*50)
+        campo16_17 = ('0' + ' '*50)
+        campo18_19 = ('0' + ' '*50)
+        campo20_21 = ('0' + ' '*50)
+        campo22 = (self.data.strftime('%d%m%y') + '\n')
+        stringa = (campo1 + campo2 + campo3 + campo4 + campo5 + campo6 + campo7 + campo8 + campo9 + campo10 + campo11 +
+                   campo12 + campo13 + campo14_15 + campo16_17 + campo18_19 + campo20_21 + campo22)
+        f = open('../laboratorio/bz00vate.dat', "w")
+        f.write(stringa)
+        f.close()
 
 
 if __name__ == '__main__':
