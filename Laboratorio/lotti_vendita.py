@@ -178,7 +178,7 @@ class LottiInVendita(tk.Toplevel):
                        "FROM lotti_vendita "
                        "WHERE prodotto = %s"
                        "AND lotti_vendita.data_ven > %s"
-                       "ORDER BY progressivo_ven DESC", (self.box_value.get(), giorni))
+                       "ORDER BY data_ven DESC", (self.box_value.get(), giorni))
         for lista in self.c:
             self.tot_qta += float(lista[3])
             try:
@@ -197,7 +197,7 @@ class LottiInVendita(tk.Toplevel):
 
         self.c.execute("SELECT DISTINCT progressivo_ven,prodotto,data_ven,quantita "
                        "FROM lotti_vendita "
-                       "ORDER BY progressivo_ven DESC")
+                       "ORDER BY data_ven DESC, progressivo_ven DESC")
         for lista in self.c:
             try:
                 self.tree.insert('', 'end', lista[0], text=lista[0], tags=('odd',))
@@ -296,6 +296,7 @@ class LottiInVendita(tk.Toplevel):
         f = open('../laboratorio/bz00vate.dat', "w")
         f.write(stringa)
         f.close()
+
 
 if __name__ == "__main__":
     root = tk.Tk()
