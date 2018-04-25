@@ -4,6 +4,14 @@ import datetime as dt
 import mysql.connector
 import shutil
 import os
+from reportlab.lib import colors
+from reportlab.lib.units import inch
+from reportlab.lib.pagesizes import A4
+from reportlab.platypus import (SimpleDocTemplate, Spacer,
+                                Table, TableStyle, Paragraph)
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.enums import TA_CENTER
+import win32api
 from tkinter import messagebox
 
 
@@ -52,7 +60,7 @@ class LottiInVendita(tk.Toplevel):
 
         # Posizionamento Label
 
-        self.label_selezionato.grid(row='1', column='0', columnspan=2)
+        self.label_selezionato.grid(row='1', column='0', columnspan='2')
         self.label_dettagli.grid(row='3', column='0', columnspan='2')
 
         # Treeview con lotto selezionato
@@ -61,6 +69,14 @@ class LottiInVendita(tk.Toplevel):
         self.tree_selezionato['show'] = 'headings'
         self.tree_selezionato.heading('lotto', text="lotto")
         self.tree_selezionato.heading('prodotto', text="prodotto")
+
+        self.tree_selezionato.column("lotto", width='90')
+        self.tree_selezionato.column("prodotto", width='180')
+
+        # BUTTON per stampare pdf del lotto selezionato
+        self.btn_stampa_pdf = ttk.Button(self.frame_dx,
+                                         text='Stampa PDF',
+                                         command=self.crea_pdf)
 
         # Treeview con DETTAGLI lotto selezionato
         self.tree_dettagli = ttk.Treeview(self.frame_dx, height=5)
@@ -141,20 +157,21 @@ class LottiInVendita(tk.Toplevel):
         self.progress_bar = ttk.Progressbar(self.frame_dx_basso, orient=tk.HORIZONTAL, mode='determinate')
 
         # LAYOUT
-        self.frame_sx.grid(row=0, column=0, rowspan=2)
-        self.frame_dx.grid(row=0, column=1)
-        self.frame_dx_basso.grid(row=1, column=1)
-        self.lblframe_box.grid(row=5, column=0, columnspan=2)
+        self.frame_sx.grid(row='0', column='0', rowspan='2')
+        self.frame_dx.grid(row='0', column='1')
+        self.frame_dx_basso.grid(row='1', column='1')
+        self.lblframe_box.grid(row='5', column='0', columnspan='2')
 
-        self.label.grid(row=0, column=0)
-        self.tree.grid(row=1, column=0)
+        self.label.grid(row='0', column='0')
+        self.tree.grid(row='1', column='0')
 
-        self.tree_selezionato.grid(row=2, column='0', columnspan=2)
-        self.tree_dettagli.grid(row=4, column='0', columnspan='2')
+        self.tree_selezionato.grid(row='2', column='0', columnspan='2')
+        self.btn_stampa_pdf.grid(row='2', column='1', sticky='we')
+        self.tree_dettagli.grid(row='4', column='0', columnspan='2')
 
-        self.btn_in_bilancia.grid(row=0, column=0, padx=20, pady=20)
-        self.btn_uscita.grid(row=0, column=1, padx=20, pady=20)
-        self.progress_bar.grid(row=1, column=0, columnspan=2, sticky='we')
+        self.btn_in_bilancia.grid(row='0', column='0', padx='20', pady='20')
+        self.btn_uscita.grid(row='0', column='1', padx='20', pady='20')
+        self.progress_bar.grid(row='1', column='0', columnspan='2', sticky='we')
 
         self.riempi_combo()
         self.riempi_tutti()
@@ -296,6 +313,41 @@ class LottiInVendita(tk.Toplevel):
         f = open('../laboratorio/bz00vate.dat', "w")
         f.write(stringa)
         f.close()
+
+    def crea_pdf(self):
+        titolo = "Dettagli lotto numero " + self.tree.parent(self.item) + " " + self.tree.item(self.item, 'text')
+        styles = getSampleStyleSheet()
+        styles.add(ParagraphStyle(name='Center', alignment=TA_CENTER))
+        data = [('Taglio', 'Lotto Ingresso', 'Fornitore', 'Documento', 'Data Acquisto')]
+
+        self.c.execute("SELECT DISTINCT prod_origine, lotto_acq,fornitore,documento,data_acq "
+                       "FROM lotti_vendita  JOIN ingresso_merce "
+                       "WHERE progressivo_ven = %s "
+                       "AND lotti_vendita.lotto_acq = ingresso_merce.progressivo_acq",
+                       (self.tree.parent(self.item),))
+        for lista in self.c:
+            data.append(lista)
+
+        doc = SimpleDocTemplate("./traccia.pdf", pagesize=A4)
+
+        parts = []
+        table_with_style = Table(data, [1 * inch, 1.7 * inch, inch])
+        table_with_style.hAlign = "LEFT"
+
+        table_with_style.setStyle(TableStyle([
+            ('FONT', (0, 0), (-1, -1), 'Helvetica'),
+            ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 8),
+            ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
+            ('BOX', (0, 0), (-1, 0), 0.25, colors.green),
+            ('ALIGN', (0, 0), (-1, 0), 'CENTER'), ]))
+
+        parts.append(Paragraph(titolo, styles["Center"]))
+        parts.append(Spacer(1, 0.5 * inch))
+        parts.append(table_with_style)
+        doc.build(parts)
+        if messagebox.askyesno('STAMPA', 'Vuoi stampare il pdf?'):
+            win32api.ShellExecute(None, "print", "traccia.pdf", None, ".", 0)
 
 
 if __name__ == "__main__":
