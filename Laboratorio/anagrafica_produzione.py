@@ -5,6 +5,10 @@ import os
 import shutil
 from tkinter import messagebox
 import datetime as dt
+import win32api
+import win32print
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import mm
 
 
 class Produzione(tk.Frame):
@@ -88,6 +92,11 @@ class Produzione(tk.Frame):
                                        text='Inserisci Dati',
                                        font=('Helvetica', 10),
                                        command=self.inserisci)
+        self.btn_stp_etichetta = tk.Button(self.lbl_frame_scegli,
+                                           text='Stampa Etichetta',
+                                           state='disabled',
+                                           font=('Helvetica', 10),
+                                           command=self.stp_etichetta)
 
         # LABELFRAME filtro
         self.lbl_frame_filtro = ttk.LabelFrame(self.frame_dx, text='Filtro Articoli')
@@ -145,6 +154,7 @@ class Produzione(tk.Frame):
         self.lbl_frame_scegli.grid(row=1, column=0)
         self.btn_modifica.grid(sticky='we')
         self.btn_inserisci.grid(sticky='we')
+        self.btn_stp_etichetta.grid(sticky='we')
         self.btn_in_bilancia.grid(sticky='we')
         self.progress_bar.grid(sticky='we')
 
@@ -284,6 +294,7 @@ class Produzione(tk.Frame):
             lista.extend(row)
 
     def ondoubleclick(self, event):
+        self.btn_stp_etichetta['state'] = 'normal'
         self.ckb_flag1.deselect()
         self.ent_nome_prodotto.delete(0, 'end')
         self.item = (self.tree_produzione.item(self.tree_produzione.selection(), 'values'))
@@ -297,6 +308,7 @@ class Produzione(tk.Frame):
 
         self.c.execute("SELECT * FROM prodotti WHERE ID = %s", (self.item[0],))
         for self.row in self.c:
+            print(self.row)
 
             self.ent_nome_prodotto.insert(0, self.row[i])
             i += 1
@@ -318,6 +330,20 @@ class Produzione(tk.Frame):
         i += 1
         if self.row[i] == 1:
             self.ckb_flag1.select()
+
+    def stp_etichetta(self):
+        pagesize = (36*mm, 89*mm)
+        d = canvas.Canvas("Eti_anagrafica.pdf", pagesize=pagesize)
+        d.rotate(90)
+        d.drawString(2*mm, -5*mm, self.item[1].upper())
+        self.c.execute("SELECT * FROM prodotti WHERE ID = %s", (self.item[0],))
+        for self.row in self.c:
+            d.drawString(2*mm, -15*mm, self.row[25])
+            d.drawString(2*mm, -20*mm, self.row[26])
+            d.drawString(2*mm, -25*mm, self.row[27])
+        d.showPage()
+        d.save()
+        win32api.ShellExecute(None, "print", "Eti_anagrafica.pdf", '/d:"%s"' % win32print.GetDefaultPrinter (), ".", 0)
 
     def filtra(self):
         self.tree_produzione.delete(*self.tree_produzione.get_children())
