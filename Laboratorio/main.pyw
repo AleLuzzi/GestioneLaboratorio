@@ -27,6 +27,7 @@ class Main(tk.Frame):
         self.img_btn2 = tk.PhotoImage(file=os.path.join('immagini', 'documentnew.gif'))
         self.img_btn3 = tk.PhotoImage(file=os.path.join('immagini', 'drun.gif'))
         self.img_btn4 = tk.PhotoImage(file=os.path.join('immagini', 'lfood.gif'))
+        self.img_btn4_a = tk.PhotoImage(file=os.path.join('immagini', 'list.gif'))
         self.img_btn5 = tk.PhotoImage(file=os.path.join('immagini', 'ingredienti.gif'))
         self.img_btn6 = tk.PhotoImage(file=os.path.join('immagini', 'lock.gif'))
         self.img_btn7 = tk.PhotoImage(file=os.path.join('immagini', 'lvendita.gif'))
@@ -45,6 +46,9 @@ class Main(tk.Frame):
 
         bottone4 = ttk.Button(self.frm_alto, text="Lotto Cucina", compound='bottom',
                               image=self.img_btn4, command=self.nuovo_lotto_cucina)
+
+        bottone4a = ttk.Button(self.frm_alto, text="Lotti Vendita Cucina", compound='bottom',
+                              image=self.img_btn4_a, command=self.lotti_vendita_cucina)
 
         bottone5 = ttk.Button(self.frm_alto, text="Ingredienti", compound='bottom',
                               image=self.img_btn5, command=self.ingredienti)
@@ -76,12 +80,13 @@ class Main(tk.Frame):
         bottone2.grid(row=0, column=1, padx=4, pady=4)
         bottone3.grid(row=0, column=2, padx=4, pady=4)
         bottone4.grid(row=0, column=3, padx=4, pady=4)
-        bottone5.grid(row=0, column=4, padx=4, pady=4)
-        bottone6.grid(row=0, column=5, padx=4, pady=4)
-        bottone7.grid(row=0, column=6, padx=4, pady=4)
-        bottone8.grid(row=0, column=7, padx=4, pady=4)
-        bottone9.grid(row=0, column=8, padx=4, pady=4)
-        bottone10.grid(row=0, column=9, padx=4, pady=4)
+        bottone4a.grid(row=0, column=4, padx=4, pady=4)
+        bottone5.grid(row=0, column=5, padx=4, pady=4)
+        bottone6.grid(row=0, column=6, padx=4, pady=4)
+        bottone7.grid(row=0, column=7, padx=4, pady=4)
+        bottone8.grid(row=0, column=8, padx=4, pady=4)
+        bottone9.grid(row=0, column=9, padx=4, pady=4)
+        bottone10.grid(row=0, column=10, padx=4, pady=4)
 
         self.frm_centrale.grid_propagate(False)
         self.frm_centrale.grid_rowconfigure(0, weight=2)
@@ -109,6 +114,10 @@ class Main(tk.Frame):
     @staticmethod
     def nuovo_lotto_cucina():
         NuovoLottoCucina()
+
+    @staticmethod
+    def lotti_vendita_cucina():
+        pass
 
     @staticmethod
     def ingredienti():
