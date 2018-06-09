@@ -1,3 +1,5 @@
+# coding: utf-8
+
 import tkinter as tk
 import tkinter.ttk as ttk
 import os
@@ -11,6 +13,7 @@ from nuovo_lotto_cucina import NuovoLottoCucina
 from inventario import Inventario
 from anagrafica import Anagrafica
 from nuovo_menu import NuovoMenu
+from lotti_vendita_cucina import LottiInVenditaCucina
 
 
 class Main(tk.Frame):
@@ -117,7 +120,7 @@ class Main(tk.Frame):
 
     @staticmethod
     def lotti_vendita_cucina():
-        pass
+        LottiInVenditaCucina()
 
     @staticmethod
     def ingredienti():
