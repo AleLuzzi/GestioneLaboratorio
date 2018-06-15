@@ -156,19 +156,19 @@ class LottiInVenditaCucina(tk.Toplevel):
                     i += 1
 
     def stp_etichetta(self):
-        pagesize = (36*mm, 89*mm)
+        pagesize = (54*mm, 101*mm)
         d = canvas.Canvas("Eti_anagrafica.pdf", pagesize=pagesize)
         d.rotate(90)
-        d.drawString(2*mm, -5*mm, (self.tree.item(self.item, 'text').upper()))
+        d.drawString(2*mm, -8*mm, (self.tree.item(self.item, 'text').upper()))
         self.c.execute("SELECT * FROM prodotti WHERE Prodotto = %s", (self.tree.item(self.item, 'text'),))
         for self.row in self.c:
-            d.drawString(2*mm, -15*mm, self.row[25])
-            d.drawString(2*mm, -20*mm, self.row[26])
-            d.drawString(2*mm, -25*mm, self.row[27])
-            d.drawString(2*mm, -30*mm, self.tree.parent(self.item))
+            d.drawString(2*mm, -18*mm, self.row[25])
+            d.drawString(2*mm, -23*mm, self.row[26])
+            d.drawString(2*mm, -28*mm, self.row[27])
+            d.drawString(2*mm, -33*mm, self.tree.parent(self.item))
         d.showPage()
         d.save()
-        # win32api.ShellExecute(None, "print", "Eti_anagrafica.pdf", '/d:"%s"' % win32print.GetDefaultPrinter(), ".", 0)
+        win32api.ShellExecute(None, "print", "Eti_anagrafica.pdf", '/d:"%s"' % win32print.GetDefaultPrinter(), ".", 0)
 
 
 if __name__ == "__main__":
