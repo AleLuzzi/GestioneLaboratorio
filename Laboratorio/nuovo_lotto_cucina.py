@@ -8,7 +8,7 @@ class NuovoLottoCucina(tk.Toplevel):
     def __init__(self):
         super(NuovoLottoCucina, self).__init__()
         self.title("Nuovo Lotto Cucina")
-        self.geometry("1024x525+0+0")
+        self.geometry("+0+0")
 
         self.data = dt.date.today().strftime('%d%m%y')
 
@@ -28,18 +28,23 @@ class NuovoLottoCucina(tk.Toplevel):
 
         # DISPOSIZIONE FRAME
         self.frame_alto = tk.Frame(self, bd='3', relief='groove')
-        self.frame_centro = tk.Frame(self, bd='3', relief='groove')
+        self.frame_centro = tk.Frame(self, height=450, width=self.winfo_screenwidth(),
+                                     bd='3', relief='groove')
         self.frame_basso = tk.Frame(self, bd='3', background='white', relief='groove')
 
+        self.frame_centro.grid_propagate(False)
+        self.frame_centro.grid_rowconfigure(0, weight=2)
+        self.frame_centro.grid_columnconfigure(0, weight=2)
+
         # TREEVIEW per riepilogo immissioni
-        self.tree = ttk.Treeview(self.frame_centro, height=10)
+        self.tree = ttk.Treeview(self.frame_centro, height=15)
         self.tree['columns'] = ('prog_v', 'prodotto', 'peso')
 
         self.tree['displaycolumns'] = ('prodotto', 'peso')
         self.tree['show'] = 'headings'
 
         self.tree.column("prodotto", width=180)
-        self.tree.column("peso", width=50)
+        self.tree.column("peso", width=80)
 
         self.tree.heading("prodotto", text="prodotto")
         self.tree.heading("peso", text="peso")
