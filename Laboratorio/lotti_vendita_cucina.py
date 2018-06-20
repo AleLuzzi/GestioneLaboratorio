@@ -84,6 +84,20 @@ class LottiInVenditaCucina(tk.Toplevel):
                                            font=('Helvetica', 10),
                                            command=self.stp_etichetta)
 
+        # BUTTON uscita
+        self.btn_uscita = tk.Button(self.frame_dx_basso,
+                                    text='Chiudi finestra',
+                                    font=('Helvetica', 20),
+                                    command=self.destroy)
+
+        # BUTTON manda in bilancia
+        self.btn_in_bilancia = tk.Button(self.frame_dx_basso,
+                                         text='Invia in bilancia',
+                                         font=('Helvetica', 20))
+
+        # PROGRESS BAR
+        self.progress_bar = ttk.Progressbar(self.frame_dx_basso, orient=tk.HORIZONTAL, mode='determinate')
+
         # LAYOUT
         self.frame_sx.grid(row=0, column=0, rowspan=2)
         self.frame_dx.grid(row=0, column=1)
@@ -98,6 +112,10 @@ class LottiInVenditaCucina(tk.Toplevel):
         self.lbl_frame_dettagli_selezionato.grid(row=3, column=0, columnspan=2)
 
         self.btn_stp_etichetta.grid(row=4, column=0)
+
+        self.btn_in_bilancia.grid(row='0', column='0', padx='20', pady='20')
+        self.btn_uscita.grid(row='0', column='1', padx='20', pady='20')
+        self.progress_bar.grid(row='1', column='0', columnspan='2', sticky='we')
 
         self.riempi_tutti()
         self.crea_label_formato_ingredienti()
