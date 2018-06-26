@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import datetime as dt
 import mysql.connector
+from tkinter import messagebox
 
 
 class NuovoLottoCucina(tk.Toplevel):
@@ -227,7 +228,7 @@ class NuovoLottoCucina(tk.Toplevel):
         self.btn_esci = tk.Button(self.frame_basso,
                                   text="Chiudi finestra",
                                   font=('Helvetica', 20),
-                                  command=self.destroy)
+                                  command=self.esci_senza_salvare)
         self.btn_esci_salva = tk.Button(self.frame_basso,
                                         text="Esci e salva",
                                         font=('Helvetica', 20),
@@ -260,27 +261,18 @@ class NuovoLottoCucina(tk.Toplevel):
     def rimuovi_riga_selezionata(self):
             curitem = self.tree.selection()[0]
             self.tree.delete(curitem)
-    '''
-    def crea_articoli_nuova_produzione(self):
-        row, col = 1, 0
-        for i in range(0, len(self.lista_nuova_produzione)):
-            if row % 8 == 0:
-                col += 1
-                row = 1
-            tk.Radiobutton(self.labelframe,
-                           text=str(self.lista_nuova_produzione[i]).upper(),
-                           variable=self.nuova_produzione,
-                           width=25,
-                           indicatoron=0,
-                           value=self.lista_nuova_produzione[i],
-                           font='Helvetica').grid(row=row, column=col, sticky="w", pady=2)
-            row += 1
-    '''
+
     def invia(self):
         self.tree.insert('', 'end', values=('L' + (str(self.prog_lotto_ven)),
                                             self.value.get(),
                                             self.peso_da_inserire.get()))
         self.entry_peso.delete(0, tk.END)
+
+    def esci_senza_salvare(self):
+        if bool(self.tree.get_children()):
+            messagebox.showinfo('Attenzione', 'Ci sono dati inseriti non salvati')
+        else:
+            self.destroy()
 
     def esci_salva(self):
         for child in self.tree.get_children():
