@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import datetime as dt
 import mysql.connector
+from tkinter import messagebox
 
 
 class NuovoLotto(tk.Toplevel):
@@ -92,7 +93,7 @@ class NuovoLotto(tk.Toplevel):
                                   text="Chiudi finestra",
                                   font=('comic sans', 20),
                                   width=14,
-                                  command=self.destroy)
+                                  command=self.esci_senza_salvare)
 
         self.btn_esci_salva = tk.Button(self.frame_sx_basso,
                                         text="Esci e salva",
@@ -177,6 +178,12 @@ class NuovoLotto(tk.Toplevel):
         self.conn.commit()
         self.conn.close()
         self.destroy()
+
+    def esci_senza_salvare(self):
+        if bool(self.tree_lotti_selezionati.get_children()):
+            messagebox.showinfo('Attenzione', 'Ci sono dati inseriti non salvati')
+        else:
+            self.destroy()
 
     def ondoubleclick(self, event):
         if (self.nuova_produzione.get() != '') and (self.peso_da_inserire.get() != ''):
