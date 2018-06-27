@@ -123,7 +123,7 @@ class NuovoLottoCucina(tk.Toplevel):
 
         row, col = 1, 0
         for i in range(0, len(self.lista_secondi)):
-            if row % 10 == 0:
+            if row % 13 == 0:
                 col += 1
                 row = 1
             tk.Radiobutton(self.tab3,
