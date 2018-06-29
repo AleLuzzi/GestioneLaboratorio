@@ -139,6 +139,26 @@ class NuovoLottoCucina(tk.Toplevel):
         self.tab4 = ttk.Frame(self.notebook)
         self.notebook.add(self.tab4, text='Secondi Pesce', compound='left', image=self.img_btn1)
 
+        self.lista_secondi_pesce = []
+        self.c.execute("SELECT prodotto FROM prodotti WHERE merceologia = '5'")
+
+        for row in self.c:
+            self.lista_secondi_pesce.extend(row)
+
+        row, col = 1, 0
+        for i in range(0, len(self.lista_secondi_pesce)):
+            if row % 13 == 0:
+                col += 1
+                row = 1
+            tk.Radiobutton(self.tab4,
+                           text=str(self.lista_secondi_pesce[i]),
+                           variable=self.value,
+                           width=25,
+                           indicatoron=0,
+                           value=self.lista_secondi_pesce[i],
+                           font='Verdana').grid(row=row, column=col, sticky='w')
+            row += 1
+
         # TAB 5 per CONTORNI
         self.tab5 = ttk.Frame(self.notebook)
         self.notebook.add(self.tab5, text='Contorni', compound='left', image=self.img_btn1)
