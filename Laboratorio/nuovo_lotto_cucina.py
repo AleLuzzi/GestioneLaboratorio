@@ -282,10 +282,11 @@ class NuovoLottoCucina(tk.Toplevel):
             curitem = self.tree.selection()[0]
             self.tree.delete(curitem)
 
-    def invia(self):
+    def invia(self, giorno=dt.date.today()):
         self.tree.insert('', 'end', values=('L' + (str(self.prog_lotto_ven)),
                                             self.value.get(),
-                                            self.peso_da_inserire.get()))
+                                            self.peso_da_inserire.get(),
+                                            giorno))
         self.entry_peso.delete(0, tk.END)
 
     def esci_senza_salvare(self):
@@ -297,7 +298,8 @@ class NuovoLottoCucina(tk.Toplevel):
     def esci_salva(self):
         for child in self.tree.get_children():
             self.lista_da_salvare.append(self.tree.item(child)['values'])
-        self.c.executemany('INSERT INTO lotti_vendita_cucina VALUES (%s,%s,%s)', self.lista_da_salvare)
+        print(self.lista_da_salvare)
+        self.c.executemany('INSERT INTO lotti_vendita_cucina VALUES (%s,%s,%s,%s)', self.lista_da_salvare)
         self.conn.commit()
         self.conn.close()
         self.destroy()
