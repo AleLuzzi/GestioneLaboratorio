@@ -139,9 +139,9 @@ class LottiInVenditaCucina(tk.Toplevel):
     def riempi_tutti(self):
         self.tree.delete(*self.tree.get_children())
 
-        self.c.execute("SELECT DISTINCT progressivo_ven_c,prodotto,quantita "
+        self.c.execute("SELECT DISTINCT progressivo_ven_c,prodotto,quantita,data_prod "
                        "FROM lotti_vendita_cucina "
-                       "ORDER BY progressivo_ven_c DESC")
+                       "ORDER BY data_prod DESC")
         for lista in self.c:
             try:
                 self.tree.insert('', 'end', lista[0], text=lista[0], tags=('odd',))
