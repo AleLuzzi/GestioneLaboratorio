@@ -36,7 +36,7 @@ class Fornitori(tk.Frame):
 
         # Lista campi del record
         self.campi = ['azienda']
-        self.attributi = ['Ingresso Merce']
+        self.attributi = ['Ingresso Merce', 'Inventario']
         self.label = {}
         self.ckbutton = {}
         self.entry = {}
@@ -115,8 +115,8 @@ class Fornitori(tk.Frame):
         for attributo in self.attributi:
             valori_da_salvare.append(self.valore_flag[attributo].get())
 
-        stringa = 'UPDATE fornitori SET flag1_ing_merce=%s WHERE ID = %s'
-        self.c.execute(stringa, (valori_da_salvare[0], (self.item[0])))
+        stringa = 'UPDATE fornitori SET flag1_ing_merce=%s, flag2_inventario=%s WHERE ID = %s'
+        self.c.execute(stringa, (valori_da_salvare[0], valori_da_salvare[1], (self.item[0])))
         self.conn.commit()
         self.aggiorna()
 
@@ -126,7 +126,7 @@ class Fornitori(tk.Frame):
             lista_da_salvare.append(self.entry[campo].get())
         for attributo in self.attributi:
             lista_da_salvare.append(self.valore_flag[attributo].get())
-        self.c.execute('INSERT INTO fornitori(azienda,flag1_ing_merce) VALUES (%s,%s)', lista_da_salvare)
+        self.c.execute('INSERT INTO fornitori(azienda,flag1_ing_merce,flag2_inventario) VALUES (%s,%s,%s)', lista_da_salvare)
         self.conn.commit()
         self.aggiorna()
 
@@ -161,6 +161,7 @@ class Fornitori(tk.Frame):
                 if self.row[i] == 1:
                     self.ckbutton[attributo].select()
                 i += 1
+
 
 if __name__ == '__main__':
     root = tk.Tk()
