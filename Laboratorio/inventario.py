@@ -58,7 +58,7 @@ class Inventario(tk.Toplevel):
 
     def crea_bottoni_fornitori(self):
         lista_fornitori = []
-        self.c.execute("SELECT azienda FROM fornitori")
+        self.c.execute("SELECT azienda FROM fornitori WHERE flag2_inventario = 1")
         for row in self.c:
             lista_fornitori.extend(row)
 
