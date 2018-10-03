@@ -203,10 +203,14 @@ class LottiInVenditaCucina(tk.Toplevel):
 		d.drawString(2 * mm, -8 * mm, (self.tree.item(self.item, 'text').upper()))
 		self.c.execute("SELECT * FROM prodotti WHERE Prodotto = %s", (self.tree.item(self.item, 'text'),))
 		for self.row in self.c:
+			d.drawString(80 * mm, -8 * mm, 'PLU')
+			d.drawString(90 * mm, -8 * mm, self.row[3][-3:])
 			d.drawString(2 * mm, -18 * mm, self.row[25])
 			d.drawString(2 * mm, -23 * mm, self.row[26])
 			d.drawString(2 * mm, -28 * mm, self.row[27])
 			d.drawString(2 * mm, -33 * mm, self.tree.parent(self.item))
+			d.drawString(2 * mm, -45 * mm, '€/Kg ')
+
 		d.showPage()
 		d.save()
 		win32api.ShellExecute(None, "print", "Eti_anagrafica.pdf", '/d:"%s"' % win32print.GetDefaultPrinter(), ".", 0)
