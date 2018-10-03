@@ -54,7 +54,7 @@ class Produzione(tk.Frame):
         self.tree_produzione.heading('Id', text="Id")
         self.tree_produzione.heading('Prodotto', text="Prodotto")
 
-        self.tree_produzione.column("Id", width=20)
+        self.tree_produzione.column("Id", width=40)
         self.tree_produzione.column("Prodotto", width=150)
 
         self.tree_produzione.bind("<Double-1>", self.ondoubleclick)
@@ -343,7 +343,7 @@ class Produzione(tk.Frame):
             d.drawString(2*mm, -25*mm, self.row[27])
         d.showPage()
         d.save()
-        win32api.ShellExecute(None, "print", "Eti_anagrafica.pdf", '/d:"%s"' % win32print.GetDefaultPrinter (), ".", 0)
+        win32api.ShellExecute(None, "print", "Eti_anagrafica.pdf", '/d:"%s"' % win32print.GetDefaultPrinter(), ".", 0)
 
     def filtra(self):
         self.tree_produzione.delete(*self.tree_produzione.get_children())
@@ -375,7 +375,7 @@ class Produzione(tk.Frame):
             pass
         campo1 = ('0' + str(self.row[3]))
         campo2 = ('000' + str(self.row[9]))
-        campo3 = ('0'*6)
+        campo3 = ('0'*(6-(len(self.row[4])))+ str(self.row[4]))  # prezzo
         campo4 = (str(self.row[13]) + '000011')
         campo5 = ('40' + str(self.row[1] + ' '*(41-(len(self.row[1])))).upper())
         campo6 = ('0'*(4-len(str(self.row[11]))) + str(self.row[11]))
