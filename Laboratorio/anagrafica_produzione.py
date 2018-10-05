@@ -332,15 +332,19 @@ class Produzione(tk.Frame):
             self.ckb_flag1.select()
 
     def stp_etichetta(self):
-        pagesize = (36*mm, 89*mm)
+        pagesize = (54 * mm, 101 * mm)
         d = canvas.Canvas("Eti_anagrafica.pdf", pagesize=pagesize)
         d.rotate(90)
-        d.drawString(2*mm, -5*mm, self.item[1].upper())
+        d.drawString(2*mm, -8*mm, self.item[1].upper())
         self.c.execute("SELECT * FROM prodotti WHERE ID = %s", (self.item[0],))
         for self.row in self.c:
+            d.drawString(80 * mm, -8 * mm, 'PLU')
+            d.drawString(90 * mm, -8 * mm, self.row[3][-3:])
             d.drawString(2*mm, -15*mm, self.row[25])
             d.drawString(2*mm, -20*mm, self.row[26])
             d.drawString(2*mm, -25*mm, self.row[27])
+            d.drawString(2 * mm, -45 * mm, '€/Kg ')
+            d.drawString(20 * mm, -45 * mm, str("%.2f" % (float(self.row[4]) / 100)))
         d.showPage()
         d.save()
         win32api.ShellExecute(None, "print", "Eti_anagrafica.pdf", '/d:"%s"' % win32print.GetDefaultPrinter(), ".", 0)
@@ -375,7 +379,7 @@ class Produzione(tk.Frame):
             pass
         campo1 = ('0' + str(self.row[3]))
         campo2 = ('000' + str(self.row[9]))
-        campo3 = ('0'*(6-(len(self.row[4])))+ str(self.row[4]))  # prezzo
+        campo3 = ('0'*(6-(len(str(self.row[4])))) + str(self.row[4]))  # prezzo
         campo4 = (str(self.row[13]) + '000011')
         campo5 = ('40' + str(self.row[1] + ' '*(41-(len(self.row[1])))).upper())
         campo6 = ('0'*(4-len(str(self.row[11]))) + str(self.row[11]))
