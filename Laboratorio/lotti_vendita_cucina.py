@@ -210,6 +210,7 @@ class LottiInVenditaCucina(tk.Toplevel):
 			d.drawString(2 * mm, -28 * mm, self.row[27])
 			d.drawString(2 * mm, -33 * mm, self.tree.parent(self.item))
 			d.drawString(2 * mm, -45 * mm, '€/Kg ')
+			d.drawString(20 * mm, -45 * mm, str("%.2f" % (float(self.row[4])/100)))
 
 		d.showPage()
 		d.save()
@@ -238,7 +239,7 @@ class LottiInVenditaCucina(tk.Toplevel):
 			pass
 		campo1 = ('0' + str(self.row[3]))
 		campo2 = ('000' + str(self.row[9]))
-		campo3 = ('0' * 6)
+		campo3 = ('0' * (6 - (len(str(self.row[4])))) + str(self.row[4]))  # prezzo
 		campo4 = (str(self.row[13]) + '000011')
 		campo5 = ('40' + str(self.row[1] + ' ' * (41 - (len(self.row[1])))).upper())
 		campo6 = ('0' * (4 - len(str(self.row[11]))) + str(self.row[11]))
