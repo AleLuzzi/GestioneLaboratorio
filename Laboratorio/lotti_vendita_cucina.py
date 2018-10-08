@@ -204,10 +204,7 @@ class LottiInVenditaCucina(tk.Toplevel):
 		d.drawString(2 * mm, -8 * mm, (self.tree.item(self.item, 'text').upper()))
 		self.c.execute("SELECT * FROM prodotti WHERE Prodotto = %s", (self.tree.item(self.item, 'text'),))
 		for self.row in self.c:
-			d.setFont('Helvetica', 10)
-			d.drawString(80 * mm, -8 * mm, 'PLU')
-			d.setFont('Helvetica', 18)
-			d.drawString(90 * mm, -8 * mm, self.row[3][-3:])
+
 			d.setFont('Helvetica', 15)
 			d.drawString(2 * mm, -18 * mm, self.row[25])
 			d.drawString(2 * mm, -23 * mm, self.row[26])
@@ -217,6 +214,10 @@ class LottiInVenditaCucina(tk.Toplevel):
 			d.drawString(2 * mm, -45 * mm, '€/Kg ')
 			d.setFont('Helvetica', 25)
 			d.drawString(20 * mm, -45 * mm, str("%.2f" % (float(self.row[4])/100)))
+			d.setFont('Helvetica', 12)
+			d.drawString(80 * mm, -45 * mm, 'PLU')
+			d.setFont('Helvetica', 15)
+			d.drawString(90 * mm, -45 * mm, self.row[3][-3:])
 
 		d.showPage()
 		d.save()
