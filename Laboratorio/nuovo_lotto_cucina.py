@@ -11,7 +11,8 @@ class NuovoLottoCucina(tk.Toplevel):
         self.title("Nuovo Lotto Cucina")
         self.geometry("+0+0")
 
-        self.data = dt.date.today().strftime('%d%m%y')
+        # self.data = dt.date.today().strftime('%d%m%y')
+        self.data = dt.date.today()
 
         self.conn = mysql.connector.connect(host='192.168.0.100',
                                             database='data',
@@ -23,7 +24,7 @@ class NuovoLottoCucina(tk.Toplevel):
         self.lista_nuova_produzione = []
         self.nuova_produzione = tk.StringVar()
         self.peso_da_inserire = tk.StringVar()
-        self.prog_lotto_ven = self.data
+        self.prog_lotto_ven = self.data.strftime('%d%m%y')
         self.img_btn1 = tk.PhotoImage(file=".//immagini//logo_piccolo.gif")
         self.value = tk.StringVar()
 
@@ -36,6 +37,16 @@ class NuovoLottoCucina(tk.Toplevel):
         self.frame_centro.grid_propagate(False)
         self.frame_centro.grid_rowconfigure(0, weight=2)
         self.frame_centro.grid_columnconfigure(0, weight=2)
+
+        # LABEL nuovo lotto vendita
+        self.lbl_nuovo_lotto = ttk.Label(self.frame_alto, text='NUOVO LOTTO VENDITA', font=('Helvetica', 20))
+        self.lbl_prog_lotto_vendita = ttk.Label(self.frame_alto, text=str(self.prog_lotto_ven),
+                                                font=('Helvetica', 40))
+
+        # LABEL che mostra il numero della settimana
+        self.n_sett = str(1 + int(self.data.strftime('%W')))
+        self.lbl_settimana = ttk.Label(self.frame_alto, text='SETTIMANA NUMERO ' + self.n_sett,
+                                       foreground='blue', font=('Verdana', 20))
 
         # TREEVIEW per riepilogo immissioni
         self.tree = ttk.Treeview(self.frame_centro, height=15)
@@ -51,11 +62,6 @@ class NuovoLottoCucina(tk.Toplevel):
         self.tree.heading("peso", text="peso")
 
         self.tree.tag_configure('odd', background='light green')
-
-        # LABEL nuovo lotto vendita
-        self.lbl_nuovo_lotto = ttk.Label(self.frame_alto, text='NUOVO LOTTO VENDITA', font=('Helvetica', 20))
-        self.lbl_prog_lotto_vendita = ttk.Label(self.frame_alto, text=str(self.prog_lotto_ven),
-                                                font=('Helvetica', 40))
 
         # LABELFRAME nuova produzione
         self.labelframe = ttk.Labelframe(self.frame_centro, text="Nuova Produzione")
@@ -266,8 +272,10 @@ class NuovoLottoCucina(tk.Toplevel):
         self.labelframe.grid(row=0, column=0, rowspan=2)
         self.notebook.grid(row=0, column=0)
 
-        self.lbl_nuovo_lotto.grid(row=0, column=0)
-        self.lbl_prog_lotto_vendita.grid(row=1, column=0)
+        self.lbl_settimana.grid(row=0, column=0)
+
+        self.lbl_nuovo_lotto.grid(row=1, column=0)
+        self.lbl_prog_lotto_vendita.grid(row=2, column=0)
 
         self.lblframe_peso.grid(row=0, column=0, sticky='w')
         self.entry_peso.grid()
