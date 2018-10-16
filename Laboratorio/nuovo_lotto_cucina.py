@@ -14,7 +14,7 @@ class NuovoLottoCucina(tk.Toplevel):
         # self.data = dt.date.today().strftime('%d%m%y')
         self.data = dt.date.today()
 
-        self.conn = mysql.connector.connect(host='localhost',
+        self.conn = mysql.connector.connect(host='192.168.0.100',
                                             database='data',
                                             user='root',
                                             password='')
