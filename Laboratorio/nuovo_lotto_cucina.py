@@ -52,7 +52,7 @@ class NuovoLottoCucina(tk.Toplevel):
 
         # TREEVIEW per riepilogo immissioni
         self.tree = ttk.Treeview(self.frame_centro, height=15)
-        self.tree['columns'] = ('prog_v', 'prodotto', 'peso')
+        self.tree['columns'] = ('prog_v', 'prodotto', 'peso', 'settimana')
 
         self.tree['displaycolumns'] = ('prodotto', 'peso')
         self.tree['show'] = 'headings'
@@ -297,7 +297,8 @@ class NuovoLottoCucina(tk.Toplevel):
         self.tree.insert('', 'end', values=('L' + (str(self.prog_lotto_ven)),
                                             self.value.get(),
                                             self.peso_da_inserire.get(),
-                                            giorno))
+                                            giorno,
+                                            int(self.data.strftime('%W'))))
         self.entry_peso.delete(0, tk.END)
 
     def esci_senza_salvare(self):
@@ -310,7 +311,7 @@ class NuovoLottoCucina(tk.Toplevel):
         for child in self.tree.get_children():
             self.lista_da_salvare.append(self.tree.item(child)['values'])
         print(self.lista_da_salvare)
-        self.c.executemany('INSERT INTO lotti_vendita_cucina VALUES (%s,%s,%s,%s)', self.lista_da_salvare)
+        self.c.executemany('INSERT INTO lotti_vendita_cucina VALUES (%s,%s,%s,%s,%s)', self.lista_da_salvare)
         self.conn.commit()
         self.conn.close()
         self.destroy()
