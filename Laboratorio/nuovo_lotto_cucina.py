@@ -298,7 +298,7 @@ class NuovoLottoCucina(tk.Toplevel):
                                             self.value.get(),
                                             self.peso_da_inserire.get(),
                                             giorno,
-                                            int(self.data.strftime('%W'))))
+                                            (1 + int(self.data.strftime('%W')))))
         self.entry_peso.delete(0, tk.END)
 
     def esci_senza_salvare(self):
