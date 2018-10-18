@@ -40,7 +40,7 @@ class ReportCucina(tk.Frame):
         self.tree_uscita.heading('Quantita', text="Quantita")
 
         self.tree_uscita.column("Prodotto", width=200)
-        self.tree_ingresso.column("Quantita", width=100)
+        self.tree_uscita.column("Quantita", width=100)
 
         # Labelframe per contenere i bottoni
         self.lblFrame_azioni = ttk.Labelframe(self, text='Azioni')
@@ -63,7 +63,6 @@ class ReportCucina(tk.Frame):
         self.stampa = ttk.Button(self.lblFrame_azioni, text="Crea PDF", command=self.crea_pdf)
 
         # LAYOUT
-
         self.tree_ingresso.grid(row=0, column=0)
         self.tree_uscita.grid(row=0, column=1)
         self.lblFrame_azioni.grid(row=0, column=2, sticky='n')
@@ -76,6 +75,7 @@ class ReportCucina(tk.Frame):
     def inserisci(self):
 
         self.tree_ingresso.delete(*self.tree_ingresso.get_children())
+        self.tree_uscita.delete(*self.tree_uscita.get_children())
 
         self.c.execute('SELECT prodotto,SUM(quantita) '
                        'FROM ingredienti '
@@ -84,6 +84,15 @@ class ReportCucina(tk.Frame):
                        (self.settimana.get(),))
         for row in self.c:
             self.tree_ingresso.insert("", 'end', values=(row[0], row[1]))
+
+        self.c.execute('SELECT prodotto, quantita '
+                       'FROM lotti_vendita_cucina '
+                       'WHERE settimana = %s '
+                       'GROUP BY prodotto ',
+                       (self.settimana.get(),))
+
+        for row in self.c:
+            self.tree_uscita.insert("", 'end', values=(row[0], row[1]))
 
     def crea_pdf(self):
         data = [('settimana', 'codice', 'prodotto')]
