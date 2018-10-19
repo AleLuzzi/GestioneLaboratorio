@@ -18,8 +18,8 @@ class Ingredienti(tk.Toplevel):
 
         # connessione database
         self.conn = mysql.connector.connect(host='192.168.0.100',
-                                            database='db_prova',
-                                            user='prova',
+                                            database='data',
+                                            user='root',
                                             password='')
         self.c = self.conn.cursor()
 
