@@ -16,6 +16,13 @@ class Ingredienti(tk.Toplevel):
         self.peso.set('')
         self.img_btn1 = tk.PhotoImage(file=".//immagini//logo_piccolo.gif")
 
+        # connessione database
+        self.conn = mysql.connector.connect(host='192.168.0.100',
+                                            database='db_prova',
+                                            user='prova',
+                                            password='')
+        self.c = self.conn.cursor()
+
         # FRAME definizione
         self.frame_sx = tk.Frame(self, bd=3, relief='groove')
         self.frame_dx = tk.Frame(self, bd=3, relief='groove')
@@ -33,13 +40,15 @@ class Ingredienti(tk.Toplevel):
 
         # TREEVIEW per riepilogo ingredienti inseriti
         self.tree = ttk.Treeview(self.frame_sx)
-        self.tree['columns'] = ('n_settimana', 'articolo', 'quantita', 'data')
+        self.tree['columns'] = ('n_settimana', 'articolo', 'quantita', 'data', 'cod_ean')
         self.tree['show'] = 'headings'
-        self.tree['displaycolumns'] = ('articolo', 'quantita')
+        self.tree['displaycolumns'] = ('articolo', 'quantita', 'cod_ean')
         self.tree.column("articolo", width=200)
         self.tree.column("quantita", width=100)
+        self.tree.column("cod_ean", width=100)
         self.tree.heading("articolo", text="articolo")
         self.tree.heading("quantita", text="quantita")
+        self.tree.heading("cod_ean", text="Cod EAN")
 
         # BOTTONE elimina riga
         self.btn_elimina_riga = tk.Button(self.frame_sx,
@@ -76,7 +85,7 @@ class Ingredienti(tk.Toplevel):
                                 'minestrone di verdure': '1955'}
         self.lista_freschi = {'pecorino romano': '010082', 'mozzarella': '010325', 'grana padano': '010080',
                               'prosc.cotto': '010332', 'ricotta mista': '010020', 'uova': 'uova medie sciolte'}
-        self.lista_pasta_fresca = {'gnocchi': '010031', 'ciriole': '010032', 'fettuccine': '010034'}
+        # self.lista_pasta_fresca = {'gnocchi': '010031', 'ciriole': '010032', 'fettuccine': '010034'}
         self.lista_carne = {'pollo ruspante': '030115', 'cosce pollo': '030182', 'piccioni': '030207',
                             'petto tacchino': '030135', 'magro suino': '030121', 'pancia suino': '030111',
                             'salsicce fresche': '030130', 'macinato magro': '030119', 'spalla agnello': '030104',
@@ -197,13 +206,19 @@ class Ingredienti(tk.Toplevel):
             r += 1
 
     def crea_bottoni_pasta_fresca(self):
+        lst_pasta_fresca = []
+        self.c.execute("SELECT ingrediente_base FROM ingredienti_base WHERE merceologia LIKE '%Pasta Fresca'")
+
+        for row in self.c:
+            lst_pasta_fresca.extend(row)
         r, c = 1, 0
-        for k, v in sorted(self.lista_pasta_fresca.items()):
+        for i in range(0, len(lst_pasta_fresca)):
             if r % 10 == 0:
                 c += 1
                 r = 1
-            tk.Radiobutton(self.tab4, text=k.upper(), indicatoron=0, variable=self.value, font='Verdana', width=20,
-                           value=k + ' cod.' + v).grid(row=r, column=c)
+            tk.Radiobutton(self.tab4, text=lst_pasta_fresca[i].upper(), indicatoron=0, variable=self.value,
+                           font='Verdana', width=20,
+                           value=lst_pasta_fresca[i]).grid(row=r, column=c)
             r += 1
 
     def crea_bottoni_carne(self):
@@ -225,26 +240,23 @@ class Ingredienti(tk.Toplevel):
 
     def invio(self):
         if self.value.get() != '':
-            self.tree.insert("", 0, values=(self.n_sett, self.value.get(), self.peso.get(), self.data))
+            self.c.execute("SELECT cod_ean FROM ingredienti_base WHERE ingrediente_base = %s ", (self.value.get(),))
+            cod_ean = self.c.fetchone()
+            self.tree.insert("", 0, values=(self.n_sett, self.value.get(), self.peso.get(), self.data, cod_ean))
             self.entry_peso.delete(0, tk.END)
             self.value.set('')
         elif self.ean.get() != '' and self.pezzi.get() != '':
-            self.tree.insert("", 0, values=(self.n_sett, self.ean.get(), self.pezzi.get(), self.data))
+            self.tree.insert("", 0, values=(self.n_sett, self.ean.get(), self.pezzi.get(), self.data, self.ean.get()))
             self.entry_pezzi.delete(0, tk.END)
             self.ean.set('')
 
     def salva(self):
-        conn = mysql.connector.connect(host='192.168.0.100',
-                                            database='data',
-                                            user='root',
-                                            password='')
-        c = conn.cursor()
         for child in self.tree.get_children():
             self.lista_da_salvare.append(self.tree.item(child)['values'])
         print(self.lista_da_salvare)
-        c.executemany('INSERT INTO ingredienti VALUES (%s,%s,%s,%s)', self.lista_da_salvare)
-        conn.commit()
-        conn.close()
+        self.c.executemany('INSERT INTO ingredienti VALUES (%s,%s,%s,%s,%s)', self.lista_da_salvare)
+        self.conn.commit()
+        self.conn.close()
         self.destroy()
 
 
