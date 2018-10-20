@@ -18,9 +18,9 @@ class Ingredienti(tk.Toplevel):
 
 		# connessione database
 		self.conn = mysql.connector.connect(host='192.168.0.100',
-											database='data',
-											user='root',
-											password='')
+		                                    database='data',
+		                                    user='root',
+		                                    password='')
 		self.c = self.conn.cursor()
 
 		# FRAME definizione
@@ -31,12 +31,21 @@ class Ingredienti(tk.Toplevel):
 		# LABEL che mostra il numero della settimana
 		self.data = datetime.date.today()
 		self.n_sett = str(1 + int(self.data.strftime('%W')))
-		self.lbl_settimana = ttk.Label(self.frame_sx, text='SETTIMANA NUMERO ' + self.n_sett,
-									   foreground='blue', font=('Verdana', 20))
-		self.label_data_utilizzo = ttk.Label(self.frame_sx,
-											 text="Data Utilizzo Merce", foreground='blue', font=('Verdana', 20))
-		self.label_data = ttk.Label(self.frame_sx, anchor='center',
-									text=self.data.strftime('%d/%m/%y'), font=('Verdana', 20))
+
+		self.lbl_settimana = tk.Label(self.frame_sx, text='SETTIMANA NUMERO ',
+		                              foreground='blue', font=('Verdana', 20),
+		                              relief='ridge', padx=20)
+
+		self.lbl_nr_settimana = tk.Label(self.frame_sx, text=str(1 + int(self.data.strftime('%W'))),
+		                                 font=('Verdana', 20), bg='white', relief='sunken', padx=20)
+
+		self.label_data_utilizzo = tk.Label(self.frame_sx, text="Data Utilizzo Merce",
+		                                    foreground='blue', font=('Verdana', 20),
+		                                    relief='ridge', padx=20)
+
+		self.label_data = tk.Label(self.frame_sx, anchor='center',
+		                           text=self.data.strftime('%d/%m/%y'), font=('Verdana', 20),
+		                           bg='white', relief='sunken', padx=20)
 
 		# TREEVIEW per riepilogo ingredienti inseriti
 		self.tree = ttk.Treeview(self.frame_sx)
@@ -52,25 +61,25 @@ class Ingredienti(tk.Toplevel):
 
 		# BOTTONE elimina riga
 		self.btn_elimina_riga = tk.Button(self.frame_sx,
-										  text='Elimina riga',
-										  font=('Verdana', 15),
-										  command=self.rimuovi_riga_selezionata)
+		                                  text='Elimina riga',
+		                                  font=('Verdana', 15),
+		                                  command=self.rimuovi_riga_selezionata)
 
 		# LABEL peso da inserire
 		self.lbl_peso = ttk.Label(self.frame_sx, text='Quantità merce utilizzata',
-								  foreground='blue',
-								  font=('Verdana', 15))
+		                          foreground='blue',
+		                          font=('Verdana', 15))
 
 		# ENTRY peso da inserire
 		self.entry_peso = ttk.Entry(self.frame_sx,
-									textvariable=self.peso,
-									font=('Verdana', 10))
+		                            textvariable=self.peso,
+		                            font=('Verdana', 10))
 
 		# LABELFRAME per inserimento EAN
 		self.lblfr_ins_ean = tk.LabelFrame(self.frame_sx,
-										   text='Inserimento ean',
-										   font=('Verdana', 15),
-										   labelanchor='n')
+		                                   text='Inserimento ean',
+		                                   font=('Verdana', 15),
+		                                   labelanchor='n')
 
 		# NOTEBOOK e posizione
 		self.notebook = ttk.Notebook(self.frame_dx)
@@ -78,23 +87,23 @@ class Ingredienti(tk.Toplevel):
 
 		# Definizione dizionari per ingredienti
 		# self.lista_surgelati = {'spinaci': '1950', 'cicoria': '1973', 'seppia': '2033', 'baccala': '2038',
-								# 'pangasio': '2025', 'frittura pesce': '1984', 'spiedini pesce': '2024',
-								# 'carciofi': '2012', 'fil.gallinella': '2052', 'gamberi 50-60': '1992',
-								# 'fagiolini': '1919', 'melanzane grigliate': '2016', 'lasagna sfoglia': '2000',
-								# 'filetto orata': '2028', 'orata': '2045', 'halibut': '2050',
-								# 'minestrone di verdure': '1955'}
+		# 'pangasio': '2025', 'frittura pesce': '1984', 'spiedini pesce': '2024',
+		# 'carciofi': '2012', 'fil.gallinella': '2052', 'gamberi 50-60': '1992',
+		# 'fagiolini': '1919', 'melanzane grigliate': '2016', 'lasagna sfoglia': '2000',
+		# 'filetto orata': '2028', 'orata': '2045', 'halibut': '2050',
+		# 'minestrone di verdure': '1955'}
 		self.lista_freschi = {'pecorino romano': '010082', 'mozzarella': '010325', 'grana padano': '010080',
-							  'prosc.cotto': '010332', 'ricotta mista': '010020', 'uova': 'uova medie sciolte'}
+		                      'prosc.cotto': '010332', 'ricotta mista': '010020', 'uova': 'uova medie sciolte'}
 		# self.lista_pasta_fresca = {'gnocchi': '010031', 'ciriole': '010032', 'fettuccine': '010034'}
 		self.lista_carne = {'pollo ruspante': '030115', 'cosce pollo': '030182', 'piccioni': '030207',
-							'petto tacchino': '030135', 'magro suino': '030121', 'pancia suino': '030111',
-							'salsicce fresche': '030130', 'macinato magro': '030119', 'spalla agnello': '030104',
-							'carne x gnocchi': '030139', 'cotolette agnello': '030105', 'trippa bovino': '030192',
-							'coratella agnello': '030106', 'magro vitella': '030163', 'petto pollo': '030114',
-							'macinato x polpette': '030206', 'fegatini di pollo': '030113',
-							'pancia di vitella': '030140', 'coniglio': '030185', 'roastbeef vitella': '030162',
-							'filetto suino': '030110', 'coscio agnello': '030103', 'fegato suino': '030169',
-							'paliata vit.': '030243', 'faraona': '030158', 'anatra': '030147', 'arista suino': '030166'}
+		                    'petto tacchino': '030135', 'magro suino': '030121', 'pancia suino': '030111',
+		                    'salsicce fresche': '030130', 'macinato magro': '030119', 'spalla agnello': '030104',
+		                    'carne x gnocchi': '030139', 'cotolette agnello': '030105', 'trippa bovino': '030192',
+		                    'coratella agnello': '030106', 'magro vitella': '030163', 'petto pollo': '030114',
+		                    'macinato x polpette': '030206', 'fegatini di pollo': '030113',
+		                    'pancia di vitella': '030140', 'coniglio': '030185', 'roastbeef vitella': '030162',
+		                    'filetto suino': '030110', 'coscio agnello': '030103', 'fegato suino': '030169',
+		                    'paliata vit.': '030243', 'faraona': '030158', 'anatra': '030147', 'arista suino': '030166'}
 
 		# TAB 1 per SURGELATI
 		self.tab1 = ttk.Frame(self.notebook)
@@ -128,31 +137,32 @@ class Ingredienti(tk.Toplevel):
 
 		self.img_btn_focus_pezzi = tk.PhotoImage(file=".//immagini//modifica.gif")
 		self.btn_focus_pezzi = ttk.Button(self.lblfr_ins_ean, image=self.img_btn_focus_pezzi,
-										  command=self.entry_pezzi.focus)
+		                                  command=self.entry_pezzi.focus)
 
 		# BOTTONI per inserimento salvataggio e chiusura finestra
 		self.btn_invio = tk.Button(self.frame_basso,
-								   text="Conferma",
-								   font=('Verdana', 15),
-								   width=20,
-								   command=self.invio)
+		                           text="Conferma",
+		                           font=('Verdana', 15),
+		                           width=20,
+		                           command=self.invio)
 		self.btn_salva = tk.Button(self.frame_basso,
-								   text='salva',
-								   font=('Verdana', 15),
-								   width=20,
-								   command=self.salva)
+		                           text='salva',
+		                           font=('Verdana', 15),
+		                           width=20,
+		                           command=self.salva)
 		self.btn_chiudi = tk.Button(self.frame_basso,
-									text="Chiudi finestra",
-									font=('Verdana', 15),
-									width=20,
-									command=self.destroy)
+		                            text="Chiudi finestra",
+		                            font=('Verdana', 15),
+		                            width=20,
+		                            command=self.destroy)
 
 		# LAYOUT
 		self.frame_sx.grid(row=0, column=0, sticky='ns')
 		self.frame_dx.grid(row=0, column=1)
 		self.frame_basso.grid(row=1, column=0, columnspan=2, sticky='we')
 
-		self.lbl_settimana.grid(row=0, column=0, columnspan=2)
+		self.lbl_settimana.grid(row=0, column=0)
+		self.lbl_nr_settimana.grid(row=0, column=1)
 
 		self.label_data_utilizzo.grid(row=1, column=0)
 		self.label_data.grid(row=1, column=1)
@@ -199,7 +209,7 @@ class Ingredienti(tk.Toplevel):
 				r = 1
 			tk.Radiobutton(self.tab1, text=lst_surgelati[i].upper(), indicatoron=0, variable=self.value,
 			               font='Verdana', width=20,
-						   value=lst_surgelati[i]).grid(row=r, column=c)
+			               value=lst_surgelati[i]).grid(row=r, column=c)
 			r += 1
 
 	def crea_bottoni_freschi(self):
@@ -209,7 +219,7 @@ class Ingredienti(tk.Toplevel):
 				c += 1
 				r = 1
 			tk.Radiobutton(self.tab2, text=k.upper(), indicatoron=0, variable=self.value, font='Verdana', width=20,
-						   value=k + ' cod.' + v).grid(row=r, column=c)
+			               value=k + ' cod.' + v).grid(row=r, column=c)
 			r += 1
 
 	def crea_bottoni_pasta_fresca(self):
@@ -224,8 +234,8 @@ class Ingredienti(tk.Toplevel):
 				c += 1
 				r = 1
 			tk.Radiobutton(self.tab4, text=lst_pasta_fresca[i].upper(), indicatoron=0, variable=self.value,
-						   font='Verdana', width=20,
-						   value=lst_pasta_fresca[i]).grid(row=r, column=c)
+			               font='Verdana', width=20,
+			               value=lst_pasta_fresca[i]).grid(row=r, column=c)
 			r += 1
 
 	def crea_bottoni_carne(self):
@@ -235,15 +245,15 @@ class Ingredienti(tk.Toplevel):
 				c += 1
 				r = 1
 			tk.Radiobutton(self.tab5, text=k.upper(), indicatoron=0, variable=self.value, font='Verdana', width=20,
-						   value=k + ' cod.' + v).grid(row=r, column=c)
+			               value=k + ' cod.' + v).grid(row=r, column=c)
 			r += 1
 
 	def rimetti_focus(self, event):
 		self.entry_peso.focus()
 
 	def rimuovi_riga_selezionata(self):
-			curitem = self.tree.selection()[0]
-			self.tree.delete(curitem)
+		curitem = self.tree.selection()[0]
+		self.tree.delete(curitem)
 
 	def invio(self):
 		if self.value.get() != '':
