@@ -24,13 +24,15 @@ class ReportCucina(tk.Frame):
 
         # Treeview per merce ingresso
         self.tree_ingresso = ttk.Treeview(self, height=20)
-        self.tree_ingresso['columns'] = ('Prodotto', 'Quantita')
+        self.tree_ingresso['columns'] = ('Prodotto', 'Quantita', 'cod_ean')
         self.tree_ingresso['show'] = 'headings'
         self.tree_ingresso.heading('Prodotto', text="Prodotto")
         self.tree_ingresso.heading('Quantita', text="Quantita")
+        self.tree_ingresso.heading('cod_ean', text="Cod EAN")
 
         self.tree_ingresso.column("Prodotto", width=200)
         self.tree_ingresso.column("Quantita", width=100)
+        self.tree_ingresso.column("cod_ean", width=100)
 
         # Treeview per merce in uscita
         self.tree_uscita = ttk.Treeview(self, height=20)
@@ -77,13 +79,13 @@ class ReportCucina(tk.Frame):
         self.tree_ingresso.delete(*self.tree_ingresso.get_children())
         self.tree_uscita.delete(*self.tree_uscita.get_children())
 
-        self.c.execute('SELECT prodotto,SUM(quantita) '
+        self.c.execute('SELECT prodotto,SUM(quantita),cod_ean '
                        'FROM ingredienti '
                        'WHERE settimana = %s '
                        'GROUP BY prodotto',
                        (self.settimana.get(),))
         for row in self.c:
-            self.tree_ingresso.insert("", 'end', values=(row[0], row[1]))
+            self.tree_ingresso.insert("", 'end', values=(row[0], row[1], row[2]))
 
         self.c.execute('SELECT prodotto, quantita '
                        'FROM lotti_vendita_cucina '
@@ -95,9 +97,9 @@ class ReportCucina(tk.Frame):
             self.tree_uscita.insert("", 'end', values=(row[0], row[1]))
 
     def crea_pdf(self):
-        data = [('settimana', 'codice', 'prodotto')]
+        data = [('settimana', 'codice', 'prodotto', 'cod_ean')]
 
-        self.c.execute("SELECT settimana,prodotto,SUM(quantita) "
+        self.c.execute("SELECT settimana,prodotto,SUM(quantita),cod_ean "
                        "FROM ingredienti "
                        "WHERE settimana = %s "
                        "GROUP BY prodotto",
