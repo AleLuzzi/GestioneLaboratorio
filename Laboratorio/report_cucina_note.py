@@ -49,7 +49,9 @@ class ReportCucina(tk.Frame):
 
         # Label che indica la settimana
         n_sett = str(1 + int(strftime('%W')))
-        self.lbl_settimana = ttk.Label(self.lblFrame_azioni, text='SETTIMANA NUMERO ' + n_sett, font='Helvetica')
+        anno = strftime('%Y')
+        self.lbl_settimana = ttk.Label(self.lblFrame_azioni, text='SETTIMANA NUMERO ' + n_sett + ' '
+                                       + anno, font='Helvetica')
 
         # Bottone per popolare il treeview
         self.btn = ttk.Button(self.lblFrame_azioni, text='Inserisci dati', command=self.inserisci)
@@ -74,7 +76,7 @@ class ReportCucina(tk.Frame):
         self.entry_settimana_s.grid()
         self.stampa.grid()
 
-    def inserisci(self):
+    def inserisci(self, anno=strftime('%Y')):
 
         self.tree_ingresso.delete(*self.tree_ingresso.get_children())
         self.tree_uscita.delete(*self.tree_uscita.get_children())
@@ -82,8 +84,9 @@ class ReportCucina(tk.Frame):
         self.c.execute('SELECT prodotto,SUM(quantita),cod_ean '
                        'FROM ingredienti '
                        'WHERE settimana = %s '
+                       'AND ingredienti.data_utilizzo>%s '
                        'GROUP BY prodotto',
-                       (self.settimana.get(),))
+                       (self.settimana.get(),anno),)
         for row in self.c:
             self.tree_ingresso.insert("", 'end', values=(row[0], row[1], row[2]))
 
