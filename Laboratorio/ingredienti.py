@@ -39,9 +39,9 @@ class Ingredienti(tk.Toplevel):
 		self.lbl_nr_settimana = tk.Label(self.frame_sx, text=str(1 + int(self.data.strftime('%W'))),
 		                                 font=('Verdana', 20), bg='white', relief='sunken', padx=20)
 
-		self.label_data_utilizzo = tk.Label(self.frame_sx, text="Data Utilizzo Merce",
+		self.label_data_utilizzo = tk.Label(self.frame_sx, text="DATA",
 		                                    foreground='blue', font=('Verdana', 20),
-		                                    relief='ridge', padx=20)
+		                                    relief='ridge', padx=80)
 
 		self.label_data = tk.Label(self.frame_sx, anchor='center',
 		                           text=self.data.strftime('%d/%m/%y'), font=('Verdana', 20),
@@ -61,14 +61,14 @@ class Ingredienti(tk.Toplevel):
 
 		# BOTTONE elimina riga
 		self.btn_elimina_riga = tk.Button(self.frame_sx,
-		                                  text='Elimina riga',
+		                                  text='Elimina riga selezionata',
 		                                  font=('Verdana', 15),
 		                                  command=self.rimuovi_riga_selezionata)
 
 		# LABEL peso da inserire
-		self.lbl_peso = ttk.Label(self.frame_sx, text='Quantità merce utilizzata',
-		                          foreground='blue',
-		                          font=('Verdana', 15))
+		self.lbl_peso = tk.Label(self.frame_sx, text='Merce utilizzata',
+		                          foreground='blue', relief='ridge',
+		                          font=('Verdana', 15), padx=30)
 
 		# ENTRY peso da inserire
 		self.entry_peso = ttk.Entry(self.frame_sx,
@@ -122,12 +122,12 @@ class Ingredienti(tk.Toplevel):
 		self.notebook.add(self.tab5, text='CARNE', compound='left', image=self.img_btn1)
 
 		# LABEL ed ENTRY per inserimento EAN
-		self.lbl_ean = ttk.Label(self.lblfr_ins_ean, text='EAN', width=20, anchor='center')
+		self.lbl_ean = ttk.Label(self.lblfr_ins_ean, text='EAN', anchor='center')
 		self.ean = tk.StringVar()
 		self.ean.set('')
 		self.entry_ean = ttk.Entry(self.lblfr_ins_ean, textvariable=self.ean)
 
-		self.lbl_pezzi = ttk.Label(self.lblfr_ins_ean, text='PEZZI', width=20, anchor='center')
+		self.lbl_pezzi = ttk.Label(self.lblfr_ins_ean, text='PEZZI', anchor='center')
 		self.pezzi = tk.StringVar()
 		self.pezzi.set('')
 		self.entry_pezzi = ttk.Entry(self.lblfr_ins_ean, textvariable=self.pezzi)
@@ -161,25 +161,25 @@ class Ingredienti(tk.Toplevel):
 		self.frame_dx.grid(row=0, column=1)
 		self.frame_basso.grid(row=1, column=0, columnspan=2, sticky='we')
 
-		self.lbl_settimana.grid(row=0, column=0)
-		self.lbl_nr_settimana.grid(row=0, column=1)
+		self.lbl_settimana.grid(row=0, column=0, sticky='w')
+		self.lbl_nr_settimana.grid(row=0, column=0, sticky='e')
 
-		self.label_data_utilizzo.grid(row=1, column=0)
-		self.label_data.grid(row=1, column=1)
+		self.label_data_utilizzo.grid(row=1, column=0, sticky='w')
+		self.label_data.grid(row=1, column=0, sticky='e')
 
 		self.tree.grid(row=3, column=0, pady=5)
-		self.btn_elimina_riga.grid(row=3, column=1, sticky='n')
+		self.btn_elimina_riga.grid(row=4, column=0, sticky='we')
 
-		self.lbl_peso.grid(row=4, column=0)
-		self.entry_peso.grid(row=4, column=1)
+		self.lbl_peso.grid(row=5, column=0, sticky='w')
+		self.entry_peso.grid(row=5, column=0, sticky='e')
 
-		self.lblfr_ins_ean.grid(row=5, column=0, columnspan=2)
+		self.lblfr_ins_ean.grid(row=6, column=0)
 		self.lbl_ean.grid(row=1, column=0)
 		self.entry_ean.grid(row=1, column=1)
-		self.lbl_pezzi.grid(row=2, column=0)
-		self.entry_pezzi.grid(row=2, column=1)
-		self.btn_focus_ean.grid(row=1, column=2)
-		self.btn_focus_pezzi.grid(row=2, column=2)
+		self.btn_focus_ean.grid(row=1, column=3)
+		self.lbl_pezzi.grid(row=1, column=4)
+		self.entry_pezzi.grid(row=1, column=5)
+		self.btn_focus_pezzi.grid(row=1, column=6)
 
 		self.notebook.grid(row=0, column=0)
 
