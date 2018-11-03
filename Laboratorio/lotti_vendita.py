@@ -120,12 +120,6 @@ class LottiInVendita(tk.Toplevel):
         # RADIOBUTTON
         self.filtro = tk.StringVar()
         self.filtro.set('Macelleria')
-        self.rdbtn_macelleria = tk.Radiobutton(self.lblframe_box, text='Macelleria',
-                                               variable=self.filtro, value='Macelleria', command=self.riempi_combo)
-        self.rdbtn_gastronomia = tk.Radiobutton(self.lblframe_box, text='Gastronomia',
-                                                variable=self.filtro, value='Gastronomia', command=self.riempi_combo)
-        self.rdbtn_macelleria.grid(row=0, column=0, padx=5, sticky='w')
-        self.rdbtn_gastronomia.grid(row=0, column=1, padx=5, sticky='w')
 
         self.filtro_mese = tk.StringVar()
         self.filtro_mese.set(1)
@@ -140,18 +134,18 @@ class LottiInVendita(tk.Toplevel):
                                           variable=self.filtro_mese, value=6)
         self.rdbtn_1mese.grid(row=1, column=0, padx=5)
         self.rdbtn_2mesi.grid(row=1, column=1, padx=5)
-        self.rdbtn_3mesi.grid(row=1, column=2, padx=5)
-        self.rdbtn_6mesi.grid(row=1, column=3, padx=5)
+        self.rdbtn_3mesi.grid(row=2, column=0, padx=5)
+        self.rdbtn_6mesi.grid(row=2, column=1, padx=5)
 
         # Combobox per gestire rimpimento tramite lista prodotti
         self.box_value = tk.StringVar()
         self.box = ttk.Combobox(self.lblframe_box, textvariable=self.box_value)
 
-        self.box.grid(row=0, column=2)
+        self.box.grid(row=1, column=2)
 
         # BOTTONE Filtra
         self.btn_filtra = ttk.Button(self.lblframe_box, text='Filtra', command=self.filtra)
-        self.btn_filtra.grid(row=0, column=3, padx=20)
+        self.btn_filtra.grid(row=2, column=2, sticky='we')
 
         # PROGRESS BAR
         self.progress_bar = ttk.Progressbar(self.frame_dx_basso, orient=tk.HORIZONTAL, mode='determinate')
@@ -265,7 +259,7 @@ class LottiInVendita(tk.Toplevel):
             pass
         campo1 = ('0' + str(self.row[3]))
         campo2 = ('000' + str(self.row[9]))
-        campo3 = ('0'*6)
+        campo3 = ('0' * (6 - (len(str(self.row[4])))) + str(self.row[4]))  # prezzo
         campo4 = (str(self.row[13]) + '000011')
         campo5 = ('40' + str(self.row[1] + ' '*(41-(len(self.row[1])))).upper())
         campo6 = ('0'*(4-len(str(self.row[11]))) + str(self.row[11]))
