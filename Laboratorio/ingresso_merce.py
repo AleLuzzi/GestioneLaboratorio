@@ -45,81 +45,82 @@ class IngressoMerce(tk.Toplevel):
             self.lista_tagli.extend(row)
 
         # LAYOUT dei frame per impaginazione
-        self.frame_alto = tk.Frame(self, bd=3)
+        self.frame_alto_sx = tk.Frame(self, bd=3)
+        self.frame_alto_dx = tk.Frame(self, bd=3)
         self.frame_sx = tk.Frame(self, bd=3)
         self.frame_dx = tk.Frame(self, bd=3)
         self.frame_basso = tk.Frame(self, background='white')
 
         # TREEVIEW per riepilogo inserimenti
-        self.tree = ttk.Treeview(self.frame_alto, height=8)
+        self.tree = ttk.Treeview(self.frame_alto_dx, height=8)
 
         self.tree['columns'] = ('prog_acq', 'data', 'num_ddt', 'fornitore',
                                 'taglio', 'peso_i', 'peso_f', 'lotto_chiuso')
 
-        self.tree['displaycolumns'] = ('fornitore', 'taglio', 'peso_i')
+        self.tree['displaycolumns'] = ('data', 'fornitore', 'taglio', 'peso_i')
         self.tree['show'] = 'headings'
+        self.tree.column("data", width=100)
         self.tree.column("fornitore", width=100)
         self.tree.column("taglio", width=100)
         self.tree.column("peso_i", width=100)
+        self.tree.heading("data", text='Data')
         self.tree.heading("fornitore", text="Fornitore")
         self.tree.heading("taglio", text="Prodotto")
-        self.tree.heading("peso_i", text="quantità")
+        self.tree.heading("peso_i", text="Quantità")
 
         # LABELFRAME per creazione bottoni per scelta fornitore
         self.labelframe_fornitori = tk.LabelFrame(self.frame_sx,
-                                                  text="Fornitore",
+                                                  text="FORNITORE",
                                                   font=('Verdana', 15),
                                                   labelanchor='n')
 
         # LABELFRAME per creazione bottoni per i tagli suino
         self.labelframe_taglio = tk.LabelFrame(self.frame_dx,
-                                               text="Taglio",
+                                               text="TAGLIO",
                                                font=('Verdana', 15),
                                                labelanchor='n')
 
         # LABEL che mostra il progressivo lotto
-        self.label_lotto = ttk.Label(self.frame_alto,
-                                     text="Progressivo Lotto",
-                                     foreground='blue',
-                                     font=('Verdana', 20))
+        self.label_lotto = tk.Label(self.frame_alto_sx,
+                                    text="PROGRESSIVO LOTTO",
+                                    foreground='blue',
+                                    font=('Verdana', 15))
 
-        self.label_prog_lotto = ttk.Label(self.frame_alto,
-                                          anchor='center',
-                                          text=str(self.prog_lotto_acq)+'A',
-                                          font=('Verdana', 20))
+        self.label_prog_lotto = tk.Label(self.frame_alto_sx,
+                                         anchor='center',
+                                         relief='ridge',
+                                         bg='white',
+                                         text=str(self.prog_lotto_acq)+'A',
+                                         font=('Verdana', 15),
+                                         padx=35)
 
         # LABEL che mostra la data ingresso merce
-        self.label_data_ingresso = ttk.Label(self.frame_alto,
-                                             text="Data Ingresso Merce",
-                                             foreground='blue',
-                                             font=('Verdana', 20))
+        self.label_data_ingresso = tk.Label(self.frame_alto_sx,
+                                            text="DATA INGRESSO MERCE",
+                                            foreground='blue',
+                                            font=('Verdana', 15))
         # DATEPICKER
-        self.picker = Datepicker(self.frame_alto, datevar=self.data, dateformat='%d-%m-%Y',)
-        '''
-        self.label_data = ttk.Label(self.frame_alto,
-                                    anchor='center',
-                                    text=self.data.strftime('%d/%m/%y'),
-                                    font=('Verdana', 20))
-        '''
+        self.picker = Datepicker(self.frame_alto_sx, datevar=self.data, dateformat='%d-%m-%Y',)
+
         # ENTRY per immissione numero ddt/fattura
-        self.label_num_ddt = ttk.Label(self.frame_alto,
-                                       text='Numero DDT/Fattura',
-                                       foreground='blue',
-                                       font=('Verdana', 15))
+        self.label_num_ddt = tk.Label(self.frame_alto_sx,
+                                      text='NUMERO DDT/FATTURA',
+                                      foreground='blue',
+                                      font=('Verdana', 15))
 
         self.num_ddt = tk.StringVar()
-        self.entry_ddt = ttk.Entry(self.frame_alto,
+        self.entry_ddt = ttk.Entry(self.frame_alto_sx,
                                    textvariable=self.num_ddt,
                                    width=25)
         self.entry_ddt.focus()
 
         # ENTRY per inserimento del peso
-        self.label_peso = ttk.Label(self.frame_alto,
-                                    text="Inserimento Peso",
+        self.label_peso = ttk.Label(self.frame_alto_sx,
+                                    text="INSERIMENTO PESO",
                                     foreground='blue',
                                     font=('Verdana', 15))
 
-        self.entry = ttk.Entry(self.frame_alto,
+        self.entry = ttk.Entry(self.frame_alto_sx,
                                textvariable=self.peso,
                                width=25)
 
@@ -143,37 +144,37 @@ class IngressoMerce(tk.Toplevel):
                                              command=self.chiudi)
 
         # BOTTONE rimuovi riga dal treeview riepilogativo
-        self.btn_rimuovi_riga = tk.Button(self.frame_alto,
+        self.btn_rimuovi_riga = tk.Button(self.frame_alto_dx,
                                           text="Rimuovi riga",
                                           command=self.rimuovi_riga_selezionata)
 
         # LAYOUT
-        self.frame_alto.grid(row=1, column=0, columnspan=2, sticky='we')
-        self.frame_sx.grid(row=2, column=0)
-        self.frame_dx.grid(row=2, column=1, sticky='n')
-        self.frame_basso.grid(row=3, column=0, columnspan=2, sticky='we')
+        self.frame_alto_sx.grid(row=0, column=1)
+        self.frame_alto_dx.grid(row=0, column=2)
+        self.frame_sx.grid(row=1, column=1)
+        self.frame_dx.grid(row=1, column=2)
+        self.frame_basso.grid(row=2, column=1, columnspan=2)
 
-        self.tree.grid(row=0, column=2, rowspan=10, padx=10)
+        self.tree.grid(row=1, column=2, rowspan=4, padx=10)
 
         self.labelframe_fornitori.grid(row=2, column=0, sticky='n')
         self.labelframe_taglio.grid(row=1, column=0)
 
-        self.label_lotto.grid(row=1, column=0)
+        self.label_lotto.grid(row=1, column=0, sticky='w')
         self.label_prog_lotto.grid(row=1, column=1)
-        self.label_data_ingresso.grid(row=3, column=0)
-        self.picker.grid(row=3, column=1)
-        # self.label_data.grid(row=3, column=1)
+        self.label_data_ingresso.grid(row=2, column=0, sticky='w')
+        self.picker.grid(row=2, column=1)
 
-        self.label_num_ddt.grid(row=5, column=0)
-        self.entry_ddt.grid(row=5, column=1)
+        self.label_num_ddt.grid(row=3, column=0, sticky='w')
+        self.entry_ddt.grid(row=3, column=1)
 
-        self.label_peso.grid(row=7, column=0)
-        self.entry.grid(row=7, column=1)
+        self.label_peso.grid(row=4, column=0, sticky='w')
+        self.entry.grid(row=4, column=1)
 
         self.btn_invio.grid(row=2, column=0, padx=5, pady=10)
         self.btn_salva_esci.grid(row=2, column=1, padx=5, pady=10)
         self.btn_chiudi_finestra.grid(row=2, column=2, padx=5, pady=10)
-        self.btn_rimuovi_riga.grid(row=0, column=3)
+        self.btn_rimuovi_riga.grid(row=5, column=2, sticky='we')
 
         self.crea_bottoni_tagli()
         self.crea_bottoni_fornitori()
