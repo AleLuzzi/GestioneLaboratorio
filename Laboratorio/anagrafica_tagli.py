@@ -39,13 +39,16 @@ class Tagli(tk.Frame):
         self.entry = {}
 
         # LABELFRAME dettagli taglio selezionato
-        self.lbl_frame_taglio_selezionato = ttk.LabelFrame(self.frame_centrale, text='Dettagli taglio selezionato')
+        self.lbl_frame_taglio_selezionato = tk.LabelFrame(self.frame_centrale,
+                                                          font=('Verdana', 15),
+                                                          text='Dettagli taglio selezionato')
 
         # LABELFRAME Azioni e filtra
-        self.lbl_frame_scegli = ttk.LabelFrame(self.frame_dx,
-                                               text='')
-        self.lbl_frame_filtra = ttk.Labelframe(self.frame_centrale,
-                                               text='Filtra')
+        self.lbl_frame_scegli = tk.LabelFrame(self.frame_dx,
+                                              text='')
+        self.lbl_frame_filtra = tk.LabelFrame(self.frame_centrale,
+                                              font=('Verdana', 15),
+                                              text='Filtra')
 
         # BOTTONI
         self.btn_modifica = tk.Button(self.lbl_frame_scegli,
@@ -59,15 +62,26 @@ class Tagli(tk.Frame):
         self.btn_applica_filtro = tk.Button(self.lbl_frame_filtra,
                                             text='Applica',
                                             font=('Helvetica', 10),
+                                            padx=30,
                                             command=self.filtra)
 
         # COMBOBOX per gestire rimpimento tramite classe prodotti
         self.box_value = tk.StringVar()
-        self.box = ttk.Combobox(self.lbl_frame_filtra, textvariable=self.box_value)
+        self.cmb_box_filtro = ttk.Combobox(self.lbl_frame_filtra, textvariable=self.box_value)
+
+        lista = []
+
+        self.c.execute("SELECT merceologia From merceologie WHERE flag2_taglio = '1' ")
+        for row in self.c:
+            lista.extend(row)
+        self.cmb_box_filtro['values'] = lista
+
+        self.cmb_box_filtro.current(0)
 
         # LABELFRAME Attributi Taglio
-        self.lbl_frame_attributi_taglio = ttk.LabelFrame(self.frame_centrale,
-                                                         text='Attributi taglio selezionato')
+        self.lbl_frame_attributi_taglio = tk.LabelFrame(self.frame_centrale,
+                                                        font=('Verdana', 15),
+                                                        text='Attributi taglio selezionato')
         self.flag1 = tk.Checkbutton(self.lbl_frame_attributi_taglio, text='Modulo Inventario')
 
         # LAYOUT
@@ -85,12 +99,10 @@ class Tagli(tk.Frame):
         self.btn_modifica.grid(sticky='we')
         self.btn_inserisci.grid(sticky='we')
 
-        self.box.grid()
-        self.btn_applica_filtro.grid(sticky='we')
+        self.cmb_box_filtro.grid(row=0, column=0, padx=10)
+        self.btn_applica_filtro.grid(row=0, column=1, sticky='we')
 
-        self.aggiorna()
         self.crea_label_entry()
-        self.riempi_combo()
 
     def filtra(self):
         self.tree_tagli.delete(*self.tree_tagli.get_children())
@@ -98,16 +110,6 @@ class Tagli(tk.Frame):
         self.c.execute("SELECT * FROM tagli WHERE taglio like %s", ('%' + stringa + '%',))
         for lista in self.c:
             self.tree_tagli.insert('', 'end', values=(lista[0], lista[1]))
-
-    def riempi_combo(self):
-        lista = []
-
-        self.c.execute("SELECT merceologia From merceologie WHERE flag2_taglio = '1' ")
-        for row in self.c:
-            lista.extend(row)
-        self.box['values'] = lista
-
-        self.box.current(0)
 
     def crea_label_entry(self):
         r = 1
