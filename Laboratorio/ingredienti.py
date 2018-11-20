@@ -67,8 +67,8 @@ class Ingredienti(tk.Toplevel):
 
 		# LABEL peso da inserire
 		self.lbl_peso = tk.Label(self.frame_sx, text='Merce utilizzata',
-		                          foreground='blue', relief='ridge',
-		                          font=('Verdana', 15), padx=30)
+		                         foreground='blue', relief='ridge',
+		                         font=('Verdana', 15), padx=30)
 
 		# ENTRY peso da inserire
 		self.entry_peso = ttk.Entry(self.frame_sx,
@@ -111,7 +111,7 @@ class Ingredienti(tk.Toplevel):
 
 		# TAB 2 per FRESCHI
 		self.tab2 = ttk.Frame(self.notebook)
-		self.notebook.add(self.tab2, text='FRESCHI', compound='left', image=self.img_btn1)
+		self.notebook.add(self.tab2, text='BASE', compound='left', image=self.img_btn1)
 
 		# TAB 3 per pasta fresca
 		self.tab4 = ttk.Frame(self.notebook)
@@ -191,7 +191,7 @@ class Ingredienti(tk.Toplevel):
 
 		# cicli per creazione bottoni
 		self.crea_bottoni_surgelati()
-		self.crea_bottoni_freschi()
+		self.crea_bottoni_base()
 		self.crea_bottoni_pasta_fresca()
 		self.crea_bottoni_carne()
 
@@ -212,14 +212,21 @@ class Ingredienti(tk.Toplevel):
 			               value=lst_surgelati[i]).grid(row=r, column=c)
 			r += 1
 
-	def crea_bottoni_freschi(self):
+	def crea_bottoni_base(self):
+		lst_base = []
+		self.c.execute("SELECT ingrediente_base FROM ingredienti_base WHERE merceologia LIKE 'Base'")
+
+		for row in self.c:
+			lst_base.extend(row)
+
 		r, c = 1, 0
-		for k, v in sorted(self.lista_freschi.items()):
-			if r % 10 == 0:
+		for i in range(0, len(lst_base)):
+			if r % 15 == 0:
 				c += 1
 				r = 1
-			tk.Radiobutton(self.tab2, text=k.upper(), indicatoron=0, variable=self.value, font='Verdana', width=20,
-			               value=k + ' cod.' + v).grid(row=r, column=c)
+			tk.Radiobutton(self.tab2, text=lst_base[i].upper(), indicatoron=0, variable=self.value,
+			               font='Verdana', width=20,
+			               value=lst_base[i]).grid(row=r, column=c)
 			r += 1
 
 	def crea_bottoni_pasta_fresca(self):
