@@ -201,7 +201,7 @@ class IngressoMerce(tk.Toplevel):
     def crea_bottoni_tagli(self):
         row, col = 1, 0
         for i in range(0, len(self.lista_tagli)):
-            if row % 7 == 0:
+            if row % 8 == 0:
                 col += 1
                 row = 1
             tk.Radiobutton(self.labelframe_taglio,
