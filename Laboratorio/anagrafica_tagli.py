@@ -23,25 +23,40 @@ class Tagli(tk.Frame):
 
         # TREEVIEEW per tab Tagli
         self.tree_tagli = ttk.Treeview(self.frame_sx, height=23)
-        self.tree_tagli['columns'] = ('Id', 'Tagli')
+        self.tree_tagli['columns'] = ('Id', 'Tagli', 'Merceologia')
         self.tree_tagli['show'] = 'headings'
         self.tree_tagli.heading('Id', text="Id")
         self.tree_tagli.heading('Tagli', text="Tagli")
+        self.tree_tagli.heading('Merceologia', text="Merceologia")
 
-        self.tree_tagli.column("Id", width=10)
+        self.tree_tagli.column("Id", width=20)
         self.tree_tagli.column("Tagli", width=150)
+        self.tree_tagli.column("Merceologia", width=150)
 
         self.tree_tagli.bind("<Double-1>", self.ondoubleclick)
-
-        # Lista campi del record
-        self.campi = ['taglio']
-        self.label = {}
-        self.entry = {}
 
         # LABELFRAME dettagli taglio selezionato
         self.lbl_frame_taglio_selezionato = tk.LabelFrame(self.frame_centrale,
                                                           font=('Verdana', 15),
                                                           text='Dettagli taglio selezionato')
+        self.lbl_taglio = tk.Label(self.lbl_frame_taglio_selezionato,
+                                   text='TAGLIO')
+        self.lbl_merceologia = tk.Label(self.lbl_frame_taglio_selezionato,
+                                        text='MERCEOLOGIA')
+
+        # CMB BOX per scelta merceologia taglio
+        self.cmb_box_merc_value = tk.StringVar()
+        self.cmb_box_merceologia = ttk.Combobox(self.lbl_frame_taglio_selezionato, textvariable=self.cmb_box_merc_value)
+
+        lista_merceologie = []
+
+        self.c.execute("SELECT merceologia From merceologie")
+        for row in self.c:
+            lista_merceologie.extend(row)
+        self.cmb_box_merceologia['values'] = lista_merceologie
+
+        # ENTRY per la descrizione del taglio
+        self.entry_taglio = tk.Entry(self.lbl_frame_taglio_selezionato)
 
         # LABELFRAME Azioni e filtra
         self.lbl_frame_scegli = tk.LabelFrame(self.frame_dx,
@@ -51,14 +66,26 @@ class Tagli(tk.Frame):
                                               text='Filtra')
 
         # BOTTONI
-        self.btn_modifica = tk.Button(self.lbl_frame_scegli,
-                                      text='Salva Modifiche',
-                                      font=('Helvetica', 10),
-                                      command=self.modifica)
+        self.btn_salva_modifiche = tk.Button(self.lbl_frame_scegli,
+                                             text='Salva Modifiche',
+                                             font=('Helvetica', 10),
+                                             command=self.modifica)
+
         self.btn_inserisci = tk.Button(self.lbl_frame_scegli,
                                        text='Inserisci Dati',
                                        font=('Helvetica', 10),
                                        command=self.inserisci)
+
+        self.btn_cancella = tk.Button(self.lbl_frame_scegli,
+                                      text='Cancella riga',
+                                      font=('Helvetica', 10),
+                                      command=self.cancella)
+
+        self.btn_mostra_tutti = tk.Button(self.lbl_frame_scegli,
+                                          text='Mostra tutti',
+                                          font=('Helvetica', 10),
+                                          command=self.aggiorna)
+
         self.btn_applica_filtro = tk.Button(self.lbl_frame_filtra,
                                             text='Applica',
                                             font=('Helvetica', 10),
@@ -78,11 +105,7 @@ class Tagli(tk.Frame):
 
         self.cmb_box_filtro.current(0)
 
-        # LABELFRAME Attributi Taglio
-        self.lbl_frame_attributi_taglio = tk.LabelFrame(self.frame_centrale,
-                                                        font=('Verdana', 15),
-                                                        text='Attributi taglio selezionato')
-        self.flag1 = tk.Checkbutton(self.lbl_frame_attributi_taglio, text='Modulo Inventario')
+        self.flag1 = tk.Checkbutton(self.lbl_frame_taglio_selezionato, text='Visualizza nel modulo Inventario')
 
         # LAYOUT
         self.frame_sx.grid(row=1, column=0, sticky='n')
@@ -90,76 +113,77 @@ class Tagli(tk.Frame):
         self.frame_dx.grid(row=1, column=2, sticky='n')
 
         self.tree_tagli.grid(row=1, column=0, columnspan=3, sticky='we')
+
         self.lbl_frame_taglio_selezionato.grid(row=1, column=0, sticky='n')
-        self.lbl_frame_attributi_taglio.grid(row=2, column=0)
-        self.flag1.grid()
+        self.lbl_taglio.grid(row=0, column=0, pady=10)
+        self.entry_taglio.grid(row=0, column=1, pady=10)
+
+        self.lbl_merceologia.grid(row=1, column=0, pady=10)
+        self.cmb_box_merceologia.grid(row=1, column=1, pady=10)
+
+        self.flag1.grid(row=2, column=0, columnspan=2)
+
         self.lbl_frame_scegli.grid(row=4, column=0)
         self.lbl_frame_filtra.grid(row=3, column=0, sticky='we')
 
-        self.btn_modifica.grid(sticky='we')
+        self.btn_salva_modifiche.grid(sticky='we')
         self.btn_inserisci.grid(sticky='we')
+        self.btn_cancella.grid(sticky='we')
+        self.btn_mostra_tutti.grid(sticky='we')
 
         self.cmb_box_filtro.grid(row=0, column=0, padx=10)
         self.btn_applica_filtro.grid(row=0, column=1, sticky='we')
 
-        self.crea_label_entry()
-
     def filtra(self):
         self.tree_tagli.delete(*self.tree_tagli.get_children())
         stringa = self.box_value.get()
-        self.c.execute("SELECT * FROM tagli WHERE taglio like %s", ('%' + stringa + '%',))
+        self.c.execute("SELECT * FROM tagli, merceologie "
+                       "WHERE merceologia like %s AND tagli.id_merceologia = merceologie.id", ('%' + stringa + '%',))
         for lista in self.c:
-            self.tree_tagli.insert('', 'end', values=(lista[0], lista[1]))
-
-    def crea_label_entry(self):
-        r = 1
-        c = 0
-        for campo in self.campi:
-            if r % 12 == 0:
-                r = 1
-                c += 2
-            lbl = ttk.Label(self.lbl_frame_taglio_selezionato, text=campo)
-            lbl.grid(row=r, column=c)
-            self.label[campo] = lbl
-
-            ent = ttk.Entry(self.lbl_frame_taglio_selezionato)
-            ent.grid(row=r, column=c+1)
-            self.entry[campo] = ent
-            r += 1
+            self.tree_tagli.insert('', 'end', values=(lista[0], lista[1], lista[4]))
 
     def modifica(self):
-        for campo in self.campi:
-            stringa = 'UPDATE tagli SET {}=%s WHERE ID = %s'.format(campo)
-            self.c.execute(stringa, (self.entry[campo].get(), (self.item[0])))
-            self.conn.commit()
-        self.aggiorna()
+        stringa = 'UPDATE tagli SET taglio=%s WHERE ID = %s'
+        self.c.execute(stringa, (self.entry_taglio.get(), (self.item[0])))
+        self.conn.commit()
+        merc = self.cmb_box_merc_value.get()
+        self.c.execute("SELECT Id FROM merceologie WHERE merceologia = %s", (merc,))
+        id_merc = []
+        id_merc.extend(self.c.fetchone())
+        id_merc.append(self.item[0])
+        stringa = 'UPDATE tagli SET id_merceologia = %s WHERE ID = %s'
+        self.c.execute(stringa, id_merc)
+        self.conn.commit()
+        self.filtra()
 
     def inserisci(self):
-        lista_da_salvare = []
-        for campo in self.campi:
-            lista_da_salvare.append(self.entry[campo].get())
-        self.c.execute('INSERT INTO tagli(taglio) VALUES (%s)', lista_da_salvare)
+        lista_da_salvare = [self.entry_taglio.get()]
+        merc = self.cmb_box_merc_value.get()
+        self.c.execute("SELECT Id FROM merceologie WHERE merceologia = %s", (merc,))
+        lista_da_salvare.extend(self.c.fetchone())
+        self.c.execute('INSERT INTO tagli(taglio,Id_Merceologia) VALUES (%s,%s)', lista_da_salvare)
         self.conn.commit()
-        self.aggiorna()
+
+    def cancella(self):
+        stringa = 'DELETE FROM tagli WHERE tagli.id = %s'
+        self.c.execute(stringa, (self.item[0],))
+        self.conn.commit()
 
     def aggiorna(self):
         self.tree_tagli.delete(*self.tree_tagli.get_children())
-        self.c.execute("SELECT * From tagli ")
+        self.c.execute("SELECT * FROM tagli, merceologie "
+                       "WHERE tagli.id_merceologia = merceologie.id")
         for lista in self.c:
-            self.tree_tagli.insert('', 'end', values=(lista[0], lista[1]))
+            self.tree_tagli.insert('', 'end', values=(lista[0], lista[1], lista[4]))
 
     def ondoubleclick(self, event):
-        for campo in self.campi:
-            self.entry[campo].delete(0, 'end')
-
+        self.entry_taglio.delete(0, 'end')
         self.item = (self.tree_tagli.item(self.tree_tagli.selection(), 'values'))
-
-        i = 1
-        self.c.execute("SELECT * FROM tagli WHERE ID = %s", (self.item[0],))
+        stringa = "SELECT * FROM tagli, merceologie WHERE tagli.ID = %s AND tagli.id_merceologia = merceologie.id"
+        self.c.execute(stringa, (self.item[0],))
         for self.row in self.c:
-            for campo in self.campi:
-                self.entry[campo].insert(0, self.row[i])
-                i += 1
+            self.entry_taglio.insert(0, self.row[1])
+            self.cmb_box_merc_value.set(self.row[4])
 
 
 if __name__ == '__main__':
