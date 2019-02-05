@@ -11,7 +11,7 @@ class Inventario(tk.Toplevel):
         self.value = tk.StringVar()
 
         # connessione database
-        self.conn = mysql.connector.connect(host='localhost',
+        self.conn = mysql.connector.connect(host='192.168.0.100',
                                             database='data',
                                             user='root',
                                             password='')
@@ -19,8 +19,29 @@ class Inventario(tk.Toplevel):
 
         self.img_btn1 = tk.PhotoImage(file=".//immagini//logo_piccolo.gif")
 
-        self.notebook = ttk.Notebook(self)
-        self.notebook.grid(row=1, column=0)
+        # Definizione Frame
+        self.frame_sx = ttk.Frame(self)
+        self.frame_centrale = ttk.Frame(self)
+        self.frame_dx = ttk.Frame(self)
+
+        self.notebook = ttk.Notebook(self.frame_dx)
+
+        # TREEVIEW riepilogo inventario
+        self.tree_riepilogo = ttk.Treeview(self.frame_sx, height=20)
+
+        self.tree_riepilogo['columns'] = ('Taglio', 'Peso')
+        self.tree_riepilogo['show'] = 'headings'
+        self.tree_riepilogo.heading('Taglio', text="Taglio")
+        self.tree_riepilogo.heading('Peso', text="Peso")
+
+        self.tree_riepilogo.column("Peso", width=80)
+
+        # LAYOUT
+        self.frame_sx.grid(row=0, column=0)
+        self.frame_dx.grid(row=0, column=1, sticky='n')
+
+        self.tree_riepilogo.grid()
+        self.notebook.grid()
 
         # TAB 1 AGNELLO
         self.tab1 = ttk.Frame(self.notebook)
