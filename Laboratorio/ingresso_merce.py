@@ -39,7 +39,7 @@ class IngressoMerce(tk.Toplevel):
             self.lista_fornitori.extend(row)
         # Creazione lista tagli suino
         self.lista_tagli = []
-        self.c.execute("SELECT taglio FROM tagli WHERE taglio LIKE '%Suino'")
+        self.c.execute("SELECT taglio FROM tagli WHERE id_merceologia = 11")
 
         for row in self.c:
             self.lista_tagli.extend(row)
