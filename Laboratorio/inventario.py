@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+import datetime as dt
 import mysql.connector
 
 
@@ -9,6 +10,8 @@ class Inventario(tk.Toplevel):
         self.title("Inventario")
 
         self.value = tk.StringVar()
+
+        self.data = dt.date.today()
 
         # connessione database
         self.conn = mysql.connector.connect(host='192.168.0.100',
@@ -20,9 +23,9 @@ class Inventario(tk.Toplevel):
         self.img_btn1 = tk.PhotoImage(file=".//immagini//logo_piccolo.gif")
 
         # Definizione Frame
-        self.frame_sx = ttk.Frame(self)
-        self.frame_centrale = ttk.Frame(self)
-        self.frame_dx = ttk.Frame(self)
+        self.frame_sx = tk.Frame(self)
+        self.frame_alto = tk.Frame(self, bd='3', relief='groove')
+        self.frame_dx = tk.Frame(self)
 
         self.notebook = ttk.Notebook(self.frame_dx)
 
@@ -36,11 +39,20 @@ class Inventario(tk.Toplevel):
 
         self.tree_riepilogo.column("Peso", width=80)
 
+        # LABEL che mostra il numero della settimana
+        self.lbl_settimana = tk.Label(self.frame_alto, text='SETTIMANA NUMERO ',
+                                      foreground='blue', font=('Verdana', 20), relief='ridge', padx=20)
+        self.lbl_nr_settimana = tk.Label(self.frame_alto, text=str(1 + int(self.data.strftime('%W'))),
+                                         font=('Verdana', 20), bg='white', relief='sunken', padx=20)
+
         # LAYOUT
-        self.frame_sx.grid(row=0, column=0)
-        self.frame_dx.grid(row=0, column=1, sticky='n')
+        self.frame_sx.grid(row=0, column=0, rowspan=2)
+        self.frame_alto.grid(row=0, column=1)
+        self.frame_dx.grid(row=1, column=1, sticky='n')
 
         self.tree_riepilogo.grid()
+        self.lbl_settimana.grid(row=0, column=1)
+        self.lbl_nr_settimana.grid(row=0, column=2)
         self.notebook.grid()
 
         # TAB 1 AGNELLO
