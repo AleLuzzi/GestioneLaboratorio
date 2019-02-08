@@ -34,10 +34,6 @@ class NuovoLottoCucina(tk.Toplevel):
                                      bd='3', relief='groove')
         self.frame_basso = tk.Frame(self, bd='3', background='white', relief='groove')
 
-        self.frame_centro.grid_propagate(False)
-        self.frame_centro.grid_rowconfigure(0, weight=2)
-        self.frame_centro.grid_columnconfigure(0, weight=2)
-
         # LABEL nuovo lotto vendita
         self.lbl_nuovo_lotto = tk.Label(self.frame_alto, text='NUOVO LOTTO VENDITA', font=('Helvetica', 20),
                                         foreground='blue', relief='ridge', padx=20)
@@ -65,11 +61,8 @@ class NuovoLottoCucina(tk.Toplevel):
 
         self.tree.tag_configure('odd', background='light green')
 
-        # LABELFRAME nuova produzione
-        self.labelframe = ttk.Labelframe(self.frame_centro, text="Nuova Produzione")
-
         # NOTEBOOK e posizione
-        self.notebook = ttk.Notebook(self.labelframe)
+        self.notebook = ttk.Notebook(self.frame_centro)
 
         # TAB 1 per PRIMI PIATTI
         self.tab1 = ttk.Frame(self.notebook)
@@ -264,15 +257,14 @@ class NuovoLottoCucina(tk.Toplevel):
         self.btn_elimina_riga = tk.Button(self.frame_centro, text='Elimina riga', command=self.rimuovi_riga_selezionata)
 
         # LAYOUT
-        self.frame_alto.grid(row=0, column=0, padx=10, sticky='n')
-        self.frame_centro.grid(row=1, column=0, sticky='ns')
-        self.frame_basso.grid(row=2, column=0, columnspan=3, sticky='we')
+        self.frame_alto.grid(row=0, column=0, padx=10)
+        self.frame_centro.grid(row=1, column=0)
+        self.frame_basso.grid(row=2, column=0, columnspan=3)
 
         self.tree.grid(row=0, column=1)
         self.btn_elimina_riga.grid(row=1, column=1, sticky='we')
 
-        self.labelframe.grid(row=0, column=0, rowspan=2)
-        self.notebook.grid(row=0, column=0)
+        self.notebook.grid(row=0, column=0, rowspan=2)
 
         self.lbl_settimana.grid(row=0, column=1)
         self.lbl_nr_settimana.grid(row=0, column=2)
@@ -280,12 +272,12 @@ class NuovoLottoCucina(tk.Toplevel):
         self.lbl_nuovo_lotto.grid(row=0, column=3)
         self.lbl_prog_lotto_vendita.grid(row=0, column=4)
 
-        self.lblframe_peso.grid(row=0, column=0, sticky='w')
+        self.lblframe_peso.grid(row=0, column=0)
         self.entry_peso.grid()
 
-        self.btn_invia.grid(row=0, column=1, padx=10, pady=20)
-        self.btn_esci.grid(row=0, column=2, padx=10, pady=20)
-        self.btn_esci_salva.grid(row=0, column=3, padx=10, pady=20)
+        self.btn_invia.grid(row=0, column=1, padx=10, pady=10)
+        self.btn_esci_salva.grid(row=0, column=2, padx=10, pady=10)
+        self.btn_esci.grid(row=0, column=3, padx=10, pady=10)
 
         # self.crea_articoli_nuova_produzione()
 
