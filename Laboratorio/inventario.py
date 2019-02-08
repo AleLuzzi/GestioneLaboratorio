@@ -24,13 +24,12 @@ class Inventario(tk.Toplevel):
 
         # Definizione Frame
         self.frame_sx = tk.Frame(self)
-        # self.frame_alto = tk.Frame(self, bd='3', relief='groove')
         self.frame_dx = tk.Frame(self)
 
         self.notebook = ttk.Notebook(self.frame_dx)
 
         # TREEVIEW riepilogo inventario
-        self.tree_riepilogo = ttk.Treeview(self.frame_sx, height=20)
+        self.tree_riepilogo = ttk.Treeview(self.frame_sx, height=18)
 
         self.tree_riepilogo['columns'] = ('Taglio', 'Peso')
         self.tree_riepilogo['show'] = 'headings'
@@ -45,15 +44,31 @@ class Inventario(tk.Toplevel):
         self.lbl_nr_settimana = tk.Label(self.frame_dx, text=str(1 + int(self.data.strftime('%W'))),
                                          font=('Verdana', 20), bg='white', relief='sunken', padx=20)
 
+        # ENTRY peso inserito
+        self.ent_peso = tk.Entry(self.frame_dx, font=('Verdana', 15))
+
+        # BUTTON inserimento peso
+        self.btn_inserisci_peso = tk.Button(self.frame_dx, text='INSERISCI PESO', font=('Verdana', 15))
+
+        # BUTTON salva dati
+        self.btn_salva_dati = tk.Button(self.frame_dx, text='SALVA DATI', font=('Verdana', 15))
+
+        # BUTTON chiudi finestra
+        self.btn_chiudi = tk.Button(self.frame_dx, text='CHIUDI FINESTRA', font=('Verdana', 15))
+
         # LAYOUT
-        self.frame_sx.grid(row=0, column=0)
-        # self.frame_alto.grid(row=0, column=1)
+        self.frame_sx.grid(row=0, column=0, rowspan=2)
         self.frame_dx.grid(row=0, column=1, sticky='n')
 
         self.tree_riepilogo.grid()
-        self.lbl_settimana.grid(row=0, column=1, sticky='we')
-        self.lbl_nr_settimana.grid(row=0, column=2, sticky='we')
-        self.notebook.grid(row=1, column=1, columnspan=2)
+        self.lbl_settimana.grid(row=0, column=1, columnspan=2, sticky='we')
+        self.lbl_nr_settimana.grid(row=0, column=3, sticky='we')
+        self.notebook.grid(row=1, column=1, columnspan=4, sticky='we')
+
+        self.ent_peso.grid(row=2, column=1)
+        self.btn_inserisci_peso.grid(row=2, column=2)
+        self.btn_salva_dati.grid(row=2, column=3)
+        self.btn_chiudi.grid(row=2, column=4)
 
         # TAB 1 AGNELLO
         self.tab1 = tk.Frame(self.notebook)
