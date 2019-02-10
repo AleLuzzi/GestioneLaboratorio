@@ -27,7 +27,7 @@ from reportlab.lib.units import mm
 class LottiInVenditaCucina(tk.Toplevel):
 	def __init__(self):
 		super(LottiInVenditaCucina, self).__init__()
-		self.geometry("1024x525+0+0")
+		self.geometry("+0+0")
 		self.title('Lotti in vendita Cucina')
 
 		self.conn = mysql.connector.connect(host='192.168.0.100',
@@ -54,7 +54,7 @@ class LottiInVenditaCucina(tk.Toplevel):
 		self.frame_dx_basso = tk.Frame(self, background='white')
 
 		# Treeview con lotti disponibili
-		self.tree = ttk.Treeview(self.frame_sx, height=23)
+		self.tree = ttk.Treeview(self.frame_sx, height=16)
 		self.tree['columns'] = 'peso'
 
 		self.tree.heading('peso', text="peso")
@@ -66,21 +66,21 @@ class LottiInVenditaCucina(tk.Toplevel):
 
 		# Label
 		self.label_selezionato = ttk.Label(self.frame_dx, text='Prodotto selezionato', font=('Helvetica', 20))
-		self.label_dettagli = ttk.Label(self.frame_dx, text='Dettagli prodotto selezionato', font=('Helvetica', 20))
+		# self.label_dettagli = ttk.Label(self.frame_dx, text='Dettagli prodotto selezionato', font=('Helvetica', 20))
 
 		# LABELFRAME dettagli prodotto selezionato
 		self.lbl_frame_dettagli_selezionato = ttk.LabelFrame(self.frame_dx,
-		                                                     text='Dettagli prodotto selezionato')
+		                                                     text='INGREDIENTI')
 
 		# LABELFRAME plu prodotto selezionato
-		self.lblfrm_plu_prod_sel = ttk.LabelFrame(self.frame_dx)
+		self.lblfrm_plu_prod_sel = ttk.LabelFrame(self.frame_dx, text='PLU')
 
 		# LABEL plu prodotto selezionato
-		self.lbl_plu_selezionato = ttk.Label(self.lblfrm_plu_prod_sel,
-		                                     borderwidth=3,
-		                                     relief='solid',
-		                                     text='PLU',
-		                                     font=('Helvetica', 20))
+		# self.lbl_plu_selezionato = ttk.Label(self.lblfrm_plu_prod_sel,
+		                                     # borderwidth=3,
+		                                     # relief='solid',
+		                                     # text='PLU',
+		                                     # font=('Helvetica', 20))
 		self.lbl_txt_plu_selezionato = ttk.Label(self.lblfrm_plu_prod_sel,
 		                                         text='---',
 		                                         font=('Helvetica', 20))
@@ -127,14 +127,14 @@ class LottiInVenditaCucina(tk.Toplevel):
 		self.label_selezionato.grid(row=0, column=0, columnspan=2)
 		self.tree_selezionato.grid(row=2, column=0, columnspan=2)
 
-		self.label_dettagli.grid(row=3, column=0, columnspan=2)
-		self.lbl_frame_dettagli_selezionato.grid(row=3, column=0, columnspan=2)
+		# self.label_dettagli.grid(row=3, column=0, columnspan=2)
+		self.lbl_frame_dettagli_selezionato.grid(row=3, column=0, columnspan=2, rowspan=2)
 
-		self.lblfrm_plu_prod_sel.grid(row=3, column=3)
-		self.lbl_plu_selezionato.grid(row=0, column=0, padx=20)
+		self.lblfrm_plu_prod_sel.grid(row=3, column=3, sticky='n')
+		# self.lbl_plu_selezionato.grid(row=0, column=0, padx=20)
 		self.lbl_txt_plu_selezionato.grid(row=1, column=0, padx=20)
 
-		self.btn_stp_etichetta.grid(row=4, column=0)
+		self.btn_stp_etichetta.grid(row=4, column=3)
 
 		self.btn_in_bilancia.grid(row='0', column='0', padx='20', pady='20')
 		self.btn_uscita.grid(row='0', column='1', padx='20', pady='20')
@@ -150,9 +150,9 @@ class LottiInVenditaCucina(tk.Toplevel):
 			if r % 12 == 0:
 				r = 1
 				c += 2
-			lbl = ttk.Label(self.lbl_frame_dettagli_selezionato, text=campo)
-			lbl.grid(row=r, column=c)
-			self.label[campo] = lbl
+			# lbl = ttk.Label(self.lbl_frame_dettagli_selezionato, text=campo)
+			# lbl.grid(row=r, column=c)
+			# self.label[campo] = lbl
 
 			ent = ttk.Entry(self.lbl_frame_dettagli_selezionato, width='50')
 			ent.grid(row=r, column=c + 1)
