@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 import datetime as dt
 import mysql.connector
 
@@ -14,7 +15,7 @@ class Inventario(tk.Toplevel):
         self.data = dt.date.today()
 
         # connessione database
-        self.conn = mysql.connector.connect(host='192.168.0.100',
+        self.conn = mysql.connector.connect(host='localhost',
                                             database='data',
                                             user='root',
                                             password='')
@@ -31,9 +32,10 @@ class Inventario(tk.Toplevel):
         # TREEVIEW riepilogo inventario
         self.tree_riepilogo = ttk.Treeview(self.frame_sx, height=18)
 
-        self.tree_riepilogo['columns'] = ('Taglio', 'Peso')
+        self.tree_riepilogo['columns'] = ('Taglio', 'Merceologia', 'Peso')
         self.tree_riepilogo['show'] = 'headings'
         self.tree_riepilogo.heading('Taglio', text="Taglio")
+        self.tree_riepilogo.heading('Merceologia', text='Merceologia')
         self.tree_riepilogo.heading('Peso', text="Peso")
 
         self.tree_riepilogo.column("Peso", width=80)
@@ -45,30 +47,44 @@ class Inventario(tk.Toplevel):
                                          font=('Verdana', 20), bg='white', relief='sunken', padx=20)
 
         # ENTRY peso inserito
-        self.ent_peso = tk.Entry(self.frame_dx, font=('Verdana', 15))
+        self.peso = tk.StringVar()
+        self.ent_peso = tk.Entry(self.frame_dx, textvariable=self.peso, font=('Verdana', 15))
+
+        self.img_btn_focus_ean = tk.PhotoImage(file=".//immagini//modifica.gif")
+        self.btn_focus_ean = ttk.Button(self.frame_dx, image=self.img_btn_focus_ean, command=self.ent_peso.focus)
 
         # BUTTON inserimento peso
-        self.btn_inserisci_peso = tk.Button(self.frame_dx, text='INSERISCI PESO', font=('Verdana', 15))
+        self.btn_inserisci_peso = tk.Button(self.frame_dx, text='INSERISCI PESO', font=('Verdana', 15),
+                                            command=self.ins_peso)
+
+        # BUTTON elimina riga
+        self.btn_rimuovi_riga = tk.Button(self.frame_sx,
+                                          text="RIMUOVI RIGA",
+                                          font=('Verdana', 15),
+                                          command=self.rimuovi_riga_selezionata)
 
         # BUTTON salva dati
         self.btn_salva_dati = tk.Button(self.frame_dx, text='SALVA DATI', font=('Verdana', 15))
 
         # BUTTON chiudi finestra
-        self.btn_chiudi = tk.Button(self.frame_dx, text='CHIUDI FINESTRA', font=('Verdana', 15))
+        self.btn_chiudi = tk.Button(self.frame_dx, text='CHIUDI FINESTRA', font=('Verdana', 15), command=self.destroy)
 
         # LAYOUT
         self.frame_sx.grid(row=0, column=0, rowspan=2)
         self.frame_dx.grid(row=0, column=1, sticky='n')
 
-        self.tree_riepilogo.grid()
+        self.tree_riepilogo.grid(row=0, column=0)
+        self.btn_rimuovi_riga.grid(row=1, column=0, sticky='we')
+
         self.lbl_settimana.grid(row=0, column=1, columnspan=2, sticky='we')
         self.lbl_nr_settimana.grid(row=0, column=3, sticky='we')
-        self.notebook.grid(row=1, column=1, columnspan=4, sticky='we')
+        self.notebook.grid(row=1, column=1, columnspan=5, sticky='we')
 
         self.ent_peso.grid(row=2, column=1)
-        self.btn_inserisci_peso.grid(row=2, column=2)
-        self.btn_salva_dati.grid(row=2, column=3)
-        self.btn_chiudi.grid(row=2, column=4)
+        self.btn_focus_ean.grid(row=2, column=2)
+        self.btn_inserisci_peso.grid(row=2, column=3)
+        self.btn_salva_dati.grid(row=2, column=4)
+        self.btn_chiudi.grid(row=2, column=5)
 
         # TAB 1 AGNELLO
         self.tab1 = tk.Frame(self.notebook)
@@ -145,6 +161,23 @@ class Inventario(tk.Toplevel):
                            font='Verdana', width=20,
                            value=lst_vitello[i]).grid(row=r, column=c)
             r += 1
+
+    def rimuovi_riga_selezionata(self):
+            curitem = self.tree_riepilogo.selection()[0]
+            self.tree_riepilogo.delete(curitem)
+
+    def ins_peso(self):
+        if self.value.get() != '' and self.peso.get() != '':
+            taglio = self.value.get()
+            cat_merc = self.notebook.tab(self.notebook.select(), "text")
+            self.c.execute("SELECT Id FROM merceologie WHERE merceologia = %s", (cat_merc,))
+            id_merc = self.c.fetchone()
+            dati = [taglio, id_merc, self.peso.get(), self.data]
+            self.tree_riepilogo.insert('', 'end', values=(taglio, cat_merc, self.peso.get()))
+            self.ent_peso.delete(0, tk.END)
+            print(dati)
+        else:
+            messagebox.showinfo('ATTENZIONE', 'dati mancanti.. controlla!!!')
 
 
 if __name__ == '__main__':
