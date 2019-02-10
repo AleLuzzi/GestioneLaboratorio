@@ -15,7 +15,7 @@ class Inventario(tk.Toplevel):
         self.data = dt.date.today()
 
         # connessione database
-        self.conn = mysql.connector.connect(host='localhost',
+        self.conn = mysql.connector.connect(host='192.168.0.100',
                                             database='data',
                                             user='root',
                                             password='')
