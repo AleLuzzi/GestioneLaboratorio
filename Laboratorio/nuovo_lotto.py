@@ -9,7 +9,7 @@ class NuovoLotto(tk.Toplevel):
     def __init__(self):
         tk.Toplevel.__init__(self)
         self.title("Nuovo Lotto")
-        self.geometry("1024x525+0+0")
+        self.geometry("1024x540+0+0")
 
         self.data = dt.date.today()
 
@@ -143,7 +143,7 @@ class NuovoLotto(tk.Toplevel):
 
         row, col = 1, 0
         for i in range(0, len(self.lista_nuova_produzione)):
-            if row % 8 == 0:
+            if row % 9 == 0:
                 col += 1
                 row = 1
             tk.Radiobutton(self.labelframe,
