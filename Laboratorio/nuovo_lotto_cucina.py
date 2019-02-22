@@ -285,11 +285,11 @@ class NuovoLottoCucina(tk.Toplevel):
             curitem = self.tree.selection()[0]
             self.tree.delete(curitem)
 
-    def invia(self, giorno=dt.date.today()):
+    def invia(self):
         self.tree.insert('', 'end', values=('L' + (str(self.prog_lotto_ven)),
                                             self.value.get(),
                                             self.peso_da_inserire.get(),
-                                            giorno,
+                                            self.data,
                                             (1 + int(self.data.strftime('%W')))))
         self.entry_peso.delete(0, tk.END)
 
