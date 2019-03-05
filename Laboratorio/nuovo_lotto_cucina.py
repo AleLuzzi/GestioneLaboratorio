@@ -303,7 +303,8 @@ class NuovoLottoCucina(tk.Toplevel):
         for child in self.tree.get_children():
             self.lista_da_salvare.append(self.tree.item(child)['values'])
         print(self.lista_da_salvare)
-        self.c.executemany('INSERT INTO lotti_vendita_cucina VALUES (%s,%s,%s,%s,%s)', self.lista_da_salvare)
+        self.c.executemany('INSERT INTO lotti_vendita_cucina(progressivo_ven_c, prodotto, quantita,'
+                           'data_prod, settimana) VALUES (%s,%s,%s,%s,%s)', self.lista_da_salvare)
         self.conn.commit()
         self.conn.close()
         self.destroy()
