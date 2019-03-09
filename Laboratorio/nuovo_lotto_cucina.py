@@ -3,6 +3,7 @@ from tkinter import ttk
 import datetime as dt
 import mysql.connector
 from tkinter import messagebox
+from tastiera_num import Tast_num
 
 
 class NuovoLottoCucina(tk.Toplevel):
@@ -23,7 +24,6 @@ class NuovoLottoCucina(tk.Toplevel):
         self.lista_da_salvare = []
         self.lista_nuova_produzione = []
         self.nuova_produzione = tk.StringVar()
-        self.peso_da_inserire = tk.StringVar()
         self.prog_lotto_ven = self.data.strftime('%d%m%y')
         self.img_btn1 = tk.PhotoImage(file=".//immagini//logo_piccolo.gif")
         self.value = tk.StringVar()
@@ -33,6 +33,8 @@ class NuovoLottoCucina(tk.Toplevel):
         self.frame_centro = tk.Frame(self, height=450, width=self.winfo_screenwidth(),
                                      bd='3', relief='groove')
         self.frame_basso = tk.Frame(self, bd='3', background='white', relief='groove')
+
+        self.tast = Tast_num(self.frame_centro)
 
         # LABEL nuovo lotto vendita
         self.lbl_nuovo_lotto = tk.Label(self.frame_alto, text='NUOVO LOTTO VENDITA', font=('Helvetica', 20),
@@ -238,7 +240,7 @@ class NuovoLottoCucina(tk.Toplevel):
         # ENTRY per inserimento del peso
         self.entry_peso = ttk.Entry(self.lblframe_peso,
                                     font=('Helvetica', 20),
-                                    textvariable=self.peso_da_inserire)
+                                    textvariable=self.tast.value)
         self.entry_peso.focus()
 
         # BOTTONE ESCI E SALVA
@@ -261,10 +263,11 @@ class NuovoLottoCucina(tk.Toplevel):
         self.frame_centro.grid(row=1, column=0)
         self.frame_basso.grid(row=2, column=0, columnspan=3)
 
+        self.notebook.grid(row=0, column=0, rowspan=3)
+
         self.tree.grid(row=0, column=1)
         self.btn_elimina_riga.grid(row=1, column=1, sticky='we')
-
-        self.notebook.grid(row=0, column=0, rowspan=2)
+        self.tast.grid(row=2, column=1)
 
         self.lbl_settimana.grid(row=0, column=1)
         self.lbl_nr_settimana.grid(row=0, column=2)
@@ -288,10 +291,11 @@ class NuovoLottoCucina(tk.Toplevel):
     def invia(self):
         self.tree.insert('', 'end', values=('L' + (str(self.prog_lotto_ven)),
                                             self.value.get(),
-                                            self.peso_da_inserire.get(),
+                                            self.tast.value.get(),
                                             self.data,
                                             (1 + int(self.data.strftime('%W')))))
         self.entry_peso.delete(0, tk.END)
+        self.tast.clear()
 
     def esci_senza_salvare(self):
         if bool(self.tree.get_children()):

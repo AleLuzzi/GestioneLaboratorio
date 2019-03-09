@@ -24,7 +24,9 @@ class Tast_num(tk.Frame):
 
 		self.btn0 = ttk.Button(self, text='0', command=lambda: self._btn_pressed(0))
 		self.btndot = ttk.Button(self, text='.', command=lambda: self._btn_pressed('.'))
-		self.canc = ttk.Button(self, text='canc', command=self._canc)
+		self.canc = ttk.Button(self, text='canc', command=self.clear)
+
+		self.canc_uno = ttk.Button(self, text='<-', command=self._canc)
 
 		self.btn1.grid(row=0, column=0)
 		self.btn2.grid(row=0, column=1)
@@ -40,16 +42,26 @@ class Tast_num(tk.Frame):
 
 		self.btn0.grid(row=3, column=0)
 		self.btndot.grid(row=3, column=1)
-		self.canc.grid(row=3, column=2)
+		self.canc_uno.grid(row=3, column=2)
+
+		self.canc.grid(row=4, column=0, columnspan=3)
 
 	def _btn_pressed(self, val):
-			self.var = self.var + str(val)
+		self.var = self.var + str(val)
+		if  self.var.startswith('0'):
+			self.clear()
+		else:
 			self.value.set(self.var)
 			print(self.value.get())
 
-	def _canc(self):
+	def clear(self):
 		self.value.set('')
 		self.var = ""
+
+	def _canc(self):
+		self.var = self.var[:-1]
+		self.value.set(self.var)
+		print(self.value.get())
 
 
 if __name__ == '__main__':
