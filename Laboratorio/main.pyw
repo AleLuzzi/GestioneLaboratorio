@@ -4,17 +4,6 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import os
 
-from ingredienti import Ingredienti
-from ingresso_merce import IngressoMerce
-from chiudi_lotto import ChiudiLotto
-from lotti_vendita import LottiInVendita
-from nuovo_lotto import NuovoLotto
-from nuovo_lotto_cucina import NuovoLottoCucina
-from inventario import Inventario
-from anagrafica import Anagrafica
-from nuovo_menu import NuovoMenu
-from lotti_vendita_cucina import LottiInVenditaCucina
-
 
 class Main(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
@@ -52,7 +41,7 @@ class Main(tk.Frame):
                               image=self.img_btn4, command=self.nuovo_lotto_cucina)
 
         bottone4a = ttk.Button(self.frm_alto, text="Lotti Vendita Cucina", compound='bottom',
-                              image=self.img_btn4_a, command=self.lotti_vendita_cucina)
+                               image=self.img_btn4_a, command=self.lotti_vendita_cucina)
 
         bottone5 = ttk.Button(self.frm_alto, text="Ingredienti", compound='bottom',
                               image=self.img_btn5, command=self.ingredienti)
@@ -70,7 +59,7 @@ class Main(tk.Frame):
                               image=self.img_btn9, command=self.nuovo_menu)
 
         bottone9a = ttk.Button(self.frm_alto, text="Ordine", compound='bottom',
-                              image=self.img_btn9_a)
+                               image=self.img_btn9_a)
 
         bottone10 = ttk.Button(self.frm_alto, text="Uscita", compound='bottom',
                                image=self.img_btn10, command=self.quit)
@@ -109,42 +98,52 @@ class Main(tk.Frame):
 
     @staticmethod
     def ingresso_merce():
+        from ingresso_merce import IngressoMerce
         IngressoMerce()
 
     @staticmethod
     def nuovo_lotto():
+        from nuovo_lotto import NuovoLotto
         NuovoLotto()
 
     @staticmethod
     def inventario():
+        from inventario import Inventario
         Inventario()
 
     @staticmethod
     def nuovo_lotto_cucina():
+        from nuovo_lotto_cucina import NuovoLottoCucina
         NuovoLottoCucina()
 
     @staticmethod
     def lotti_vendita_cucina():
+        from lotti_vendita_cucina import LottiInVenditaCucina
         LottiInVenditaCucina()
 
     @staticmethod
     def ingredienti():
+        from ingredienti import Ingredienti
         Ingredienti()
 
     @staticmethod
     def chiudi_lotto():
+        from chiudi_lotto import ChiudiLotto
         ChiudiLotto()
 
     @staticmethod
     def lotti_in_vendita():
+        from lotti_vendita import LottiInVendita
         LottiInVendita()
 
     @staticmethod
     def nuovo_menu():
+        from nuovo_menu import NuovoMenu
         NuovoMenu()
 
     @staticmethod
     def anagrafica():
+        from anagrafica import Anagrafica
         Anagrafica()
 
 
