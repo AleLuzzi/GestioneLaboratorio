@@ -3,7 +3,7 @@ from tkinter import ttk
 import datetime as dt
 import mysql.connector
 from tkinter import messagebox
-from tastiera_num import Tast_num
+# from tastiera_num import Tast_num
 
 
 class NuovoLottoCucina(tk.Toplevel):
@@ -12,7 +12,6 @@ class NuovoLottoCucina(tk.Toplevel):
         self.title("Nuovo Lotto Cucina")
         self.geometry("+0+0")
 
-        # self.data = dt.date.today().strftime('%d%m%y')
         self.data = dt.date.today()
 
         self.conn = mysql.connector.connect(host='192.168.0.100',
@@ -33,8 +32,6 @@ class NuovoLottoCucina(tk.Toplevel):
         self.frame_centro = tk.Frame(self, height=450, width=self.winfo_screenwidth(),
                                      bd='3', relief='groove')
         self.frame_basso = tk.Frame(self, bd='3', background='white', relief='groove')
-
-        self.tast = Tast_num(self.frame_centro)
 
         # LABEL nuovo lotto vendita
         self.lbl_nuovo_lotto = tk.Label(self.frame_alto, text='NUOVO LOTTO VENDITA', font=('Helvetica', 20),
@@ -240,7 +237,7 @@ class NuovoLottoCucina(tk.Toplevel):
         # ENTRY per inserimento del peso
         self.entry_peso = ttk.Entry(self.lblframe_peso,
                                     font=('Helvetica', 20),
-                                    textvariable=self.tast.value)
+                                    textvariable=self.value)
         self.entry_peso.focus()
 
         # BOTTONE ESCI E SALVA
@@ -267,7 +264,6 @@ class NuovoLottoCucina(tk.Toplevel):
 
         self.tree.grid(row=0, column=1)
         self.btn_elimina_riga.grid(row=1, column=1, sticky='we')
-        self.tast.grid(row=2, column=1)
 
         self.lbl_settimana.grid(row=0, column=1)
         self.lbl_nr_settimana.grid(row=0, column=2)
@@ -282,8 +278,6 @@ class NuovoLottoCucina(tk.Toplevel):
         self.btn_esci_salva.grid(row=0, column=2, padx=10, pady=10)
         self.btn_esci.grid(row=0, column=3, padx=10, pady=10)
 
-        # self.crea_articoli_nuova_produzione()
-
     def rimuovi_riga_selezionata(self):
             curitem = self.tree.selection()[0]
             self.tree.delete(curitem)
@@ -291,11 +285,10 @@ class NuovoLottoCucina(tk.Toplevel):
     def invia(self):
         self.tree.insert('', 'end', values=('L' + (str(self.prog_lotto_ven)),
                                             self.value.get(),
-                                            self.tast.value.get(),
+                                            self.value.get(),
                                             self.data,
                                             (1 + int(self.data.strftime('%W')))))
         self.entry_peso.delete(0, tk.END)
-        self.tast.clear()
 
     def esci_senza_salvare(self):
         if bool(self.tree.get_children()):
