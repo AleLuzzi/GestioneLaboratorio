@@ -26,6 +26,7 @@ class NuovoLottoCucina(tk.Toplevel):
         self.prog_lotto_ven = self.data.strftime('%d%m%y')
         self.img_btn1 = tk.PhotoImage(file=".//immagini//logo_piccolo.gif")
         self.value = tk.StringVar()
+        self.value_peso = tk.StringVar()
 
         # DISPOSIZIONE FRAME
         self.frame_alto = tk.Frame(self, bd='3', relief='groove')
@@ -237,7 +238,7 @@ class NuovoLottoCucina(tk.Toplevel):
         # ENTRY per inserimento del peso
         self.entry_peso = ttk.Entry(self.lblframe_peso,
                                     font=('Helvetica', 20),
-                                    textvariable=self.value)
+                                    textvariable=self.value_peso)
         self.entry_peso.focus()
 
         # BOTTONE ESCI E SALVA
@@ -285,7 +286,7 @@ class NuovoLottoCucina(tk.Toplevel):
     def invia(self):
         self.tree.insert('', 'end', values=('L' + (str(self.prog_lotto_ven)),
                                             self.value.get(),
-                                            self.value.get(),
+                                            self.value_peso.get(),
                                             self.data,
                                             (1 + int(self.data.strftime('%W')))))
         self.entry_peso.delete(0, tk.END)
