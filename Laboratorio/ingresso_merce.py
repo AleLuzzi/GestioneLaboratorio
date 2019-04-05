@@ -141,6 +141,9 @@ class IngressoMerce(tk.Toplevel):
         self.entry_ddt = ttk.Entry(self.frame_alto,
                                    textvariable=self.num_ddt,
                                    width=25)
+
+        self.btn_ins_num_ddt = ttk.Button(self.frame_alto, image=self.img_btn, command=self._ins_num_ddt)
+
         self.entry_ddt.focus()
 
         # ENTRY per inserimento del peso
@@ -152,6 +155,8 @@ class IngressoMerce(tk.Toplevel):
         self.entry = ttk.Entry(self.frame_alto,
                                textvariable=self.peso,
                                width=25)
+
+        self.btn_ins_peso = ttk.Button(self.frame_alto, image=self.img_btn, command=self._ins_peso)
 
         # BOTTONI salva e chiudi finestra
         self.btn_invio = tk.Button(self.frame_basso,
@@ -177,8 +182,6 @@ class IngressoMerce(tk.Toplevel):
                                           text="Rimuovi riga",
                                           command=self._rimuovi_riga_selezionata)
 
-        self.btn_ins_peso = ttk.Button(self.frame_alto, image=self.img_btn, command=self._ins_peso)
-
         # LAYOUT
         self.frame_alto.grid(row=0, column=1)
         self.frame_centrale.grid(row=1, column=1)
@@ -196,6 +199,7 @@ class IngressoMerce(tk.Toplevel):
 
         self.label_num_ddt.grid(row=3, column=0, sticky='w')
         self.entry_ddt.grid(row=3, column=1)
+        self.btn_ins_num_ddt.grid(row=3, column=2)
 
         self.label_peso.grid(row=4, column=0, sticky='w')
         self.entry.grid(row=4, column=1)
@@ -235,6 +239,11 @@ class IngressoMerce(tk.Toplevel):
         peso = Tast_num(self)
         val = peso.value.get()
         self.peso.set(val)
+
+    def _ins_num_ddt(self):
+        ddt_num = Tast_num(self)
+        val = ddt_num.value.get()
+        self.num_ddt.set(val)
 
     def _chiudi(self):
         self.destroy()
