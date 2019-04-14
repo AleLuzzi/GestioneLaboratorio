@@ -28,6 +28,9 @@ class Impostazioni(tk.Frame):
         # LABELFRAME Facebook
         self.lblfrm_facebook = tk.LabelFrame(self, text='Facebook', foreground='blue')
 
+        # LABELFRAME Stampante
+        self.lblfrm_stampante = tk.LabelFrame(self, text='Stampante', foreground='blue')
+
         # LABEL Database
         self.lbl_database = tk.Label(self.lblfrm_imp_database, text='Data Base')
         self.lbl_host = tk.Label(self.lblfrm_imp_database, text='Host')
@@ -61,6 +64,10 @@ class Impostazioni(tk.Frame):
                                              text=self.config['Facebook']['scadenza'],
                                              relief='sunken')
 
+        # LABEL Stampante
+        self.lbl_stampante = tk.Label(self.lblfrm_stampante,
+                                      text='Stampante')
+
         # LAYOUT
         self.frame_sx.grid()
 
@@ -85,6 +92,9 @@ class Impostazioni(tk.Frame):
         self.lbl_token_fb_value.grid(row=1, column=1)
         self.lbl_scad_token.grid(row=2, column=0)
         self.lbl_scad_token_value.grid(row=2, column=1)
+
+        self.lblfrm_stampante.grid(row=3, column=0, sticky='we')
+        self.lbl_stampante.grid()
 
     @staticmethod
     def leggi_file_ini():
