@@ -70,7 +70,7 @@ class Main(tk.Frame):
 
         label1.grid(row=0, column=0)
 
-        label2 = tk.Label(self.frm_basso, text="Barra di stato")
+        label2 = tk.Label(self.frm_basso, text=os.environ['COMPUTERNAME'])
 
         bottone1.grid(row=0, column=0, padx=4, pady=4)
         bottone2.grid(row=0, column=1, padx=4, pady=4)
