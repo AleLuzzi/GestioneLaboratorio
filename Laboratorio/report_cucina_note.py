@@ -9,16 +9,19 @@ import mysql.connector
 # import os
 from tkinter import messagebox
 import win32api
+import configparser
 
 
 class ReportCucina(tk.Frame):
     def __init__(self, parent):
         tk.Frame.__init__(self, parent)
 
+        self.config = self.leggi_file_ini()
+
         # Connessione al database
-        self.conn = mysql.connector.connect(host='192.168.0.100',
-                                            database='data',
-                                            user='root',
+        self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
+                                            database=self.config['DataBase']['db'],
+                                            user=self.config['DataBase']['user'],
                                             password='')
         self.c = self.conn.cursor()
 
@@ -76,6 +79,12 @@ class ReportCucina(tk.Frame):
         self.entry_settimana_s.grid()
         self.stampa.grid()
 
+    @staticmethod
+    def leggi_file_ini():
+        ini = configparser.ConfigParser()
+        ini.read('config.ini')
+        return ini
+
     def inserisci(self, anno=strftime('%Y')):
 
         self.tree_ingresso.delete(*self.tree_ingresso.get_children())
@@ -86,7 +95,7 @@ class ReportCucina(tk.Frame):
                        'WHERE settimana = %s '
                        'AND ingredienti.data_utilizzo>%s '
                        'GROUP BY prodotto',
-                       (self.settimana.get(),anno),)
+                       (self.settimana.get(), anno),)
         for row in self.c:
             self.tree_ingresso.insert("", 'end', values=(row[0], row[1], row[2]))
 
