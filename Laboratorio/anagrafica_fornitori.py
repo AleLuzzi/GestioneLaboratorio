@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import mysql.connector
+import configparser
 
 
 class Fornitori(tk.Frame):
@@ -9,11 +10,12 @@ class Fornitori(tk.Frame):
 
         self.item = ''
         self.valore_flag = dict()
+        self.config = self.leggi_file_ini()
 
         # Connessione al Database
-        self.conn = mysql.connector.connect(host='192.168.0.100',
-                                            database='data',
-                                            user='root',
+        self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
+                                            database=self.config['DataBase']['db'],
+                                            user=self.config['DataBase']['user'],
                                             password='')
         self.c = self.conn.cursor()
 
@@ -71,6 +73,12 @@ class Fornitori(tk.Frame):
         self.aggiorna()
         self.crea_label_entry()
         self.crea_attributi()
+
+    @staticmethod
+    def leggi_file_ini():
+        ini = configparser.ConfigParser()
+        ini.read('config.ini')
+        return ini
 
     def crea_label_entry(self):
         r = 1
