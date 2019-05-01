@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import mysql.connector
+import configparser
 
 
 class Dipendenti(tk.Frame):
@@ -8,11 +9,12 @@ class Dipendenti(tk.Frame):
         tk.Frame.__init__(self, parent)
 
         self.item = ''
+        self.config = self.leggi_file_ini()
 
         # Connessione al Database
-        self.conn = mysql.connector.connect(host='192.168.0.100',
-                                            database='data',
-                                            user='root',
+        self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
+                                            database=self.config['DataBase']['db'],
+                                            user=self.config['DataBase']['user'],
                                             password='')
         self.c = self.conn.cursor()
 
@@ -95,6 +97,12 @@ class Dipendenti(tk.Frame):
 
         self.aggiorna()
 
+    @staticmethod
+    def leggi_file_ini():
+        ini = configparser.ConfigParser()
+        ini.read('config.ini')
+        return ini
+
     def modifica(self):
         for campo in self.campi:
             stringa = 'UPDATE dipendenti SET {}=%s WHERE ID = %s'.format(campo)
@@ -134,6 +142,7 @@ class Dipendenti(tk.Frame):
             for campo in self.campi:
                 self.entry[campo].insert(0, self.row[i])
                 i += 1
+
 
 if __name__ == '__main__':
     root = tk.Tk()
