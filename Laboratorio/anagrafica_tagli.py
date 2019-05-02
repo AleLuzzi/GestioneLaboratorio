@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import mysql.connector
+import configparser
 
 
 class Tagli(tk.Frame):
@@ -8,11 +9,12 @@ class Tagli(tk.Frame):
         tk.Frame.__init__(self, parent)
 
         self.item = ''
+        self.config = self.leggi_file_ini()
 
         # Connessione al Database
-        self.conn = mysql.connector.connect(host='192.168.0.100',
-                                            database='data',
-                                            user='root',
+        self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
+                                            database=self.config['DataBase']['db'],
+                                            user=self.config['DataBase']['user'],
                                             password='')
         self.c = self.conn.cursor()
 
@@ -133,6 +135,12 @@ class Tagli(tk.Frame):
 
         self.cmb_box_filtro.grid(row=0, column=0, padx=10)
         self.btn_applica_filtro.grid(row=0, column=1, sticky='we')
+
+    @staticmethod
+    def leggi_file_ini():
+        ini = configparser.ConfigParser()
+        ini.read('config.ini')
+        return ini
 
     def filtra(self):
         self.tree_tagli.delete(*self.tree_tagli.get_children())
