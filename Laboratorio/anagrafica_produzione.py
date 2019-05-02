@@ -3,6 +3,7 @@ from tkinter import ttk
 import mysql.connector
 import os
 import shutil
+import configparser
 from tkinter import messagebox
 import datetime as dt
 import win32api
@@ -31,11 +32,12 @@ class Produzione(tk.Frame):
         self.filtro_merceologia = tk.StringVar()
         self.valore_ckb_flag1 = tk.StringVar()
         self.valore_ckb_flag1.set(0)
+        self.config = self.leggi_file_ini()
 
         # Connessione al Database
-        self.conn = mysql.connector.connect(host='192.168.0.100',
-                                            database='data',
-                                            user='root',
+        self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
+                                            database=self.config['DataBase']['db'],
+                                            user=self.config['DataBase']['user'],
                                             password='')
         self.c = self.conn.cursor()
 
@@ -120,17 +122,57 @@ class Produzione(tk.Frame):
                                          font=('Helvetica', 20),
                                          command=self.crea_file)
 
+        # crea ENTRY
+        r = 1
+        c = 0
+        for campo in self.campi:
+            if r % 12 == 0:
+                r = 1
+                c += 2
+            lbl = ttk.Label(self.lbl_frame_dettagli_selezionato, text=campo)
+            lbl.grid(row=r, column=c)
+            self.label[campo] = lbl
+
+            ent = ttk.Entry(self.lbl_frame_dettagli_selezionato)
+            ent.grid(row=r, column=c + 1)
+            self.entry[campo] = ent
+            r += 1
+
+        # crea LABEL formato ingredienti
+        r = 2
+        c = 0
+        for campo in self.formati:
+            if r % 12 == 0:
+                r = 1
+                c += 2
+            lbl = ttk.Label(self.frame_centrale_basso, text=campo)
+            lbl.grid(row=r, column=c)
+            self.label[campo] = lbl
+
+            ent = ttk.Entry(self.frame_centrale_basso, width='5')
+            ent.grid(row=r, column=c + 1)
+            self.entry[campo] = ent
+            r += 1
+
+        r = 2
+        c = 2
+        for campo in self.ingredienti:
+            if r % 12 == 0:
+                r = 1
+                c += 2
+            lbl = ttk.Label(self.frame_centrale_basso, text=campo)
+            lbl.grid(row=r, column=c)
+            self.label[campo] = lbl
+
+            ent = ttk.Entry(self.frame_centrale_basso, width='50')
+            ent.grid(row=r, column=c + 1)
+            self.entry[campo] = ent
+            r += 1
+
         # PROGRESS BAR
         self.progress_bar = ttk.Progressbar(self.lbl_frame_scegli, orient=tk.HORIZONTAL, mode='determinate')
 
-        self.crea_layout()
-        self.aggiorna()
-        self.riempi_combo_reparto()
-        self.riempi_combo_merceologie()
-        self.crea_label_entry()
-        self.crea_label_formato_ingredienti()
-
-    def crea_layout(self):
+        # LAYOUT
         self.frame_sx.grid(row=1, column=0, rowspan=2, sticky='n')
         self.frame_centrale_alto.grid(row=1, column=1, sticky='n')
         self.frame_centrale_basso.grid(row=2, column=1, sticky='n')
@@ -163,52 +205,15 @@ class Produzione(tk.Frame):
         self.btn_filtra.grid(sticky='we')
         self.btn_reset.grid(sticky='we')
 
-    def crea_label_entry(self):
-        r = 1
-        c = 0
-        for campo in self.campi:
-            if r % 12 == 0:
-                r = 1
-                c += 2
-            lbl = ttk.Label(self.lbl_frame_dettagli_selezionato, text=campo)
-            lbl.grid(row=r, column=c)
-            self.label[campo] = lbl
+        self.aggiorna()
+        self.riempi_combo_reparto()
+        self.riempi_combo_merceologie()
 
-            ent = ttk.Entry(self.lbl_frame_dettagli_selezionato)
-            ent.grid(row=r, column=c + 1)
-            self.entry[campo] = ent
-            r += 1
-
-    def crea_label_formato_ingredienti(self):
-        r = 2
-        c = 0
-        for campo in self.formati:
-            if r % 12 == 0:
-                r = 1
-                c += 2
-            lbl = ttk.Label(self.frame_centrale_basso, text=campo)
-            lbl.grid(row=r, column=c)
-            self.label[campo] = lbl
-
-            ent = ttk.Entry(self.frame_centrale_basso, width='5')
-            ent.grid(row=r, column=c + 1)
-            self.entry[campo] = ent
-            r += 1
-
-        r = 2
-        c = 2
-        for campo in self.ingredienti:
-            if r % 12 == 0:
-                r = 1
-                c += 2
-            lbl = ttk.Label(self.frame_centrale_basso, text=campo)
-            lbl.grid(row=r, column=c)
-            self.label[campo] = lbl
-
-            ent = ttk.Entry(self.frame_centrale_basso, width='50')
-            ent.grid(row=r, column=c + 1)
-            self.entry[campo] = ent
-            r += 1
+    @staticmethod
+    def leggi_file_ini():
+        ini = configparser.ConfigParser()
+        ini.read('config.ini')
+        return ini
 
     def riempi_combo_reparto(self):
         lista_rep = []
@@ -275,7 +280,8 @@ class Produzione(tk.Frame):
                        'testo_agg_3, testo_agg_4, pz_x_scatola, peso_fisso, num_offerta, art_in_pubblic, '
                        'sovrascritt_prezzo, stile_tracc, rich_stm_traccia, riga_1, riga_2, riga_3, riga_4, '
                        'formato_1, formato_2, formato_3, formato_4, merceologia, flag1_prod ) '
-                       'VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',
+                       'VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,'
+                       '%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',
                        self.lista_da_salvare)
         self.conn.commit()
         self.aggiorna()
