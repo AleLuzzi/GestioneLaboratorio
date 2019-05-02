@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import datetime as dt
 import mysql.connector
+import configparser
 
 
 class ChiudiLotto(tk.Toplevel):
@@ -10,10 +11,12 @@ class ChiudiLotto(tk.Toplevel):
         self.title("Chiudi Lotto")
         self.geometry("1024x525+0+0")
 
+        self.config = self.leggi_file_ini()
+
         # Connessione al database
-        self.conn = mysql.connector.connect(host='192.168.0.100',
-                                            database='data',
-                                            user='root',
+        self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
+                                            database=self.config['DataBase']['db'],
+                                            user=self.config['DataBase']['user'],
                                             password='')
         self.c = self.conn.cursor()
 
@@ -85,6 +88,12 @@ class ChiudiLotto(tk.Toplevel):
         self.btn_salva.grid(row=2, column=1, pady=20, padx=20)
 
         self.aggiorna()
+
+    @staticmethod
+    def leggi_file_ini():
+        ini = configparser.ConfigParser()
+        ini.read('config.ini')
+        return ini
 
     def rimuovi_riga_selezionata(self):
             curitem = self.tree_lotti_selezionati.selection()[0]
