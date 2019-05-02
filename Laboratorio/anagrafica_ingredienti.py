@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import mysql.connector
+import configparser
 
 
 class Ingredienti(tk.Frame):
@@ -9,11 +10,12 @@ class Ingredienti(tk.Frame):
 
         self.item = ''
         self.valore_flag = dict()
+        self.config = self.leggi_file_ini()
 
         # Connessione al Database
-        self.conn = mysql.connector.connect(host='192.168.0.100',
-                                            database='data',
-                                            user='root',
+        self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
+                                            database=self.config['DataBase']['db'],
+                                            user=self.config['DataBase']['user'],
                                             password='')
         self.c = self.conn.cursor()
         # Definizione Frame
@@ -71,6 +73,48 @@ class Ingredienti(tk.Frame):
         # LABELFRAME scegli ingrediente
         self.lbl_frame_scegli = ttk.LabelFrame(self.frame_dx, text='')
 
+        # crea Label ENTRY
+        r = 1
+        c = 0
+        for campo in self.campi:
+            if r % 12 == 0:
+                r = 1
+                c += 2
+            lbl = ttk.Label(self.lbl_frame_dettagli_selezionato, text=campo)
+            lbl.grid(row=r, column=c)
+            self.label[campo] = lbl
+
+            ent = ttk.Entry(self.lbl_frame_dettagli_selezionato)
+            ent.grid(row=r, column=c + 1)
+            self.entry[campo] = ent
+            r += 1
+
+        # Crea Attributi
+        r = 1
+        c = 0
+        for attributo in self.attributi:
+            if r % 12 == 0:
+                r = 1
+                c += 2
+            lbl = ttk.Label(self.lbl_frame_attributi_ingrediente, text=attributo)
+            lbl.grid(row=r, column=c)
+            self.label[attributo] = lbl
+
+            self.valore_flag[attributo] = tk.IntVar()
+            ckbtn = tk.Checkbutton(self.lbl_frame_attributi_ingrediente, variable=self.valore_flag[attributo])
+            ckbtn.grid(row=r, column=c + 1)
+            self.ckbutton[attributo] = ckbtn
+            r += 1
+
+        # Riempi COMBO Merceologia e Filtro
+        lista_merceologie = []
+
+        self.c.execute("SELECT merceologia From merceologie WHERE flag3_ing_base = 1 ")
+        for row in self.c:
+            lista_merceologie.extend(row)
+        self.box['values'] = lista_merceologie
+        self.box_filtro['values'] = lista_merceologie
+
         # BOTTONI per azioni
         self.btn_modifica = tk.Button(self.lbl_frame_scegli,
                                       text='Salva Modifiche',
@@ -102,51 +146,12 @@ class Ingredienti(tk.Frame):
         self.btn_inserisci.grid(sticky='we')
 
         self.aggiorna()
-        self.crea_label_entry()
-        self.crea_attributi()
-        self.riempi_combo_merceologia_e_filtro()
 
-    def riempi_combo_merceologia_e_filtro(self):
-        lista_merceologie = []
-
-        self.c.execute("SELECT merceologia From merceologie WHERE flag3_ing_base = 1 ")
-        for row in self.c:
-            lista_merceologie.extend(row)
-        self.box['values'] = lista_merceologie
-        self.box_filtro['values'] = lista_merceologie
-
-    def crea_label_entry(self):
-        r = 1
-        c = 0
-        for campo in self.campi:
-            if r % 12 == 0:
-                r = 1
-                c += 2
-            lbl = ttk.Label(self.lbl_frame_dettagli_selezionato, text=campo)
-            lbl.grid(row=r, column=c)
-            self.label[campo] = lbl
-
-            ent = ttk.Entry(self.lbl_frame_dettagli_selezionato)
-            ent.grid(row=r, column=c + 1)
-            self.entry[campo] = ent
-            r += 1
-
-    def crea_attributi(self):
-        r = 1
-        c = 0
-        for attributo in self.attributi:
-            if r % 12 == 0:
-                r = 1
-                c += 2
-            lbl = ttk.Label(self.lbl_frame_attributi_ingrediente, text=attributo)
-            lbl.grid(row=r, column=c)
-            self.label[attributo] = lbl
-
-            self.valore_flag[attributo] = tk.IntVar()
-            ckbtn = tk.Checkbutton(self.lbl_frame_attributi_ingrediente, variable=self.valore_flag[attributo])
-            ckbtn.grid(row=r, column=c + 1)
-            self.ckbutton[attributo] = ckbtn
-            r += 1
+    @staticmethod
+    def leggi_file_ini():
+        ini = configparser.ConfigParser()
+        ini.read('config.ini')
+        return ini
 
     def inserisci(self):
         lista_da_salvare = []
