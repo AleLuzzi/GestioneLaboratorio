@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import mysql.connector
+import configparser
 
 
 class Reparti(tk.Frame):
@@ -9,11 +10,12 @@ class Reparti(tk.Frame):
 
         self.item = ''
         self.valore_flag = dict()
+        self.config = self.leggi_file_ini()
 
         # Connessione al Database
-        self.conn = mysql.connector.connect(host='192.168.0.100',
-                                            database='data',
-                                            user='root',
+        self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
+                                            database=self.config['DataBase']['db'],
+                                            user=self.config['DataBase']['user'],
                                             password='')
         self.c = self.conn.cursor()
 
@@ -77,6 +79,12 @@ class Reparti(tk.Frame):
         self.lbl_frame_scegli.grid(row=3, column=0)
         self.btn_modifica.grid(sticky='we')
         self.btn_inserisci.grid(sticky='we')
+
+    @staticmethod
+    def leggi_file_ini():
+        ini = configparser.ConfigParser()
+        ini.read('config.ini')
+        return ini
 
     def crea_label_entry(self):
         r = 1
