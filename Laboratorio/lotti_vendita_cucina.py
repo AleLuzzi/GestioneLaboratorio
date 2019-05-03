@@ -5,6 +5,7 @@ import datetime as dt
 import mysql.connector
 import shutil
 import os
+import configparser
 
 '''
 from reportlab.lib import colors
@@ -16,7 +17,6 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_CENTER
 '''
 import win32api
-import win32print
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import mm
 
@@ -30,9 +30,11 @@ class LottiInVenditaCucina(tk.Toplevel):
 		self.geometry("+0+0")
 		self.title('Lotti in vendita Cucina')
 
-		self.conn = mysql.connector.connect(host='192.168.0.100',
-		                                    database='data',
-		                                    user='root',
+		self.config = self.leggi_file_ini()
+
+		self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
+		                                    database=self.config['DataBase']['db'],
+		                                    user=self.config['DataBase']['user'],
 		                                    password='')
 		self.c = self.conn.cursor()
 
@@ -66,7 +68,6 @@ class LottiInVenditaCucina(tk.Toplevel):
 
 		# Label
 		self.label_selezionato = ttk.Label(self.frame_dx, text='Prodotto selezionato', font=('Helvetica', 20))
-		# self.label_dettagli = ttk.Label(self.frame_dx, text='Dettagli prodotto selezionato', font=('Helvetica', 20))
 
 		# LABELFRAME dettagli prodotto selezionato
 		self.lbl_frame_dettagli_selezionato = ttk.LabelFrame(self.frame_dx,
@@ -76,11 +77,6 @@ class LottiInVenditaCucina(tk.Toplevel):
 		self.lblfrm_plu_prod_sel = ttk.LabelFrame(self.frame_dx, text='PLU')
 
 		# LABEL plu prodotto selezionato
-		# self.lbl_plu_selezionato = ttk.Label(self.lblfrm_plu_prod_sel,
-		                                     # borderwidth=3,
-		                                     # relief='solid',
-		                                     # text='PLU',
-		                                     # font=('Helvetica', 20))
 		self.lbl_txt_plu_selezionato = ttk.Label(self.lblfrm_plu_prod_sel,
 		                                         text='---',
 		                                         font=('Helvetica', 20))
@@ -117,6 +113,19 @@ class LottiInVenditaCucina(tk.Toplevel):
 		# PROGRESS BAR
 		self.progress_bar = ttk.Progressbar(self.frame_dx_basso, orient=tk.HORIZONTAL, mode='determinate')
 
+		# crea LABEL formato ingredienti
+		r = 2
+		c = 0
+		for campo in self.ingredienti:
+			if r % 12 == 0:
+				r = 1
+				c += 2
+
+			ent = ttk.Entry(self.lbl_frame_dettagli_selezionato, width='50')
+			ent.grid(row=r, column=c + 1)
+			self.entry[campo] = ent
+			r += 1
+
 		# LAYOUT
 		self.frame_sx.grid(row=0, column=0, rowspan=2)
 		self.frame_dx.grid(row=0, column=1)
@@ -127,11 +136,9 @@ class LottiInVenditaCucina(tk.Toplevel):
 		self.label_selezionato.grid(row=0, column=0, columnspan=2)
 		self.tree_selezionato.grid(row=2, column=0, columnspan=2)
 
-		# self.label_dettagli.grid(row=3, column=0, columnspan=2)
 		self.lbl_frame_dettagli_selezionato.grid(row=3, column=0, columnspan=2, rowspan=2)
 
 		self.lblfrm_plu_prod_sel.grid(row=3, column=3, sticky='n')
-		# self.lbl_plu_selezionato.grid(row=0, column=0, padx=20)
 		self.lbl_txt_plu_selezionato.grid(row=1, column=0, padx=20)
 
 		self.btn_stp_etichetta.grid(row=4, column=3)
@@ -141,30 +148,19 @@ class LottiInVenditaCucina(tk.Toplevel):
 		self.progress_bar.grid(row='1', column='0', columnspan='2', sticky='we')
 
 		self.riempi_tutti()
-		self.crea_label_formato_ingredienti()
 
-	def crea_label_formato_ingredienti(self):
-		r = 2
-		c = 0
-		for campo in self.ingredienti:
-			if r % 12 == 0:
-				r = 1
-				c += 2
-			# lbl = ttk.Label(self.lbl_frame_dettagli_selezionato, text=campo)
-			# lbl.grid(row=r, column=c)
-			# self.label[campo] = lbl
-
-			ent = ttk.Entry(self.lbl_frame_dettagli_selezionato, width='50')
-			ent.grid(row=r, column=c + 1)
-			self.entry[campo] = ent
-			r += 1
+	@staticmethod
+	def leggi_file_ini():
+		ini = configparser.ConfigParser()
+		ini.read('config.ini')
+		return ini
 
 	def riempi_tutti(self):
 		self.tree.delete(*self.tree.get_children())
 
 		self.c.execute("SELECT DISTINCT progressivo_ven_c,prodotto,quantita,data_prod "
 		               "FROM lotti_vendita_cucina "
-		               "ORDER BY data_prod DESC")
+		               "WHERE data_prod >= %s", (self.data,))
 		for lista in self.c:
 			try:
 				self.tree.insert('', 'end', lista[0], text=lista[0], tags=('odd',))
@@ -204,16 +200,14 @@ class LottiInVenditaCucina(tk.Toplevel):
 		d.drawString(2 * mm, -8 * mm, (self.tree.item(self.item, 'text').upper()))
 		self.c.execute("SELECT * FROM prodotti WHERE Prodotto = %s", (self.tree.item(self.item, 'text'),))
 		for self.row in self.c:
-
 			d.setFont('Helvetica', 15)
 			d.drawString(2 * mm, -18 * mm, self.row[25])
 			d.drawString(2 * mm, -23 * mm, self.row[26])
 			d.drawString(2 * mm, -28 * mm, self.row[27])
 			d.setFont('Helvetica', 10)
-			# d.drawString(2 * mm, -33 * mm, self.tree.parent(self.item))
 			d.drawString(2 * mm, -45 * mm, '€/Kg ')
 			d.setFont('Helvetica', 25)
-			d.drawString(20 * mm, -45 * mm, str("%.2f" % (float(self.row[4])/100)))
+			d.drawString(20 * mm, -45 * mm, str("%.2f" % (float(self.row[4]) / 100)))
 			d.setFont('Helvetica', 12)
 			d.drawString(80 * mm, -45 * mm, 'PLU')
 			d.setFont('Helvetica', 15)
@@ -221,7 +215,7 @@ class LottiInVenditaCucina(tk.Toplevel):
 
 		d.showPage()
 		d.save()
-		win32api.ShellExecute(None, "print", "Eti_anagrafica.pdf", '/d:"%s"' % win32print.GetDefaultPrinter(), ".", 0)
+		win32api.ShellExecute(0, "printto", "Eti_anagrafica.pdf", self.config['Stampante']['stampa'], ".", 0)
 
 	def crea_file(self):
 		path = '//192.168.0.224/c/WinSwGx-NET//bizvar/LABORATORIO/'
