@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, filedialog
 import configparser
+import win32print
 
 
 class Impostazioni(tk.Frame):
@@ -9,10 +10,12 @@ class Impostazioni(tk.Frame):
 
         self.config = self.leggi_file_ini()
         self.token_fb_status = self.controlla_token()
+        self.img_btn = tk.PhotoImage(file=".//immagini//Save-icon.gif")
 
         # STRINGVAR
         self.win_dir = tk.StringVar()
         self.win_dir.set(self.config['Winswgx']['dir'])
+        self.stampante_value = tk.StringVar()
 
         # FRAME
         self.frame_sx = tk.Frame(self)
@@ -67,6 +70,14 @@ class Impostazioni(tk.Frame):
         # LABEL Stampante
         self.lbl_stampante = tk.Label(self.lblfrm_stampante,
                                       text='Stampante')
+        self.lbl_stampante_value = tk.Label(self.lblfrm_stampante, text=self.config['Stampante']['stampa'])
+        self.cmb_box_stampante = ttk.Combobox(self.lblfrm_stampante,
+                                              textvariable=self.stampante_value,
+                                              state='read only')
+        self.btn_salva_stampante = ttk.Button(self.lblfrm_stampante, image=self.img_btn)
+
+        lista_stampanti = [printer[2] for printer in win32print.EnumPrinters(2)]
+        self.cmb_box_stampante['values'] = lista_stampanti
 
         # LAYOUT
         self.frame_sx.grid()
@@ -94,7 +105,10 @@ class Impostazioni(tk.Frame):
         self.lbl_scad_token_value.grid(row=2, column=1)
 
         self.lblfrm_stampante.grid(row=3, column=0, sticky='we')
-        self.lbl_stampante.grid()
+        self.lbl_stampante.grid(row=1, column=0)
+        self.lbl_stampante_value.grid(row=1, column=1)
+        self.cmb_box_stampante.grid(row=1, column=2)
+        self.btn_salva_stampante.grid(row=1, column=3, padx=5)
 
     @staticmethod
     def leggi_file_ini():
