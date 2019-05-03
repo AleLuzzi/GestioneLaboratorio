@@ -16,6 +16,7 @@ class Impostazioni(tk.Frame):
         self.win_dir = tk.StringVar()
         self.win_dir.set(self.config['Winswgx']['dir'])
         self.stampante_value = tk.StringVar()
+        self.stampante_value.set(self.config['Stampante']['stampa'])
 
         # FRAME
         self.frame_sx = tk.Frame(self)
@@ -70,11 +71,11 @@ class Impostazioni(tk.Frame):
         # LABEL Stampante
         self.lbl_stampante = tk.Label(self.lblfrm_stampante,
                                       text='Stampante')
-        self.lbl_stampante_value = tk.Label(self.lblfrm_stampante, text=self.config['Stampante']['stampa'])
+        self.lbl_stampante_value = tk.Label(self.lblfrm_stampante, textvariable=self.stampante_value)
         self.cmb_box_stampante = ttk.Combobox(self.lblfrm_stampante,
                                               textvariable=self.stampante_value,
                                               state='read only')
-        self.btn_salva_stampante = ttk.Button(self.lblfrm_stampante, image=self.img_btn)
+        self.btn_salva_stampante = ttk.Button(self.lblfrm_stampante, image=self.img_btn, command=self.salva_stampante)
 
         lista_stampanti = [printer[2] for printer in win32print.EnumPrinters(2)]
         self.cmb_box_stampante['values'] = lista_stampanti
@@ -128,6 +129,12 @@ class Impostazioni(tk.Frame):
             return 'Impostato'
         else:
             return 'Non Impostato'
+
+    def salva_stampante(self):
+        scelta = self.stampante_value.get()
+        cfg_file = open('config.ini', 'w')
+        self.config.set('Stampante', 'stampa', scelta)
+        self.config.write(cfg_file)
 
 
 if __name__ == '__main__':
