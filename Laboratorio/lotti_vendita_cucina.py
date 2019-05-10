@@ -81,6 +81,14 @@ class LottiInVenditaCucina(tk.Toplevel):
 		                                         text='---',
 		                                         font=('Helvetica', 20))
 
+		# LABELFRAME prezzo prodotto selezionato
+		self.lblfrm_prezzo_prod_sel = ttk.LabelFrame(self.frame_dx, text='Prezzo')
+
+		# LABEL prezzo prodotto selezionato
+		self.lbl_txt_prezzo_selezionato = ttk.Label(self.lblfrm_prezzo_prod_sel,
+		                                            text='---',
+		                                            font=('Helvetica', 20))
+
 		# Treeview con prodotto selezionato
 		self.tree_selezionato = ttk.Treeview(self.frame_dx, height=1)
 		self.tree_selezionato['columns'] = ('lotto', 'prodotto')
@@ -141,7 +149,10 @@ class LottiInVenditaCucina(tk.Toplevel):
 		self.lblfrm_plu_prod_sel.grid(row=3, column=3, sticky='n')
 		self.lbl_txt_plu_selezionato.grid(row=1, column=0, padx=20)
 
-		self.btn_stp_etichetta.grid(row=4, column=3)
+		self.lblfrm_prezzo_prod_sel.grid(row=4, column=3, sticky='n')
+		self.lbl_txt_prezzo_selezionato.grid(row=2, column=0, padx=20)
+
+		self.btn_stp_etichetta.grid(row=2, column=3)
 
 		self.btn_in_bilancia.grid(row='0', column='0', padx='20', pady='20')
 		self.btn_uscita.grid(row='0', column='1', padx='20', pady='20')
