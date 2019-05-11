@@ -194,6 +194,7 @@ class LottiInVenditaCucina(tk.Toplevel):
 
 		for self.row in self.c:
 			self.lbl_txt_plu_selezionato['text'] = self.row[3][-3:]
+			self.lbl_txt_prezzo_selezionato['text'] = str("%.2f" % (float(self.row[4]) / 100))
 			for campo in self.ingredienti:
 				self.entry[campo].delete(0, 'end')
 
