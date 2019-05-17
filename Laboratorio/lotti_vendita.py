@@ -13,6 +13,7 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_CENTER
 import win32api
 from tkinter import messagebox
+import configparser
 
 
 class LottiInVendita(tk.Toplevel):
@@ -21,9 +22,11 @@ class LottiInVendita(tk.Toplevel):
         self.geometry("1024x525+0+0")
         self.title('Lotti in vendita')
 
-        self.conn = mysql.connector.connect(host='192.168.0.100',
-                                            database='data',
-                                            user='root',
+        self.config = self.leggi_file_ini()
+
+        self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
+                                            database=self.config['DataBase']['db'],
+                                            user=self.config['DataBase']['user'],
                                             password='')
         self.c = self.conn.cursor()
 
@@ -169,6 +172,12 @@ class LottiInVendita(tk.Toplevel):
 
         self.riempi_combo()
         self.riempi_tutti()
+
+    @staticmethod
+    def leggi_file_ini():
+        ini = configparser.ConfigParser()
+        ini.read('config.ini')
+        return ini
 
     def riempi_combo(self):
         lista = []
