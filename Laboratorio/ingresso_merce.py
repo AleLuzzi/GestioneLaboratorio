@@ -4,6 +4,7 @@ from datepicker import Datepicker
 import datetime
 import mysql.connector
 from tastiera_num import Tast_num
+import configparser
 
 
 class IngressoMerce(tk.Toplevel):
@@ -12,11 +13,12 @@ class IngressoMerce(tk.Toplevel):
         self.title("Ingresso Merce")
         self.geometry("+0+0")
 
+        self.config = self.leggi_file_ini()
+
         # Connessione al database
-        self.conn = mysql.connector.connect(host='192.168.0.100',
-                                            port='3306',
-                                            database='data',
-                                            user='root',
+        self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
+                                            database=self.config['DataBase']['db'],
+                                            user=self.config['DataBase']['user'],
                                             password='')
         self.c = self.conn.cursor()
 
@@ -209,6 +211,12 @@ class IngressoMerce(tk.Toplevel):
         self.btn_salva_esci.grid(row=2, column=1, padx=5, pady=10)
         self.btn_chiudi_finestra.grid(row=2, column=2, padx=5, pady=10)
         self.btn_rimuovi_riga.grid(row=5, column=3, sticky='we')
+
+    @staticmethod
+    def leggi_file_ini():
+        ini = configparser.ConfigParser()
+        ini.read('config.ini')
+        return ini
 
     def _rimuovi_riga_selezionata(self):
             curitem = self.tree.selection()[0]
