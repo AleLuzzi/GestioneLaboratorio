@@ -3,19 +3,22 @@ from tkinter import ttk
 import datetime as dt
 import mysql.connector
 from tkinter import messagebox
+import configparser
 
 
 class NuovoLotto(tk.Toplevel):
     def __init__(self):
         tk.Toplevel.__init__(self)
         self.title("Nuovo Lotto")
-        self.geometry("1024x540+0+0")
+        self.geometry('1024x540+0+0')
 
         self.data = dt.date.today()
 
-        self.conn = mysql.connector.connect(host='192.168.0.100',
-                                            database='data',
-                                            user='root',
+        self.config = self.leggi_file_ini()
+
+        self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
+                                            database=self.config['DataBase']['db'],
+                                            user=self.config['DataBase']['user'],
                                             password='')
         self.c = self.conn.cursor()
 
@@ -126,9 +129,15 @@ class NuovoLotto(tk.Toplevel):
         self.lotti_acq_aperti()
         self.riempi_lista_produzione()
 
+    @staticmethod
+    def leggi_file_ini():
+        ini = configparser.ConfigParser()
+        ini.read('config.ini')
+        return ini
+
     def rimuovi_riga_selezionata(self):
-            curitem = self.tree_lotti_selezionati.selection()[0]
-            self.tree_lotti_selezionati.delete(curitem)
+        curitem = self.tree_lotti_selezionati.selection()[0]
+        self.tree_lotti_selezionati.delete(curitem)
 
     def genera_prog_vendita(self):
         self.c.execute("SELECT prog_ven FROM progressivi")
@@ -196,6 +205,7 @@ class NuovoLotto(tk.Toplevel):
                                                                   (self.tree.item(item, 'text'))))
         else:
             pass
+
 
 if __name__ == '__main__':
     root = tk.Tk()
