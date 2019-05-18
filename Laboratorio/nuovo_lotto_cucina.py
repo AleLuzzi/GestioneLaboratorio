@@ -3,7 +3,7 @@ from tkinter import ttk
 import datetime as dt
 import mysql.connector
 from tkinter import messagebox
-# from tastiera_num import Tast_num
+import configparser
 
 
 class NuovoLottoCucina(tk.Toplevel):
@@ -13,10 +13,11 @@ class NuovoLottoCucina(tk.Toplevel):
         self.geometry("+0+0")
 
         self.data = dt.date.today()
+        self.config = self.leggi_file_ini()
 
-        self.conn = mysql.connector.connect(host='192.168.0.100',
-                                            database='data',
-                                            user='root',
+        self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
+                                            database=self.config['DataBase']['db'],
+                                            user=self.config['DataBase']['user'],
                                             password='')
         self.c = self.conn.cursor()
 
@@ -279,9 +280,15 @@ class NuovoLottoCucina(tk.Toplevel):
         self.btn_esci_salva.grid(row=0, column=2, padx=10, pady=10)
         self.btn_esci.grid(row=0, column=3, padx=10, pady=10)
 
+    @staticmethod
+    def leggi_file_ini():
+        ini = configparser.ConfigParser()
+        ini.read('config.ini')
+        return ini
+
     def rimuovi_riga_selezionata(self):
-            curitem = self.tree.selection()[0]
-            self.tree.delete(curitem)
+        curitem = self.tree.selection()[0]
+        self.tree.delete(curitem)
 
     def invia(self):
         self.tree.insert('', 'end', values=('L' + (str(self.prog_lotto_ven)),
