@@ -4,7 +4,8 @@ import datetime as dt
 import mysql.connector
 import random
 import os
-import facebook
+# import facebook
+import configparser
 
 
 class NuovoMenu(tk.Toplevel):
@@ -14,10 +15,11 @@ class NuovoMenu(tk.Toplevel):
         self.geometry("1024x525+0+0")
 
         self.data = dt.date.today()
+        self.config = self.leggi_file_ini()
 
-        self.conn = mysql.connector.connect(host='192.168.0.100',
-                                            database='data',
-                                            user='root',
+        self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
+                                            database=self.config['DataBase']['db'],
+                                            user=self.config['DataBase']['user'],
                                             password='')
         self.c = self.conn.cursor()
 
@@ -161,9 +163,15 @@ class NuovoMenu(tk.Toplevel):
 
         self.crea_nuovo_menu()
 
+    @staticmethod
+    def leggi_file_ini():
+        ini = configparser.ConfigParser()
+        ini.read('config.ini')
+        return ini
+
     def rimuovi_riga_selezionata(self):
-            curitem = self.tree.selection()[0]
-            self.tree.delete(curitem)
+        curitem = self.tree.selection()[0]
+        self.tree.delete(curitem)
 
     def crea_nuovo_menu(self):
         self.crea_articoli_nuova_produzione_primi_piatti()
@@ -303,8 +311,10 @@ class NuovoMenu(tk.Toplevel):
         self.destroy()
 
     def pubblica(self):
-        graph = facebook.GraphAPI(access_token='token', version='2.7')
-        graph.put_wall_post(message=self.primi)
+        pass
+        # graph = facebook.GraphAPI(access_token='token', version='2.7')
+        # graph.put_wall_post(message=self.primi)
+
 
 if __name__ == '__main__':
     root = tk.Tk()
