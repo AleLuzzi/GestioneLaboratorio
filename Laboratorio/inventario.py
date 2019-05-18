@@ -3,6 +3,7 @@ from tkinter import ttk
 from tkinter import messagebox
 import datetime as dt
 import mysql.connector
+import configparser
 
 
 class Inventario(tk.Toplevel):
@@ -11,13 +12,13 @@ class Inventario(tk.Toplevel):
         self.title("Inventario")
 
         self.value = tk.StringVar()
-
         self.data = dt.date.today()
+        self.config = self.leggi_file_ini()
 
         # connessione database
-        self.conn = mysql.connector.connect(host='192.168.0.100',
-                                            database='data',
-                                            user='root',
+        self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
+                                            database=self.config['DataBase']['db'],
+                                            user=self.config['DataBase']['user'],
                                             password='')
         self.c = self.conn.cursor()
 
@@ -162,9 +163,15 @@ class Inventario(tk.Toplevel):
                            value=lst_vitello[i]).grid(row=r, column=c)
             r += 1
 
+    @staticmethod
+    def leggi_file_ini():
+        ini = configparser.ConfigParser()
+        ini.read('config.ini')
+        return ini
+
     def rimuovi_riga_selezionata(self):
-            curitem = self.tree_riepilogo.selection()[0]
-            self.tree_riepilogo.delete(curitem)
+        curitem = self.tree_riepilogo.selection()[0]
+        self.tree_riepilogo.delete(curitem)
 
     def ins_peso(self):
         if self.value.get() != '' and self.peso.get() != '':
