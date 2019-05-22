@@ -1,5 +1,3 @@
-# coding: utf-8
-
 import tkinter as tk
 import tkinter.ttk as ttk
 import os
@@ -73,17 +71,17 @@ class Main(tk.Frame):
         label2 = tk.Label(self.frm_basso, text=os.environ['COMPUTERNAME'])
 
         bottone1.grid(row=0, column=0, padx=4, pady=4)
-        bottone2.grid(row=0, column=1, padx=4, pady=4)
+        bottone2.grid(row=0, column=1, padx=4, pady=4, sticky='we')
         bottone3.grid(row=0, column=2, padx=4, pady=4)
-        bottone4.grid(row=0, column=3, padx=4, pady=4)
-        bottone4a.grid(row=0, column=4, padx=4, pady=4)
-        bottone5.grid(row=0, column=5, padx=4, pady=4)
-        bottone6.grid(row=0, column=6, padx=4, pady=4)
-        bottone7.grid(row=0, column=7, padx=4, pady=4)
-        bottone8.grid(row=0, column=8, padx=4, pady=4)
-        bottone9.grid(row=0, column=9, padx=4, pady=4)
-        bottone9a.grid(row=0, column=10, padx=4, pady=4)
-        bottone10.grid(row=0, column=11, padx=4, pady=4)
+        bottone6.grid(row=0, column=3, padx=4, pady=4)
+        bottone7.grid(row=0, column=4, padx=4, pady=4)
+        bottone8.grid(row=0, column=5, padx=4, pady=4)
+        bottone9a.grid(row=0, column=6, padx=4, pady=4)
+        bottone10.grid(row=0, column=7, padx=4, pady=4)
+        bottone5.grid(row=1, column=0, padx=4, pady=4)
+        bottone4.grid(row=1, column=1, padx=4, pady=4)
+        bottone4a.grid(row=1, column=2, padx=4, pady=4)
+        bottone9.grid(row=1, column=3, padx=4, pady=4)
 
         self.frm_centrale.grid_propagate(False)
         self.frm_centrale.grid_rowconfigure(0, weight=2)
