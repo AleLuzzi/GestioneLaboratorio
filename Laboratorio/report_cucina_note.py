@@ -2,13 +2,14 @@ import tkinter as tk
 from tkinter import ttk
 from time import strftime
 from reportlab.lib import colors
+# from reportlab.lib.units import inch
+# from reportlab.lib.pagesizes import A4
+from reportlab.platypus import Frame, Spacer, Table, TableStyle
+from reportlab.platypus import BaseDocTemplate, Paragraph, NextPageTemplate, PageBreak, PageTemplate
 from reportlab.lib.units import inch
-from reportlab.lib.pagesizes import A4
-from reportlab.platypus import SimpleDocTemplate, Spacer, Table, TableStyle
+# from reportlab.lib.styles import getSampleStyleSheet
 import mysql.connector
 # import os
-from tkinter import messagebox
-import win32api
 import configparser
 
 
@@ -109,7 +110,7 @@ class ReportCucina(tk.Frame):
             self.tree_uscita.insert("", 'end', values=(row[0], row[1]))
 
     def crea_pdf(self):
-        data = [('settimana', 'codice', 'prodotto', 'cod_ean')]
+        data = [('sett', 'codice', 'prodotto', 'cod_ean')]
 
         self.c.execute("SELECT settimana,prodotto,SUM(quantita),cod_ean "
                        "FROM ingredienti "
@@ -119,10 +120,12 @@ class ReportCucina(tk.Frame):
         for i in self.c:
             data.append(i)
 
-        doc = SimpleDocTemplate("./table.pdf", pagesize=A4)
+        doc = BaseDocTemplate("./table.pdf", showBoundary=1, leftMargin=1)
 
-        parts = []
-        table_with_style = Table(data, [1 * inch, 1.7 * inch, inch])
+        # styles = getSampleStyleSheet()
+        Elements = []
+
+        table_with_style = Table(data)
         table_with_style.hAlign = "LEFT"
 
         table_with_style.setStyle(TableStyle([
@@ -134,11 +137,32 @@ class ReportCucina(tk.Frame):
             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
         ]))
 
-        parts.append(Spacer(1, 0.5 * inch))
-        parts.append(table_with_style)
-        doc.build(parts)
-        if messagebox.askyesno('STAMPA', 'Vuoi stampare il pdf?'):
-            win32api.ShellExecute(None, "print", "table.pdf", None, ".", 0)
+        # normal frame as for SimpleFlowDocument
+        # frameT = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id='normal')
+
+        # Two Columns
+        frame1 = Frame(doc.leftMargin, doc.bottomMargin, doc.width / 2 - 4, doc.height, id='col1')
+        frame2 = Frame(doc.leftMargin + doc.width / 2 + 4, doc.bottomMargin, doc.width / 2 - 6,
+                       doc.height, id='col2')
+
+        # Elements.append(Paragraph("Frame one column, " * 500, styles['Normal']))
+        Elements.append(NextPageTemplate('TwoCol'))
+        # Elements.append(PageBreak())
+        Elements.append(table_with_style)
+        Elements.append(Spacer(1, 0.5 * inch))
+        Elements.append(table_with_style)
+        Elements.append(Spacer(1, 0.5 * inch))
+        Elements.append(table_with_style)
+        # Elements.append(Paragraph("Frame two columns,  " * 500, styles['Normal']))
+        # Elements.append(NextPageTemplate('OneCol'))
+        # Elements.append(PageBreak())
+        # Elements.append(Paragraph("Une colonne", styles['Normal']))
+        # doc.addPageTemplates([PageTemplate(id='OneCol', frames=frameT),
+        #                       PageTemplate(id='TwoCol', frames=[frame1, frame2]),
+        #                       ])
+        # start the construction of the pdf
+        doc.addPageTemplates([PageTemplate(id='TwoCol', frames=[frame1, frame2])])
+        doc.build(Elements)
 
 
 if __name__ == '__main__':
