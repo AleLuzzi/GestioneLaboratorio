@@ -3,7 +3,7 @@ from tkinter import ttk
 from time import strftime
 from reportlab.lib import colors
 # from reportlab.lib.units import inch
-# from reportlab.lib.pagesizes import A4
+from reportlab.lib.pagesizes import A4, landscape
 from reportlab.platypus import Frame, Spacer, Table, TableStyle
 from reportlab.platypus import BaseDocTemplate, Paragraph, NextPageTemplate, PageBreak, PageTemplate
 from reportlab.lib.units import inch
@@ -120,7 +120,7 @@ class ReportCucina(tk.Frame):
         for i in self.c:
             data.append(i)
 
-        doc = BaseDocTemplate("./table.pdf", showBoundary=1, leftMargin=1)
+        doc = BaseDocTemplate("./table.pdf", showBoundary=1, leftMargin=1, pagesize=landscape(A4))
 
         # styles = getSampleStyleSheet()
         Elements = []
