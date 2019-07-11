@@ -246,7 +246,7 @@ class LottiInVendita(tk.Toplevel):
                                                          dt.date.strftime(lista[4], '%d/%m/%y')))
 
     def crea_file(self):
-        path = '//192.168.0.224/c/WinSwGx-NET//bizvar/LABORATORIO/'
+        path = '//192.168.0.4/c/WinSwGx-NET//bizvar/LABORATORIO/'
         if not os.listdir(path):
             self.crea_bz00varp()
             self.progress_bar['value'] = 25
