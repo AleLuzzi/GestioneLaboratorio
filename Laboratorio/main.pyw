@@ -9,7 +9,7 @@ class Main(tk.Frame):
         self.parent = parent
         
         self.frm_alto = tk.Frame(self, bd=1, relief="raised", bg="yellow")
-        self.frm_centrale = tk.Frame(self, height=400, width=self.winfo_screenwidth(),
+        self.frm_centrale = tk.Frame(self, height=300, width=self.winfo_screenwidth(),
                                      bd=1, relief="raised", bg="white")
         self.frm_basso = tk.Frame(self, bd=1, relief="raised")
 
