@@ -368,7 +368,7 @@ class Produzione(tk.Frame):
             self.tree_produzione.insert('', 'end', values=(lista[0], lista[1]))
 
     def crea_file(self):
-        path = '//192.168.0.224/c/WinSwGx-NET//bizvar/LABORATORIO/'
+        path = '//192.168.0.4/c/WinSwGx-NET//bizvar/LABORATORIO/'
         print(self.item[1])
         if not os.listdir(path):
             self.crea_bz00varp()
