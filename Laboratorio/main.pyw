@@ -72,7 +72,7 @@ class Main(tk.Frame):
 
         bottone1.grid(row=0, column=0, padx=4, pady=4)
         bottone2.grid(row=0, column=1, padx=4, pady=4, sticky='we')
-        bottone3.grid(row=0, column=2, padx=4, pady=4)
+        bottone3.grid(row=0, column=2, padx=4, pady=4, sticky='we')
         bottone6.grid(row=0, column=3, padx=4, pady=4)
         bottone7.grid(row=0, column=4, padx=4, pady=4)
         bottone8.grid(row=0, column=5, padx=4, pady=4)
