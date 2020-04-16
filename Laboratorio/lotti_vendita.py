@@ -217,7 +217,7 @@ class LottiInVendita(tk.Toplevel):
 
         self.c.execute("SELECT DISTINCT progressivo_ven,prodotto,data_ven,quantita "
                        "FROM lotti_vendita "
-                       "WHERE data_ven > '2019-01-01'"
+                       "WHERE data_ven > '2020-01-01'"
                        "ORDER BY data_ven DESC, progressivo_ven DESC")
         for lista in self.c:
             try:
@@ -247,7 +247,7 @@ class LottiInVendita(tk.Toplevel):
                                                          dt.date.strftime(lista[4], '%d/%m/%y')))
 
     def crea_file(self):
-        path = '//192.168.0.4/c/WinSwGx-NET//bizvar/LABORATORIO/'
+        path = '//192.168.0.7/c/WinSwGx-NET//bizvar/LABORATORIO/'
         if not os.listdir(path):
             self.crea_bz00varp()
             self.progress_bar['value'] = 25
