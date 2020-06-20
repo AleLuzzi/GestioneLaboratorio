@@ -34,10 +34,11 @@ class Impostazioni(tk.Frame):
 
         # LABELFRAME Stampante
         self.lblfrm_stampante = tk.LabelFrame(self, text='Stampante', foreground='blue')
-		
-	# LABELFRAME Lotti_vendita_carne
-	self.lblfrm_lotti_vendita_carne = tk.LabelFrame(self, text='Modulo Lotti Vendita Carne', foreground='blue')
-	
+
+        # LABELFRAME Lotti_vendita_carne
+        self.lblfrm_lotti_vendita_carne = tk.LabelFrame(self, text='Modulo Lotti Vendita Carne', foreground='blue')
+        self.lbl_visualizza_lotti = tk.Label(self.lblfrm_lotti_vendita_carne, text='Visualizza lotti dal ')
+
         # LABEL Database
         self.lbl_database = tk.Label(self.lblfrm_imp_database, text='Data Base')
         self.lbl_host = tk.Label(self.lblfrm_imp_database, text='Host')
@@ -114,6 +115,9 @@ class Impostazioni(tk.Frame):
         self.cmb_box_stampante.grid(row=1, column=2)
         self.btn_salva_stampante.grid(row=1, column=3, padx=5)
 
+        self.lblfrm_lotti_vendita_carne.grid(row=4, column=0, sticky='we')
+        self.lbl_visualizza_lotti.grid(row=1, column=0)
+
     @staticmethod
     def leggi_file_ini():
         ini = configparser.ConfigParser()
@@ -126,7 +130,7 @@ class Impostazioni(tk.Frame):
         self.config.set('Winswgx', 'dir', new_dirname)
         self.config.write(cfg_file)
         self.win_dir.set(new_dirname)
-        
+
     def controlla_token(self):
         if self.config['Facebook']['token']:
             return 'Impostato'
