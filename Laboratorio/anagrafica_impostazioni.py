@@ -34,7 +34,10 @@ class Impostazioni(tk.Frame):
 
         # LABELFRAME Stampante
         self.lblfrm_stampante = tk.LabelFrame(self, text='Stampante', foreground='blue')
-
+		
+	# LABELFRAME Lotti_vendita_carne
+	self.lblfrm_lotti_vendita_carne = tk.LabelFrame(self, text='Modulo Lotti Vendita Carne', foreground='blue')
+	
         # LABEL Database
         self.lbl_database = tk.Label(self.lblfrm_imp_database, text='Data Base')
         self.lbl_host = tk.Label(self.lblfrm_imp_database, text='Host')
