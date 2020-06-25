@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import ttk, filedialog
 import configparser
 import win32print
+from datepicker import Datepicker
+import datetime
 
 
 class Impostazioni(tk.Frame):
@@ -38,6 +40,11 @@ class Impostazioni(tk.Frame):
         # LABELFRAME Lotti_vendita_carne
         self.lblfrm_lotti_vendita_carne = tk.LabelFrame(self, text='Modulo Lotti Vendita Carne', foreground='blue')
         self.lbl_visualizza_lotti = tk.Label(self.lblfrm_lotti_vendita_carne, text='Visualizza lotti dal ')
+        self.data = tk.StringVar()
+        self.data.set(self.config['Modulo_lotti_vendita']['data_dal'])
+        self.picker_lot_vend_carne = Datepicker(self.lblfrm_lotti_vendita_carne,
+                                                datevar=self.data,
+                                                dateformat='%d-%m-%Y', )
 
         # LABEL Database
         self.lbl_database = tk.Label(self.lblfrm_imp_database, text='Data Base')
@@ -117,6 +124,7 @@ class Impostazioni(tk.Frame):
 
         self.lblfrm_lotti_vendita_carne.grid(row=4, column=0, sticky='we')
         self.lbl_visualizza_lotti.grid(row=1, column=0)
+        self.picker_lot_vend_carne.grid(row=1, column=1)
 
     @staticmethod
     def leggi_file_ini():
