@@ -45,6 +45,8 @@ class Impostazioni(tk.Frame):
         self.picker_lot_vend_carne = Datepicker(self.lblfrm_lotti_vendita_carne,
                                                 datevar=self.data,
                                                 dateformat='%d-%m-%Y', )
+        self.btn_salva_data = ttk.Button(self.lblfrm_lotti_vendita_carne, image=self.img_btn,
+                                         command=self._salva_data)
 
         # LABEL Database
         self.lbl_database = tk.Label(self.lblfrm_imp_database, text='Data Base')
@@ -125,6 +127,7 @@ class Impostazioni(tk.Frame):
         self.lblfrm_lotti_vendita_carne.grid(row=4, column=0, sticky='we')
         self.lbl_visualizza_lotti.grid(row=1, column=0)
         self.picker_lot_vend_carne.grid(row=1, column=1)
+        self.btn_salva_data.grid(row=1, column=2)
 
     @staticmethod
     def leggi_file_ini():
@@ -149,6 +152,13 @@ class Impostazioni(tk.Frame):
         scelta = self.stampante_value.get()
         cfg_file = open('config.ini', 'w')
         self.config.set('Stampante', 'stampa', scelta)
+        self.config.write(cfg_file)
+
+    def _salva_data(self):
+        scelta = self.data.get()
+        print(scelta)
+        cfg_file = open('config.ini', 'w')
+        self.config.set('Modulo_lotti_vendita', 'data_dal', scelta)
         self.config.write(cfg_file)
 
 
