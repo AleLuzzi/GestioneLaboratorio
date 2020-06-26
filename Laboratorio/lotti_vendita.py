@@ -213,12 +213,14 @@ class LottiInVendita(tk.Toplevel):
         self.lbl_peso_totale['text'] = "{0:.2f}".format(round(self.tot_qta, 2))
 
     def riempi_tutti(self):
+        data = self.config['Modulo_lotti_vendita']['data_dal']
+        data = (data[-4:]+'-'+data[3:5]+'-'+data[:2])
         self.tree.delete(*self.tree.get_children())
 
         self.c.execute("SELECT DISTINCT progressivo_ven,prodotto,data_ven,quantita "
                        "FROM lotti_vendita "
-                       "WHERE data_ven > '2020-01-01'"
-                       "ORDER BY data_ven DESC, progressivo_ven DESC")
+                       "WHERE data_ven > %s"
+                       "ORDER BY data_ven DESC, progressivo_ven DESC", (data,))
         for lista in self.c:
             try:
                 self.tree.insert('', 'end', lista[0], text=lista[0], tags=('odd',))
