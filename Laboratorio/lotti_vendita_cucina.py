@@ -5,6 +5,7 @@ import shutil
 import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import messagebox
+from datepicker import Datepicker
 
 import mysql.connector
 
@@ -123,6 +124,13 @@ class LottiInVenditaCucina(tk.Toplevel):
         # PROGRESS BAR
         self.progress_bar = ttk.Progressbar(self.frame_dx_basso, orient=tk.HORIZONTAL, mode='determinate')
 
+        # LABELFAME visualizza lotti del giorno
+        self.lblfrm_vis_lotti_del = ttk.LabelFrame(self.frame_dx, text='Visualizza lotti del giorno')
+        self.data_filtro = tk.StringVar()
+        self.data_filtro.set(dt.date.today().strftime('%d-%m-%Y'))
+        self.picker = Datepicker(self.lblfrm_vis_lotti_del, datevar=self.data_filtro, dateformat='%d-%m-%Y',)
+        self.btn_filtra = tk.Button(self.lblfrm_vis_lotti_del, text='Filtra')
+
         # crea LABEL formato ingredienti
         r = 2
         c = 0
@@ -147,6 +155,10 @@ class LottiInVenditaCucina(tk.Toplevel):
         self.tree_selezionato.grid(row=2, column=0, columnspan=2)
 
         self.lbl_frame_dettagli_selezionato.grid(row=3, column=0, columnspan=2, rowspan=2)
+
+        self.lblfrm_vis_lotti_del.grid(row=5, column=0, columnspan=2)
+        self.picker.grid(row=0, column=0)
+        self.btn_filtra.grid(row=0, column=1)
 
         self.lblfrm_plu_prod_sel.grid(row=3, column=3, sticky='n')
         self.lbl_txt_plu_selezionato.grid(row=1, column=0, padx=20)
