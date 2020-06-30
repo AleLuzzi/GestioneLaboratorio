@@ -130,6 +130,7 @@ class LottiInVenditaCucina(tk.Toplevel):
         self.data_filtro.set(dt.date.today().strftime('%d-%m-%Y'))
         self.picker = Datepicker(self.lblfrm_vis_lotti_del, datevar=self.data_filtro, dateformat='%d-%m-%Y',)
         self.btn_filtra = tk.Button(self.lblfrm_vis_lotti_del, text='Filtra')
+        # TODO aggiungere funzioni per selezione data e filtro
 
         # crea LABEL formato ingredienti
         r = 2
