@@ -128,7 +128,7 @@ class LottiInVenditaCucina(tk.Toplevel):
         self.lblfrm_vis_lotti_del = ttk.LabelFrame(self.frame_dx, text='Visualizza lotti del giorno')
         self.data_filtro = tk.StringVar()
         self.data_filtro.set(dt.date.today().strftime('%d-%m-%Y'))
-        self.picker = Datepicker(self.lblfrm_vis_lotti_del, datevar=self.data_filtro, dateformat='%d-%m-%Y',)
+        self.picker = Datepicker(self.lblfrm_vis_lotti_del, datevar=self.data_filtro, dateformat='%d-%m-%Y', )
         self.btn_filtra = tk.Button(self.lblfrm_vis_lotti_del, text='Filtra')
         # TODO aggiungere funzioni per selezione data e filtro
 
@@ -246,7 +246,7 @@ class LottiInVenditaCucina(tk.Toplevel):
         win32api.ShellExecute(None, "print", "Eti_anagrafica.pdf", '/d:"%s"' % win32print.GetDefaultPrinter(), ".", 0)
 
     def crea_file(self):
-        path = '//192.168.0.4/c/WinSwGx-NET//bizvar/LABORATORIO/'
+        path = '//192.168.0.7/WinSwGx-NET//bizvar/LABORATORIO/'
         if not os.listdir(path):
             self.crea_bz00varp()
             self.progress_bar['value'] = 25
