@@ -143,6 +143,38 @@ class Dipendenti(tk.Frame):
             for campo in self.campi:
                 self.entry[campo].insert(0, self.row[i])
                 i += 1
+                
+    def _inserisci(self):
+
+        def _centra(toplevel):
+            screen_width = toplevel.winfo_screenwidth()
+            screen_height = toplevel.winfo_screenheight()
+
+            size = tuple(int(_) for _ in toplevel.geometry().split('+')[0].split('x'))
+            x = screen_width / 3 - size[0] / 2
+            y = screen_height / 3 - size[1] / 2
+
+            toplevel.geometry("+%d+%d" % (x, y))
+
+        def _salva_nuovo():
+            pass
+            # TODO modificare codice per salvataggio dati dipendenti
+            # rep = rep_new.get()
+            # if rep != '' and merc_new.get() != '':
+                # self.c.execute("SELECT Id FROM reparti WHERE reparto = %s", (rep,))
+                # lista_da_salvare = [merc_new.get(), self.c.fetchone()[0], flag1.get(), flag2.get(), flag3.get()]
+                # print(lista_da_salvare)
+                # self.c.execute('INSERT INTO merceologie(merceologia,Id_Reparto,flag1_inv,flag2_taglio,flag3_ing_base) '
+                #                'VALUES (%s,%s,%s,%s,%s)', lista_da_salvare)
+                # self.conn.commit()
+                # self._aggiorna()
+                # nuovo_dato.destroy()
+            # else:
+                # messagebox.showinfo('ATTENZIONE', 'CI SONO CAMPI VUOTI')
+
+        nuovo_dato = tk.Toplevel()
+
+        _centra(nuovo_dato)
 
 
 if __name__ == '__main__':
