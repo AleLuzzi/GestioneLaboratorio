@@ -111,6 +111,7 @@ class Dipendenti(tk.Frame):
         self.aggiorna()
 
     def inserisci(self):
+        # TODO migliorare inserimento nuovo dipendente con finestra top level
         lista_da_salvare = []
         for campo in self.campi:
             lista_da_salvare.append(self.entry[campo].get())
