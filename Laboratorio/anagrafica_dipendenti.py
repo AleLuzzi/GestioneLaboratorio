@@ -79,7 +79,7 @@ class Dipendenti(tk.Frame):
         self.btn_inserisci = tk.Button(self.lbl_frame_scegli,
                                        text='Inserisci Dati',
                                        font=('Helvetica', 10),
-                                       command=self.inserisci)
+                                       command=self._inserisci)
 
         # LAYOUT
         self.frame_sx.grid(row=1, column=0, sticky='n')
@@ -175,6 +175,37 @@ class Dipendenti(tk.Frame):
         nuovo_dato = tk.Toplevel()
 
         _centra(nuovo_dato)
+        nome_new = tk.StringVar()
+        cognome_new = tk.StringVar()
+        reparto_new = tk.StringVar()
+        email_new = tk.StringVar()
+        
+        lbl_nome = tk.Label(nuovo_dato, text='Nome')
+        ent_nome = tk.Entry(nuovo_dato, textvariable=nome_new)
+        lbl_cognome = tk.Label(nuovo_dato, text='Cognome')
+        ent_cognome = tk.Entry(nuovo_dato, textvariable=cognome_new)
+        lbl_reparto = tk.Label(nuovo_dato, text='Reparto')
+        cmb_reparto = ttk.Combobox(nuovo_dato, textvariable=reparto_new)
+        lbl_email = tk.Label(nuovo_dato, text='Email')
+        ent_email = ttk.Entry(nuovo_dato, textvariable=email_new)
+        
+        lista_reparti_new = []
+        self.c.execute("SELECT reparto From reparti")
+        for row in self.c:
+            lista_reparti_new.extend(row)
+        cmb_reparto['values'] = lista_reparti_new
+
+        lbl_nome.grid(row=0, column=0)
+        ent_nome.grid(row=0, column=1, sticky='we')
+        lbl_cognome.grid(row=1, column=0)
+        ent_cognome.grid(row=1, column=1, sticky='we')
+        lbl_reparto.grid(row=2, column=0)
+        cmb_reparto.grid(row=2, column=1)
+        lbl_email.grid(row=3, column=0)
+        ent_email.grid(row=3, column=1, sticky='we')
+		
+		
+		
 
 
 if __name__ == '__main__':
