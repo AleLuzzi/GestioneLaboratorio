@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 import mysql.connector
 import configparser
 
@@ -110,15 +111,6 @@ class Dipendenti(tk.Frame):
             self.conn.commit()
         self.aggiorna()
 
-    def inserisci(self):
-        # TODO migliorare inserimento nuovo dipendente con finestra top level
-        lista_da_salvare = []
-        for campo in self.campi:
-            lista_da_salvare.append(self.entry[campo].get())
-        self.c.execute('INSERT INTO dipendenti(nome,cognome,reparto,email) VALUES (%s,%s,%s,%s)', lista_da_salvare)
-        self.conn.commit()
-        self.aggiorna()
-
     def aggiorna(self):
         self.tree_dipendenti.delete(*self.tree_dipendenti.get_children())
         self.c.execute("SELECT * From dipendenti ")
@@ -157,20 +149,17 @@ class Dipendenti(tk.Frame):
             toplevel.geometry("+%d+%d" % (x, y))
 
         def _salva_nuovo():
-            pass
-            # TODO modificare codice per salvataggio dati dipendenti
-            # rep = rep_new.get()
-            # if rep != '' and merc_new.get() != '':
-                # self.c.execute("SELECT Id FROM reparti WHERE reparto = %s", (rep,))
-                # lista_da_salvare = [merc_new.get(), self.c.fetchone()[0], flag1.get(), flag2.get(), flag3.get()]
-                # print(lista_da_salvare)
-                # self.c.execute('INSERT INTO merceologie(merceologia,Id_Reparto,flag1_inv,flag2_taglio,flag3_ing_base) '
-                #                'VALUES (%s,%s,%s,%s,%s)', lista_da_salvare)
+            rep = reparto_new.get()
+            if rep != '' and nome_new.get() != '':
+                self.c.execute("SELECT Id FROM reparti WHERE reparto = %s", (rep,))
+                lista_da_salvare = [nome_new.get(), cognome_new.get(), self.c.fetchone()[0], email_new.get()]
+                print(lista_da_salvare)
+                # self.c.execute('INSERT INTO dipendenti(nome,cognome,reparto,email) VALUES (%s,%s,%s,%s)', lista_da_salvare)
                 # self.conn.commit()
                 # self._aggiorna()
                 # nuovo_dato.destroy()
-            # else:
-                # messagebox.showinfo('ATTENZIONE', 'CI SONO CAMPI VUOTI')
+            else:
+                messagebox.showinfo('ATTENZIONE', 'CI SONO CAMPI VUOTI')
 
         nuovo_dato = tk.Toplevel()
 
@@ -188,6 +177,9 @@ class Dipendenti(tk.Frame):
         cmb_reparto = ttk.Combobox(nuovo_dato, textvariable=reparto_new)
         lbl_email = tk.Label(nuovo_dato, text='Email')
         ent_email = ttk.Entry(nuovo_dato, textvariable=email_new)
+
+        btn_salva = tk.Button(nuovo_dato, text='Salva Dati', command=_salva_nuovo)
+        btn_chiudi = tk.Button(nuovo_dato, text='Chiudi', command=nuovo_dato.destroy)
         
         lista_reparti_new = []
         self.c.execute("SELECT reparto From reparti")
@@ -203,7 +195,10 @@ class Dipendenti(tk.Frame):
         cmb_reparto.grid(row=2, column=1)
         lbl_email.grid(row=3, column=0)
         ent_email.grid(row=3, column=1, sticky='we')
-		
+
+        btn_salva.grid(row=4, column=0, sticky='we')
+        btn_chiudi.grid(row=4, column=1, sticky='we')
+	
 		
 		
 
