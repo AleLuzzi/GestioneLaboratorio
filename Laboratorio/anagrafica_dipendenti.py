@@ -188,6 +188,9 @@ class Dipendenti(tk.Frame):
         cmb_reparto = ttk.Combobox(nuovo_dato, textvariable=reparto_new)
         lbl_email = tk.Label(nuovo_dato, text='Email')
         ent_email = ttk.Entry(nuovo_dato, textvariable=email_new)
+
+        btn_salva = tk.Button(nuovo_dato, text='Salva Dati', command=_salva_nuovo)
+        btn_chiudi = tk.Button(nuovo_dato, text='Chiudi', command=nuovo_dato.destroy)
         
         lista_reparti_new = []
         self.c.execute("SELECT reparto From reparti")
@@ -203,7 +206,10 @@ class Dipendenti(tk.Frame):
         cmb_reparto.grid(row=2, column=1)
         lbl_email.grid(row=3, column=0)
         ent_email.grid(row=3, column=1, sticky='we')
-		
+
+        btn_salva.grid(row=4, column=0, sticky='we')
+        btn_chiudi.grid(row=4, column=1, sticky='we')
+	
 		
 		
 
