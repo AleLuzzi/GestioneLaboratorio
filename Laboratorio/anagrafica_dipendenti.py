@@ -153,11 +153,11 @@ class Dipendenti(tk.Frame):
             if rep != '' and nome_new.get() != '':
                 self.c.execute("SELECT Id FROM reparti WHERE reparto = %s", (rep,))
                 lista_da_salvare = [nome_new.get(), cognome_new.get(), self.c.fetchone()[0], email_new.get()]
-                print(lista_da_salvare)
-                # self.c.execute('INSERT INTO dipendenti(nome,cognome,reparto,email) VALUES (%s,%s,%s,%s)', lista_da_salvare)
-                # self.conn.commit()
-                # self._aggiorna()
-                # nuovo_dato.destroy()
+                # print(lista_da_salvare)
+                self.c.execute('INSERT INTO dipendenti(nome,cognome,reparto,email) VALUES (%s,%s,%s,%s)', lista_da_salvare)
+                self.conn.commit()
+                self._aggiorna()
+                nuovo_dato.destroy()
             else:
                 messagebox.showinfo('ATTENZIONE', 'CI SONO CAMPI VUOTI')
 
