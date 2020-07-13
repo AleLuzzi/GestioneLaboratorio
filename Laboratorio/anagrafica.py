@@ -17,13 +17,31 @@ class Anagrafica(tk.Toplevel):
         self.title("Anagrafica")
         # self.geometry('%dx525+0+0' % self.winfo_screenwidth())
         '''
-        Disposizione Frame
+        Disposizione Menu
         '''
-        '''
-        self.frame = ttk.Frame(self)
-        self.frame.grid(row='1', column='0')
-        '''
+        menubar = tk.Menu(self)
+        anagraficamenu = tk.Menu(menubar, tearoff=0)
+        anagraficamenu.add_command(label="Dipendenti")
+        anagraficamenu.add_command(label="Fornitori")
+        anagraficamenu.add_command(label="Ingredienti")
+        anagraficamenu.add_command(label="Produzione")
+        anagraficamenu.add_command(label="Reparti")
+        anagraficamenu.add_command(label="Merceologie")
+        anagraficamenu.add_command(label="Tagli")
+        menubar.add_cascade(label="Anagrafica", menu=anagraficamenu)
+
+        reportmenu = tk.Menu(menubar, tearoff=0)
+        reportmenu.add_command(label="Cucina")
+        menubar.add_cascade(label="Report", menu=reportmenu)
+
+        config_menu = tk.Menu(menubar, tearoff=0)
+        config_menu.add_command(label="Configurazione")
+        menubar.add_cascade(label="Configurazione", menu=config_menu)
+
         self.img_btn1 = tk.PhotoImage(file=".//immagini//logo_piccolo.gif")
+
+        self.config(menu=menubar)
+        # TODO aggiungere funzioni per il menu
         '''
         Notebook e posizione
         '''
@@ -77,6 +95,6 @@ class Anagrafica(tk.Toplevel):
         self.notebook.add(self.tab9, text='Impostazioni', compound='left', image=self.img_btn1)
 
 if __name__ == '__main__':
-    root = tk.Tk()
+    root = tk.Tk()  
     new = Anagrafica()
     root.mainloop()
