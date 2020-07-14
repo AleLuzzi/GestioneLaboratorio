@@ -1,5 +1,6 @@
 import tkinter as tk
 import tkinter.ttk as ttk
+from tkinter import messagebox
 import os
 
 
@@ -141,8 +142,41 @@ class Main(tk.Frame):
 
     @staticmethod
     def anagrafica():
-        from anagrafica import Anagrafica
-        Anagrafica()
+        password = ("assist")
+
+        def _centra(toplevel):
+            screen_width = toplevel.winfo_screenwidth()
+            screen_height = toplevel.winfo_screenheight()
+
+            size = tuple(int(_) for _ in toplevel.geometry().split('+')[0].split('x'))
+            x = screen_width / 3 - size[0] / 2
+            y = screen_height / 3 - size[1] / 2
+
+            toplevel.geometry("+%d+%d" % (x, y))
+            
+        def _try_login():
+            if ent_password.get() == password:
+                from anagrafica import Anagrafica
+                Anagrafica()
+                window.destroy()
+            else:
+                messagebox.showinfo("-- ERRORE --", "Non sei autorizzato ad entrare qui!", icon="warning")
+                window.destroy()
+                
+        window = tk.Toplevel()
+        _centra(window)
+
+        window.title("Log-In")
+
+        lbl_password = tk.Label(window, text="Password:", font=('Verdana', 15))
+        ent_password = tk.Entry(window, show="*")
+
+        btn_login = tk.Button(window, text="Login", command=_try_login)
+        ent_password.focus()
+
+        lbl_password.grid(row=0, column=0)
+        ent_password.grid(row=0, column=1)
+        btn_login.grid(row=1, column=0, columnspan=2, sticky='we')
 
 
 if __name__ == "__main__":
