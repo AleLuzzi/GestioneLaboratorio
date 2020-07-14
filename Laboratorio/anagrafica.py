@@ -94,6 +94,7 @@ class Anagrafica(tk.Toplevel):
         self.tab9 = Impostazioni(self.notebook)
         self.notebook.add(self.tab9, text='Impostazioni', compound='left', image=self.img_btn1)
 
+
 if __name__ == '__main__':
     root = tk.Tk()  
     new = Anagrafica()

@@ -142,7 +142,7 @@ class Main(tk.Frame):
 
     @staticmethod
     def anagrafica():
-        password = ("assist")
+        password = "assist"
 
         def _centra(toplevel):
             screen_width = toplevel.winfo_screenwidth()
