@@ -11,7 +11,7 @@ class ChiudiLotto(tk.Toplevel):
         self.title("Chiudi Lotto")
         self.geometry("1024x525+0+0")
 
-        self.config = self.leggi_file_ini()
+        self.config = self._leggi_file_ini()
 
         # Connessione al database
         self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
@@ -43,7 +43,7 @@ class ChiudiLotto(tk.Toplevel):
 
         self.tree.tag_configure('odd', background='light green')
 
-        self.tree.bind("<Double-1>", self.ondoubleclick)
+        self.tree.bind("<Double-1>", self._ondoubleclick)
 
         # LABEL lotti da chiudere
         self.lbl_nuovo_lotto = ttk.Label(self.frame_dx,
@@ -70,10 +70,10 @@ class ChiudiLotto(tk.Toplevel):
         self.btn_salva = tk.Button(self.frame_dx_basso,
                                    text='salva dati',
                                    font=('Helvetica', 20),
-                                   command=self.salva)
+                                   command=self._salva)
 
-        self.btn_rimuovi_riga = tk.Button(self.frame_dx, text="Rimuovi riga", command=self.rimuovi_riga_selezionata)
-        self.btn_rimuovi_riga.grid(row=1, column=3, sticky='n')
+        self.btn_rimuovi_riga = tk.Button(self.frame_dx, text="Rimuovi riga", command=self._rimuovi_riga_selezionata)
+        
 
         # LAYOUT
         self.frame_sx.grid(row=0, column=0, rowspan=2)
@@ -83,37 +83,38 @@ class ChiudiLotto(tk.Toplevel):
         self.tree.grid(row=0, column=0, sticky='w')
         self.lbl_nuovo_lotto.grid(row=0, column=0)
         self.tree_lotti_selezionati.grid(row=1, column=0)
+        self.btn_rimuovi_riga.grid(row=2, column=0, sticky='we')
 
         self.btn_esci.grid(row=2, column=0, pady=20, padx=20)
         self.btn_salva.grid(row=2, column=1, pady=20, padx=20)
 
-        self.aggiorna()
+        self._aggiorna()
 
     @staticmethod
-    def leggi_file_ini():
+    def _leggi_file_ini():
         ini = configparser.ConfigParser()
         ini.read('config.ini')
         return ini
 
-    def rimuovi_riga_selezionata(self):
+    def _rimuovi_riga_selezionata(self):
             curitem = self.tree_lotti_selezionati.selection()[0]
             self.tree_lotti_selezionati.delete(curitem)
 
-    def ondoubleclick(self, event):
+    def _ondoubleclick(self, event):
         item = self.tree.selection()[0]
         self.tree_lotti_selezionati.insert("", 'end',
                                            values=(self.tree.parent(item),
                                                    self.tree.item(item, 'text')))
 
-    def salva(self):
+    def _salva(self):
         for child in self.tree_lotti_selezionati.get_children():
             self.lotti_da_chiudere.append(self.tree_lotti_selezionati.item(child)['values'])
         self.c.executemany("UPDATE ingresso_merce SET lotto_chiuso = 'si' WHERE progressivo_acq = %s AND prodotto = %s ",
                            self.lotti_da_chiudere)
         self.conn.commit()
-        self.aggiorna()
+        self._aggiorna()
 
-    def aggiorna(self):
+    def _aggiorna(self):
 
         self.tree.delete(*self.tree.get_children())
         self.tree_lotti_selezionati.delete(*self.tree_lotti_selezionati.get_children())
