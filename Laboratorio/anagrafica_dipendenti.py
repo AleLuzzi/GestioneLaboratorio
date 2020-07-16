@@ -199,9 +199,6 @@ class Dipendenti(tk.Frame):
         btn_salva.grid(row=4, column=0, sticky='we')
         btn_chiudi.grid(row=4, column=1, sticky='we')
 	
-		
-		
-
 
 if __name__ == '__main__':
     root = tk.Tk()
