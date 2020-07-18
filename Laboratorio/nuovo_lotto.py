@@ -10,8 +10,7 @@ class NuovoLotto(tk.Toplevel):
     def __init__(self):
         tk.Toplevel.__init__(self)
         self.title("Nuovo Lotto")
-        self.geometry('1024x540+0+0')
-
+        # self.geometry('1024x540+0+0')
         self.data = dt.date.today()
 
         self.config = self.leggi_file_ini()
@@ -33,6 +32,8 @@ class NuovoLotto(tk.Toplevel):
         self.frame_sx_alto = tk.Frame(self.frame_sx)
         self.frame_sx_basso = tk.Frame(self.frame_sx, background='white')
         self.frame_dx = tk.Frame(self)
+        self.frame_dx_r = tk.Frame(self)
+        self.frame_dx_basso = tk.Frame(self)
 
         # TREEVIEW per riepilogo immissioni
         self.tree = ttk.Treeview(self.frame_sx_alto, height=20)
@@ -54,7 +55,7 @@ class NuovoLotto(tk.Toplevel):
 
         # LABEL nuovo lotto vendita
         self.lbl_nuovo_lotto = ttk.Label(self.frame_dx, text='NUOVO LOTTO',
-                                         foreground='blue', font=('Helvetica', 20))
+                                         foreground='blue', font=('Helvetica', 22))
         self.lbl_prog_lotto_vendita = ttk.Label(self.frame_dx, text=str(self.prog_lotto_ven) + 'V',
                                                 font=('Helvetica', 40))
 
@@ -63,7 +64,7 @@ class NuovoLotto(tk.Toplevel):
                                           foreground='blue', font=('Helvetica', 20))
 
         # TREEVIEW per lotti selezionati
-        self.tree_lotti_selezionati = ttk.Treeview(self.frame_dx, height=5)
+        self.tree_lotti_selezionati = ttk.Treeview(self.frame_dx_r, height=8)
         self.tree_lotti_selezionati['columns'] = ('progressivo_v',
                                                   'data',
                                                   'lotto ingresso',
@@ -82,25 +83,25 @@ class NuovoLotto(tk.Toplevel):
         self.tree_lotti_selezionati.heading("taglio", text="taglio")
 
         # LABELFRAME nuova produzione
-        self.labelframe = ttk.Labelframe(self.frame_dx, text="Nuova Produzione")
+        self.labelframe = ttk.Labelframe(self.frame_dx_basso, text="Nuova Produzione")
 
         # ENTRY per inserimento del peso
         self.entry_peso = ttk.Entry(self.frame_dx, font=('Helvetica', 20), width=7, textvariable=self.peso_da_inserire)
         self.entry_peso.focus()
 
         # BOTTONE ESCI E SALVA
-        self.btn_elimina_riga = tk.Button(self.frame_dx,
+        self.btn_elimina_riga = tk.Button(self.frame_dx_r,
                                           text='Elimina riga',
                                           command=self.rimuovi_riga_selezionata)
         self.btn_esci = tk.Button(self.frame_sx_basso,
                                   text="Chiudi finestra",
-                                  font=('comic sans', 20),
+                                  font=('Helvetica', 20),
                                   width=14,
                                   command=self.esci_senza_salvare)
 
         self.btn_esci_salva = tk.Button(self.frame_sx_basso,
                                         text="Esci e salva",
-                                        font=('comic sans', 20),
+                                        font=('Helvetica', 20),
                                         width=14,
                                         command=self.esci_salva)
 
@@ -109,17 +110,19 @@ class NuovoLotto(tk.Toplevel):
         self.frame_sx_alto.grid()
         self.frame_sx_basso.grid(sticky='ew')
         self.frame_dx.grid(row=0, column=1, sticky='n')
+        self.frame_dx_r.grid(row=0, column=2, sticky='n')
+        self.frame_dx_basso.grid(row=0, column=1, columnspan=2, sticky='s')
 
         self.tree.grid(row=0, column=0, columnspan=2, sticky='w')
 
-        self.lbl_nuovo_lotto.grid(row=1, column=0)
-        self.lbl_prog_lotto_vendita.grid(row=1, column=1, sticky='w')
+        self.lbl_nuovo_lotto.grid(row=0, column=0)
+        self.lbl_prog_lotto_vendita.grid(row=1, column=0, sticky='w')
 
         self.lbl_qta_prodotto.grid(row=2, column=0)
-        self.entry_peso.grid(row=2, column=1, sticky='w')
+        self.entry_peso.grid(row=3, column=0, sticky='w')
 
-        self.tree_lotti_selezionati.grid(row=3, column=0, pady=15, sticky='e')
-        self.btn_elimina_riga.grid(row=3, column=1, pady=15, sticky='nw')
+        self.tree_lotti_selezionati.grid(row=0, column=0)
+        self.btn_elimina_riga.grid(row=1, column=0, sticky='we')
 
         self.labelframe.grid(row=4, column=0, columnspan=2, sticky='ew')
 
