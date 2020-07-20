@@ -5,9 +5,9 @@ import mysql.connector
 import configparser
 
 
-class Dipendenti(tk.Frame):
-    def __init__(self, parent):
-        tk.Frame.__init__(self, parent)
+class Dipendenti(tk.Toplevel):
+    def __init__(self):
+        tk.Toplevel.__init__(self)
 
         self.item = ''
         self.config = self.leggi_file_ini()
@@ -154,9 +154,10 @@ class Dipendenti(tk.Frame):
                 self.c.execute("SELECT Id FROM reparti WHERE reparto = %s", (rep,))
                 lista_da_salvare = [nome_new.get(), cognome_new.get(), self.c.fetchone()[0], email_new.get()]
                 # print(lista_da_salvare)
-                self.c.execute('INSERT INTO dipendenti(nome,cognome,reparto,email) VALUES (%s,%s,%s,%s)', lista_da_salvare)
+                self.c.execute('INSERT INTO dipendenti(nome,cognome,reparto,email) '
+                               'VALUES (%s,%s,%s,%s)', lista_da_salvare)
                 self.conn.commit()
-                self._aggiorna()
+                self.aggiorna()
                 nuovo_dato.destroy()
             else:
                 messagebox.showinfo('ATTENZIONE', 'CI SONO CAMPI VUOTI')
@@ -202,8 +203,11 @@ class Dipendenti(tk.Frame):
 
 if __name__ == '__main__':
     root = tk.Tk()
+    '''
     notebook = ttk.Notebook(root)
     notebook.grid(row='1', column='0')
     new = Dipendenti(notebook)
     notebook.add(new, text='Dipendenti')
+    '''
+    new = Dipendenti()
     root.mainloop()

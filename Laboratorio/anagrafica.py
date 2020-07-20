@@ -1,5 +1,5 @@
 from anagrafica_reparti import *
-from anagrafica_dipendenti import *
+# from anagrafica_dipendenti import *
 from anagrafica_fornitori import *
 from anagrafica_ingredienti import *
 from anagrafica_produzione import *
@@ -15,13 +15,12 @@ class Anagrafica(tk.Toplevel):
     def __init__(self):
         tk.Toplevel.__init__(self)
         self.title("Anagrafica")
-        # self.geometry('%dx525+0+0' % self.winfo_screenwidth())
         '''
         Disposizione Menu
         '''
         menubar = tk.Menu(self)
         anagraficamenu = tk.Menu(menubar, tearoff=0)
-        anagraficamenu.add_command(label="Dipendenti")
+        anagraficamenu.add_command(label="Dipendenti", command=self._dipendenti)
         anagraficamenu.add_command(label="Fornitori")
         anagraficamenu.add_command(label="Ingredienti")
         anagraficamenu.add_command(label="Produzione")
@@ -41,7 +40,6 @@ class Anagrafica(tk.Toplevel):
         self.img_btn1 = tk.PhotoImage(file=".//immagini//logo_piccolo.gif")
 
         self.config(menu=menubar)
-        # TODO aggiungere funzioni per il menu
         '''
         Notebook e posizione
         '''
@@ -50,8 +48,8 @@ class Anagrafica(tk.Toplevel):
         '''
         TAB 1 per Dipendenti
         '''
-        self.tab1 = Dipendenti(self.notebook)
-        self.notebook.add(self.tab1,  text='Dipendenti', compound='left', image=self.img_btn1)
+        # self.tab1 = Dipendenti(self.notebook)
+        # self.notebook.add(self.tab1,  text='Dipendenti', compound='left', image=self.img_btn1)
         '''
         TAB 2 per Fornitori
         '''
@@ -93,6 +91,11 @@ class Anagrafica(tk.Toplevel):
         '''
         self.tab9 = Impostazioni(self.notebook)
         self.notebook.add(self.tab9, text='Impostazioni', compound='left', image=self.img_btn1)
+
+    @staticmethod
+    def _dipendenti():
+        from anagrafica_dipendenti import Dipendenti
+        Dipendenti()
 
 
 if __name__ == '__main__':
