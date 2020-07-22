@@ -1,6 +1,6 @@
 from anagrafica_reparti import *
 # from anagrafica_dipendenti import *
-from anagrafica_fornitori import *
+# from anagrafica_fornitori import *
 from anagrafica_ingredienti import *
 from anagrafica_produzione import *
 from anagrafica_merceologie import *
@@ -21,7 +21,7 @@ class Anagrafica(tk.Toplevel):
         menubar = tk.Menu(self)
         anagraficamenu = tk.Menu(menubar, tearoff=0)
         anagraficamenu.add_command(label="Dipendenti", command=self._dipendenti)
-        anagraficamenu.add_command(label="Fornitori")
+        anagraficamenu.add_command(label="Fornitori", command=self._fornitori)
         anagraficamenu.add_command(label="Ingredienti")
         anagraficamenu.add_command(label="Produzione")
         anagraficamenu.add_command(label="Reparti")
@@ -53,9 +53,10 @@ class Anagrafica(tk.Toplevel):
         '''
         TAB 2 per Fornitori
         '''
+        '''
         self.tab2 = Fornitori(self.notebook)
         self.notebook.add(self.tab2, text='Fornitori', compound='left', image=self.img_btn1)
-
+        '''
         '''
         TAB 3 per Ingredienti
         '''
@@ -96,6 +97,11 @@ class Anagrafica(tk.Toplevel):
     def _dipendenti():
         from anagrafica_dipendenti import Dipendenti
         Dipendenti()
+
+    @staticmethod
+    def _fornitori():
+        from anagrafica_fornitori import Fornitori
+        Fornitori()
 
 
 if __name__ == '__main__':
