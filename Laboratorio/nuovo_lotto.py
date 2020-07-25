@@ -81,7 +81,8 @@ class NuovoLotto(tk.Toplevel):
         self.tree_lotti_selezionati.heading("taglio", text="taglio")
 
         # LABELFRAME nuova produzione
-        self.labelframe = ttk.Labelframe(self.frame_dx_basso, text="NUOVA PRODUZIONE")
+        self.labelframe = tk.LabelFrame(self.frame_dx_basso, text="NUOVA PRODUZIONE",
+                                         font=('Verdana', 15), labelanchor='n')
 
         # ENTRY per inserimento del peso
         self.entry_peso = ttk.Entry(self.frame_dx, font=('Verdana', 20), width=16, textvariable=self.peso_da_inserire)
