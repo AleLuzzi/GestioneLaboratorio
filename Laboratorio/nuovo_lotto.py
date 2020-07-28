@@ -29,14 +29,12 @@ class NuovoLotto(tk.Toplevel):
 
         # DISPOSIZIONE FRAME
         self.frame_sx = tk.Frame(self)
-        self.frame_sx_alto = tk.Frame(self.frame_sx)
-        self.frame_sx_basso = tk.Frame(self.frame_sx, background='white')
         self.frame_dx = tk.Frame(self)
         self.frame_dx_r = tk.Frame(self)
         self.frame_dx_basso = tk.Frame(self)
 
         # TREEVIEW per riepilogo immissioni
-        self.tree = ttk.Treeview(self.frame_sx_alto, height=20)
+        self.tree = ttk.Treeview(self.frame_sx, height=20)
         self.tree['columns'] = ('data ingresso', 'fornitore', 'peso', 'residuo')
 
         self.tree.column("data ingresso", width=80)
@@ -54,17 +52,17 @@ class NuovoLotto(tk.Toplevel):
         self.tree.bind("<Double-1>", self.ondoubleclick)
 
         # LABEL nuovo lotto vendita
-        self.lbl_nuovo_lotto = ttk.Label(self.frame_dx, text='NUOVO LOTTO',
-                                         foreground='blue', font=('Helvetica', 22))
-        self.lbl_prog_lotto_vendita = ttk.Label(self.frame_dx, text=str(self.prog_lotto_ven) + 'V',
-                                                font=('Helvetica', 40))
+        self.lbl_nuovo_lotto = tk.Label(self.frame_dx, text='NUOVO LOTTO', relief='ridge',
+                                        foreground='blue', font=('Verdana', 20))
+        self.lbl_prog_lotto_vendita = tk.Label(self.frame_dx, text=str(self.prog_lotto_ven) + 'V',
+                                               font=('Verdana', 40), width=8, bg='white', relief='sunken')
 
         # LABEL quantita' prodotta
-        self.lbl_qta_prodotto = ttk.Label(self.frame_dx, text='Quantita prodotta',
-                                          foreground='blue', font=('Helvetica', 20))
+        self.lbl_qta_prodotto = tk.Label(self.frame_dx, text='Quantità prodotta', relief='ridge',
+                                          foreground='blue', font=('Verdana', 20))
 
         # TREEVIEW per lotti selezionati
-        self.tree_lotti_selezionati = ttk.Treeview(self.frame_dx_r, height=8)
+        self.tree_lotti_selezionati = ttk.Treeview(self.frame_dx_r, height=6)
         self.tree_lotti_selezionati['columns'] = ('progressivo_v',
                                                   'data',
                                                   'lotto ingresso',
@@ -83,51 +81,50 @@ class NuovoLotto(tk.Toplevel):
         self.tree_lotti_selezionati.heading("taglio", text="taglio")
 
         # LABELFRAME nuova produzione
-        self.labelframe = ttk.Labelframe(self.frame_dx_basso, text="Nuova Produzione")
+        self.labelframe = tk.LabelFrame(self.frame_dx_basso, text="NUOVA PRODUZIONE",
+                                         font=('Verdana', 15), labelanchor='n')
 
         # ENTRY per inserimento del peso
-        self.entry_peso = ttk.Entry(self.frame_dx, font=('Helvetica', 20), width=7, textvariable=self.peso_da_inserire)
+        self.entry_peso = ttk.Entry(self.frame_dx, font=('Verdana', 20), width=16, textvariable=self.peso_da_inserire)
         self.entry_peso.focus()
 
         # BOTTONE ESCI E SALVA
         self.btn_elimina_riga = tk.Button(self.frame_dx_r,
-                                          text='Elimina riga',
+                                          text='ELIMINA RIGA',
+                                          font=('Verdana', 12),
                                           command=self.rimuovi_riga_selezionata)
-        self.btn_esci = tk.Button(self.frame_sx_basso,
-                                  text="Chiudi finestra",
-                                  font=('Helvetica', 20),
+        self.btn_esci = tk.Button(self.frame_sx,
+                                  text="CHIUDI FINESTRA",
+                                  font=('Verdana', 15),
                                   width=14,
                                   command=self.esci_senza_salvare)
 
-        self.btn_esci_salva = tk.Button(self.frame_sx_basso,
-                                        text="Esci e salva",
-                                        font=('Helvetica', 20),
+        self.btn_esci_salva = tk.Button(self.frame_sx,
+                                        text="ESCI e SALVA",
+                                        font=('Verdana', 15),
                                         width=14,
                                         command=self.esci_salva)
 
         # LAYOUT
         self.frame_sx.grid(row=0, column=0, sticky='n')
-        self.frame_sx_alto.grid()
-        self.frame_sx_basso.grid(sticky='ew')
         self.frame_dx.grid(row=0, column=1, sticky='n')
         self.frame_dx_r.grid(row=0, column=2, sticky='n')
         self.frame_dx_basso.grid(row=0, column=1, columnspan=2, sticky='s')
 
-        self.tree.grid(row=0, column=0, columnspan=2, sticky='w')
+        self.tree.grid(row=0, column=0, columnspan=2)
+        self.btn_esci.grid(row=1, column=0, sticky='we')
+        self.btn_esci_salva.grid(row=1, column=1, sticky='we')
 
-        self.lbl_nuovo_lotto.grid(row=0, column=0)
+        self.lbl_nuovo_lotto.grid(row=0, column=0, sticky='we')
         self.lbl_prog_lotto_vendita.grid(row=1, column=0, sticky='w')
 
-        self.lbl_qta_prodotto.grid(row=2, column=0)
+        self.lbl_qta_prodotto.grid(row=2, column=0, sticky='we')
         self.entry_peso.grid(row=3, column=0, sticky='w')
 
-        self.tree_lotti_selezionati.grid(row=0, column=0)
+        self.tree_lotti_selezionati.grid(row=0, column=0, sticky='we')
         self.btn_elimina_riga.grid(row=1, column=0, sticky='we')
 
-        self.labelframe.grid(row=4, column=0, columnspan=2, sticky='ew')
-
-        self.btn_esci.grid(row=2, column=0, padx=10, pady=10)
-        self.btn_esci_salva.grid(row=2, column=1, padx=10, pady=10)
+        self.labelframe.grid(row=4, column=0, columnspan=2, sticky='we')
 
         self.lotti_acq_aperti()
         self.riempi_lista_produzione()
