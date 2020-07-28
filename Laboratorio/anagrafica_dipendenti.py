@@ -28,46 +28,41 @@ class Dipendenti(tk.Toplevel):
         self.lbl_gest_dipendenti = ttk.LabelFrame(self.frame_sx, text='Gestione Dipendenti')
 
         # Treeview per tab Dipendenti
-        self.tree_dipendenti = ttk.Treeview(self.lbl_gest_dipendenti, height=23)
-        self.tree_dipendenti['columns'] = ('Id', 'Nome', 'Cognome', 'Reparto', 'email')
+        self.tree_dipendenti = ttk.Treeview(self.lbl_gest_dipendenti, height=15)
+        self.tree_dipendenti['columns'] = ('Id', 'Nome', 'Cognome')
         self.tree_dipendenti['show'] = 'headings'
         self.tree_dipendenti.heading('Id', text="Id")
         self.tree_dipendenti.heading('Nome', text="Nome")
         self.tree_dipendenti.heading('Cognome', text="Cognome")
-        self.tree_dipendenti.heading('Reparto', text="Reparto")
-        self.tree_dipendenti.heading('email', text="E-mail")
 
         self.tree_dipendenti.column("Id", width=20)
-        self.tree_dipendenti.column("Nome", width=80)
-        self.tree_dipendenti.column("Cognome", width=80)
-        self.tree_dipendenti.column("Reparto", width=50)
-        self.tree_dipendenti.column("email", width=150)
+        self.tree_dipendenti.column("Nome", width=100)
+        self.tree_dipendenti.column("Cognome", width=100)
 
-        self.tree_dipendenti.bind("<Double-1>", self.ondoubleclick)
-
-        # Lista campi del record
-        self.campi = ['nome', 'cognome', 'reparto', 'email']
-        self.label = {}
-        self.entry = {}
+        self.tree_dipendenti.bind("<Double-1>", self._ondoubleclick)
 
         # LABELFRAME dettagli prodotto selezionato
         self.lbl_frame_dettagli_selezionato = ttk.LabelFrame(self.frame_centrale, text='Dettagli riga selezionata')
 
         # LABEL ed entry per mostrare dettagli prodotto selezionato
-        r = 1
-        c = 0
-        for campo in self.campi:
-            if r % 12 == 0:
-                r = 1
-                c += 2
-            lbl = ttk.Label(self.lbl_frame_dettagli_selezionato, text=campo)
-            lbl.grid(row=r, column=c)
-            self.label[campo] = lbl
+        self.lbl_nome = tk.Label(self.lbl_frame_dettagli_selezionato, text='Nome')
+        self.ent_nome = tk.Entry(self.lbl_frame_dettagli_selezionato, width=25)
+        self.lbl_cognome = tk.Label(self.lbl_frame_dettagli_selezionato, text='Cognome')
+        self.ent_cognome = tk.Entry(self.lbl_frame_dettagli_selezionato, width=25)
+        self.lbl_reparto = tk.Label(self.lbl_frame_dettagli_selezionato, text='Reparto')
+        self.lbl_email = tk.Label(self.lbl_frame_dettagli_selezionato, text='Email')
+        self.ent_email = tk.Entry(self.lbl_frame_dettagli_selezionato, width=25)
 
-            ent = ttk.Entry(self.lbl_frame_dettagli_selezionato, width=25)
-            ent.grid(row=r, column=c+1)
-            self.entry[campo] = ent
-            r += 1
+        self.cmb_box_reparto_value = tk.StringVar()
+        self.cmb_box_reparto = ttk.Combobox(self.lbl_frame_dettagli_selezionato,
+                                            textvariable=self.cmb_box_reparto_value)
+
+        lista_reparti = []
+
+        self.c.execute("SELECT reparto From reparti")
+        for row in self.c:
+            lista_reparti.extend(row)
+        self.cmb_box_reparto['values'] = lista_reparti
 
         # LABELFRAME scegli prodotto
         self.lbl_frame_scegli = ttk.LabelFrame(self.frame_dx)
@@ -91,12 +86,20 @@ class Dipendenti(tk.Toplevel):
         self.tree_dipendenti.grid(row=1, column=0, columnspan=3)
 
         self.lbl_frame_dettagli_selezionato.grid(row=1, column=0, sticky='n')
+        self.lbl_nome.grid(row=0, column=0)
+        self.ent_nome.grid(row=0, column=1)
+        self.lbl_cognome.grid(row=1, column=0)
+        self.ent_cognome.grid(row=1, column=1)
+        self.lbl_reparto.grid(row=2, column=0)
+        self.cmb_box_reparto.grid(row=2, column=1)
+        self.lbl_email.grid(row=3, column=0)
+        self.ent_email.grid(row=3, column=1)
 
         self.lbl_frame_scegli.grid(row=1, column=0)
         self.btn_modifica.grid(row=1, column=0, columnspan=2, sticky='we')
         self.btn_inserisci.grid(row=2, column=0, columnspan=2, sticky='we')
 
-        self.aggiorna()
+        self._aggiorna()
 
     @staticmethod
     def leggi_file_ini():
@@ -105,17 +108,26 @@ class Dipendenti(tk.Toplevel):
         return ini
 
     def modifica(self):
-        for campo in self.campi:
-            stringa = 'UPDATE dipendenti SET {}=%s WHERE ID = %s'.format(campo)
-            self.c.execute(stringa, (self.entry[campo].get(), (self.item[0])))
-            self.conn.commit()
-        self.aggiorna()
-
-    def aggiorna(self):
+        self.item = self.tree_dipendenti.item(self.tree_dipendenti.selection(), 'values')
+        if self.item:
+            lista = [self.ent_nome.get(), self.ent_cognome.get(), self.ent_email.get(), self.item[0]]
+            self.c.execute('UPDATE dipendenti SET nome = %s, cognome = %s, email = %s WHERE ID = %s', lista)
+            rep = self.cmb_box_reparto_value.get()
+            self.c.execute('SELECT Id FROM reparti WHERE reparto = %s', (rep,))
+            id_rep = []
+            id_rep.extend(self.c.fetchone())
+            id_rep.append(self.item[0])
+            stringa = 'UPDATE dipendenti SET reparto = %s WHERE ID = %s'
+            self.c.execute(stringa, id_rep)
+            self._aggiorna()
+        else:
+            messagebox.showinfo("ATTENZIONE", "Non hai selezionato nessun record")
+        
+    def _aggiorna(self):
         self.tree_dipendenti.delete(*self.tree_dipendenti.get_children())
         self.c.execute("SELECT * From dipendenti ")
         for lista in self.c:
-            self.tree_dipendenti.insert('', 'end', values=(lista[0], lista[1], lista[2], lista[3], lista[4]))
+            self.tree_dipendenti.insert('', 'end', values=(lista[0], lista[1], lista[2]))
 
         lista = []
 
@@ -123,19 +135,21 @@ class Dipendenti(tk.Toplevel):
         for row in self.c:
             lista.extend(row)
 
-    def ondoubleclick(self, event):
-        for campo in self.campi:
-            self.entry[campo].delete(0, 'end')
+    def _ondoubleclick(self, event):
+        self.ent_nome.delete(0, 'end')
+        self.ent_cognome.delete(0, 'end')
+        self.ent_email.delete(0, 'end')
 
         self.item = (self.tree_dipendenti.item(self.tree_dipendenti.selection(), 'values'))
+        stringa = "SELECT * FROM dipendenti, reparti WHERE dipendenti.ID = %s AND dipendenti.reparto = reparti.id"
+        self.c.execute(stringa, (self.item[0],))
 
-        i = 1
-        self.c.execute("SELECT * FROM dipendenti WHERE ID = %s", (self.item[0],))
         for self.row in self.c:
-            for campo in self.campi:
-                self.entry[campo].insert(0, self.row[i])
-                i += 1
-                
+            self.ent_nome.insert(0, self.row[1])
+            self.ent_cognome.insert(0, self.row[2])
+            self.cmb_box_reparto_value.set(self.row[6])
+            self.ent_email.insert(0, self.row[4])
+
     def _inserisci(self):
 
         def _centra(toplevel):
@@ -153,11 +167,10 @@ class Dipendenti(tk.Toplevel):
             if rep != '' and nome_new.get() != '':
                 self.c.execute("SELECT Id FROM reparti WHERE reparto = %s", (rep,))
                 lista_da_salvare = [nome_new.get(), cognome_new.get(), self.c.fetchone()[0], email_new.get()]
-                # print(lista_da_salvare)
                 self.c.execute('INSERT INTO dipendenti(nome,cognome,reparto,email) '
                                'VALUES (%s,%s,%s,%s)', lista_da_salvare)
                 self.conn.commit()
-                self.aggiorna()
+                self._aggiorna()
                 nuovo_dato.destroy()
             else:
                 messagebox.showinfo('ATTENZIONE', 'CI SONO CAMPI VUOTI')
@@ -203,11 +216,5 @@ class Dipendenti(tk.Toplevel):
 
 if __name__ == '__main__':
     root = tk.Tk()
-    '''
-    notebook = ttk.Notebook(root)
-    notebook.grid(row='1', column='0')
-    new = Dipendenti(notebook)
-    notebook.add(new, text='Dipendenti')
-    '''
     new = Dipendenti()
     root.mainloop()
