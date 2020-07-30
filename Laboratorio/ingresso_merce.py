@@ -22,7 +22,7 @@ class IngressoMerce(tk.Toplevel):
                                             password='')
         self.c = self.conn.cursor()
 
-        # Lettura progressivo lotto acquisto da file
+        # Lettura progressivo lotto acquisto da db
         self.c.execute("SELECT prog_acq FROM progressivi")
         self.prog_lotto_acq = self.c.fetchone()[0]
 
@@ -42,6 +42,7 @@ class IngressoMerce(tk.Toplevel):
 
         for row in self.c:
             self.lista_fornitori.extend(row)
+            
         # Creazione lista tagli suino
         self.lista_tagli = []
         self.c.execute("SELECT taglio FROM tagli WHERE id_merceologia = 11")
@@ -52,7 +53,7 @@ class IngressoMerce(tk.Toplevel):
         # LAYOUT dei frame per impaginazione
         self.frame_alto = tk.Frame(self, bd=3)
         self.frame_centrale = tk.Frame(self, bd=3)
-        self.frame_basso = tk.Frame(self, background='white')
+        self.frame_basso = tk.Frame(self)
 
         # TREEVIEW per riepilogo inserimenti
         self.tree = ttk.Treeview(self.frame_alto, height=8)
@@ -71,7 +72,7 @@ class IngressoMerce(tk.Toplevel):
         self.tree.heading("taglio", text="Prodotto")
         self.tree.heading("peso_i", text="Quantità")
 
-        # LABELFRAME per creazione bottoni per scelta fornitore
+        # LABELFRAME contiene bottoni per scelta fornitore
         self.labelframe_fornitori = tk.LabelFrame(self.frame_centrale,
                                                   text="FORNITORE",
                                                   font=('Verdana', 15),
@@ -91,7 +92,7 @@ class IngressoMerce(tk.Toplevel):
                            font='Verdana').grid(row=row, column=col, sticky='w')
             row += 1
 
-        # LABELFRAME per creazione bottoni per i tagli suino
+        # LABELFRAME contiene bottoni per i tagli suino
         self.labelframe_taglio = tk.LabelFrame(self.frame_centrale,
                                                text="TAGLIO",
                                                font=('Verdana', 15),
@@ -149,20 +150,20 @@ class IngressoMerce(tk.Toplevel):
         self.entry_ddt.focus()
 
         # ENTRY per inserimento del peso
-        self.label_peso = ttk.Label(self.frame_alto,
+        self.label_peso = tk.Label(self.frame_alto,
                                     text="INSERIMENTO PESO",
                                     foreground='blue',
                                     font=('Verdana', 15))
 
-        self.entry = ttk.Entry(self.frame_alto,
+        self.entry = tk.Entry(self.frame_alto,
                                textvariable=self.peso,
                                width=25)
 
-        self.btn_ins_peso = ttk.Button(self.frame_alto, image=self.img_btn, command=self._ins_peso)
+        self.btn_ins_peso = tk.Button(self.frame_alto, image=self.img_btn, command=self._ins_peso)
 
         # BOTTONI salva e chiudi finestra
         self.btn_invio = tk.Button(self.frame_basso,
-                                   text="invio",
+                                   text="INVIO",
                                    font=('Verdana', 15),
                                    width=18,
                                    command=self._invio)
@@ -181,7 +182,7 @@ class IngressoMerce(tk.Toplevel):
 
         # BOTTONE rimuovi riga dal treeview riepilogativo
         self.btn_rimuovi_riga = tk.Button(self.frame_alto,
-                                          text="Rimuovi riga",
+                                          text="RIMUOVI RIGA",
                                           command=self._rimuovi_riga_selezionata)
 
         # LAYOUT
@@ -207,9 +208,9 @@ class IngressoMerce(tk.Toplevel):
         self.entry.grid(row=4, column=1)
         self.btn_ins_peso.grid(row=4, column=2)
 
-        self.btn_invio.grid(row=2, column=0, padx=5, pady=10)
-        self.btn_salva_esci.grid(row=2, column=1, padx=5, pady=10)
-        self.btn_chiudi_finestra.grid(row=2, column=2, padx=5, pady=10)
+        self.btn_invio.grid(row=0, column=0, sticky='we')
+        self.btn_salva_esci.grid(row=0, column=1, sticky='we')
+        self.btn_chiudi_finestra.grid(row=0, column=2, sticky='we')
         self.btn_rimuovi_riga.grid(row=5, column=3, sticky='we')
 
     @staticmethod
