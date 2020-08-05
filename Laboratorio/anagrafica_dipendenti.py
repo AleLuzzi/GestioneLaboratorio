@@ -112,6 +112,7 @@ class Dipendenti(tk.Toplevel):
         if self.item:
             lista = [self.ent_nome.get(), self.ent_cognome.get(), self.ent_email.get(), self.item[0]]
             self.c.execute('UPDATE dipendenti SET nome = %s, cognome = %s, email = %s WHERE ID = %s', lista)
+            self.conn.commit()
             rep = self.cmb_box_reparto_value.get()
             self.c.execute('SELECT Id FROM reparti WHERE reparto = %s', (rep,))
             id_rep = []
@@ -119,6 +120,7 @@ class Dipendenti(tk.Toplevel):
             id_rep.append(self.item[0])
             stringa = 'UPDATE dipendenti SET reparto = %s WHERE ID = %s'
             self.c.execute(stringa, id_rep)
+            self.conn.commit()
             self._aggiorna()
         else:
             messagebox.showinfo("ATTENZIONE", "Non hai selezionato nessun record")
