@@ -142,7 +142,7 @@ class Dipendenti(tk.Toplevel):
         self.ent_cognome.delete(0, 'end')
         self.ent_email.delete(0, 'end')
 
-        self.item = event.widget.item(self.tree_fornitori.selection(), 'values')
+        self.item = event.widget.item(self.tree_dipendenti.selection(), 'values')
         stringa = "SELECT * FROM dipendenti, reparti WHERE dipendenti.ID = %s AND dipendenti.reparto = reparti.id"
         self.c.execute(stringa, (self.item[0],))
 
