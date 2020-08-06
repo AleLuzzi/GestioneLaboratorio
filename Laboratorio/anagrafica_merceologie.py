@@ -92,11 +92,11 @@ class MerceologieCucina(tk.Frame):
         self.lbl_frame_scegli = ttk.LabelFrame(self.frame_dx, text='')
         self.btn_modifica = tk.Button(self.lbl_frame_scegli,
                                       text='Salva Modifiche',
-                                      font=('Helvetica', 10),
+                                      font=('Verdana', 10),
                                       command=self._modifica)
         self.btn_inserisci = tk.Button(self.lbl_frame_scegli,
                                        text='Inserisci Dati',
-                                       font=('Helvetica', 10),
+                                       font=('Verdana', 10),
                                        command=self._inserisci)
 
         self._aggiorna()
@@ -159,7 +159,7 @@ class MerceologieCucina(tk.Frame):
         self.entry_merceologia.delete(0, 'end')
         for attributo in self.attributi:
             self.ckbutton[attributo].deselect()
-        self.item = (self.tree_merceologie.item(self.tree_merceologie.selection(), 'values'))
+        self.item = event.widget.item(self.tree_merceologie.selection(), 'values')
         stringa = "SELECT * FROM merceologie, reparti WHERE merceologie.ID = %s AND merceologie.id_reparto = reparti.id"
         self.c.execute(stringa, (self.item[0],))
         for self.row in self.c:
