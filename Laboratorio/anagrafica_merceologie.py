@@ -45,11 +45,13 @@ class MerceologieCucina(tk.Frame):
         self.ckbutton = {}
 
         # LABELFRAME dettagli reparto selezionato
-        self.lbl_frame_merceologia_selezionata = ttk.LabelFrame(self.frame_centrale,
-                                                                text='Dettagli merceologia selezionata')
+        self.lbl_frame_merceologia_selezionata = tk.LabelFrame(self.frame_centrale,
+                                                               text='Dettagli merceologia selezionata',
+                                                               font=('Verdana', 15))
 
-        self.lbl_frame_attributi_merceologia = ttk.LabelFrame(self.frame_centrale,
-                                                              text='Attributi merceologia selezionata')
+        self.lbl_frame_attributi_merceologia = tk.LabelFrame(self.frame_centrale,
+                                                             text='Attributi merceologia selezionata',
+                                                             font=('Verdana', 15))
 
         # crea LABEL ed ENTRY merceologia
         self.lbl_merceologia = tk.Label(self.lbl_frame_merceologia_selezionata,
