@@ -38,8 +38,10 @@ class Fornitori(tk.Toplevel):
         self.tree_fornitori.bind("<Double-1>", self._ondoubleclick)
 
         # LABELFRAME dettagli fornitore selezionato
-        self.lbl_frame_dettagli_selezionato = ttk.LabelFrame(self.frame_centrale, text='Dettagli fornitore selezionato')
-        self.lbl_frame_attributi_fornitori = ttk.LabelFrame(self.frame_centrale, text='Attributi fornitore selezionato')
+        self.lbl_frame_dettagli_selezionato = tk.LabelFrame(self.frame_centrale, text='Dettagli fornitore selezionato',
+                                                             font=('Verdana', 15))
+        self.lbl_frame_attributi_fornitori = tk.LabelFrame(self.frame_centrale, text='Attributi fornitore selezionato',
+                                                            font=('Verdana', 15))
 
         # Label ed Entry per mostrare dettagli fornitore selezionato
         self.lbl_azienda = tk.Label(self.lbl_frame_dettagli_selezionato, text='Fornitore')
