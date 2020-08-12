@@ -4,9 +4,9 @@ import mysql.connector
 import configparser
 
 
-class Ingredienti(tk.Frame):
-    def __init__(self, parent):
-        tk.Frame.__init__(self, parent)
+class Ingredienti(tk.Toplevel):
+    def __init__(self):
+        tk.Toplevel.__init__(self)
 
         self.item = ''
         self.valore_flag = dict()
@@ -46,16 +46,19 @@ class Ingredienti(tk.Frame):
         self.entry = {}
 
         # LABELFRAME dettagli ingrediente selezionato
-        self.lbl_frame_dettagli_selezionato = ttk.LabelFrame(self.frame_dx, text='Dettagli ingrediente selezionato')
-        self.lbl_frame_attributi_ingrediente = ttk.LabelFrame(self.frame_dx, text='Attributi ingrediente selezionato')
+        self.lbl_frame_dettagli_selezionato = tk.LabelFrame(self.frame_dx, text='Dettagli ingrediente selezionato',
+                                                             font=('Verdana', 15))
+        self.lbl_frame_attributi_ingrediente = tk.LabelFrame(self.frame_dx, text='Attributi ingrediente selezionato',
+                                                              font=('Verdana', 15))
 
         # COMBOBOX per gestire merceologia prodotti
         self.box_merceologia = tk.StringVar()
         self.box = ttk.Combobox(self.lbl_frame_attributi_ingrediente, textvariable=self.box_merceologia)
 
         # LABELFRAME per filtro
-        self.lbl_frame_filtro = ttk.LabelFrame(self.frame_dx,
-                                               text='Filtra Lista Ingredienti')
+        self.lbl_frame_filtro = tk.LabelFrame(self.frame_dx,
+                                               text='Filtra Lista Ingredienti',
+                                               font=('Verdana', 15))
 
         # COMBOBOX e BOTTONE per filtro
         self.box_filtro = ttk.Combobox(self.lbl_frame_filtro)
@@ -71,7 +74,7 @@ class Ingredienti(tk.Frame):
                                           command=self.aggiorna)
 
         # LABELFRAME scegli ingrediente
-        self.lbl_frame_scegli = ttk.LabelFrame(self.frame_dx, text='')
+        self.lbl_frame_scegli = tk.LabelFrame(self.frame_dx, text='')
 
         # crea Label ENTRY
         r = 1
@@ -205,7 +208,7 @@ class Ingredienti(tk.Frame):
         for attributo in self.attributi:
             self.ckbutton[attributo].deselect()
 
-        self.item = (self.tree_ingredienti.item(self.tree_ingredienti.selection(), 'values'))
+        self.item = event.widget.item(self.tree_ingredienti.selection(), 'values')
 
         i = 1
         self.c.execute("SELECT * FROM ingredienti_base WHERE ID = %s", (self.item[0],))
@@ -231,8 +234,5 @@ class Ingredienti(tk.Frame):
 
 if __name__ == '__main__':
     root = tk.Tk()
-    notebook = ttk.Notebook(root)
-    notebook.grid(row='1', column='0')
-    new = Ingredienti(notebook)
-    notebook.add(new, text='Ingredienti')
+    new = Ingredienti()
     root.mainloop()
