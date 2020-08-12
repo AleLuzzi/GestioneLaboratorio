@@ -44,21 +44,23 @@ class Reparti(tk.Frame):
         self.entry = {}
 
         # LABELFRAME dettagli reparto selezionato
-        self.lbl_frame_dettagli_selezionato = ttk.LabelFrame(self.frame_centrale,
-                                                             text='Dettagli reparto selezionato')
+        self.lbl_frame_dettagli_selezionato = tk.LabelFrame(self.frame_centrale,
+                                                            font=('Verdana',15),
+                                                            text='Dettagli reparto selezionato')
 
-        self.lbl_frame_attributi_reparto = ttk.LabelFrame(self.frame_centrale,
-                                                          text='Attributi reparto selezionato')
+        self.lbl_frame_attributi_reparto = tk.LabelFrame(self.frame_centrale,
+                                                         font=('Verdana',15),
+                                                         text='Attributi reparto selezionato')
 
         # LABELFRAME scegli prodotto
         self.lbl_frame_scegli = ttk.LabelFrame(self.frame_dx, text='')
         self.btn_modifica = tk.Button(self.lbl_frame_scegli,
                                       text='Salva Modifiche',
-                                      font=('Helvetica', 10),
+                                      font=('Verdana',10),
                                       command=self.modifica)
         self.btn_inserisci = tk.Button(self.lbl_frame_scegli,
                                        text='Inserisci Dati',
-                                       font=('Helvetica', 10),
+                                       font=('Verdana',10),
                                        command=self.inserisci)
 
         self.aggiorna()
