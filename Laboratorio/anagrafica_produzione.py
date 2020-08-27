@@ -205,7 +205,7 @@ class Produzione(tk.Frame):
         self.btn_filtra.grid(sticky='we')
         self.btn_reset.grid(sticky='we')
 
-        self.aggiorna()
+        # self.aggiorna()
         self.riempi_combo_reparto()
         self.riempi_combo_merceologie()
 
