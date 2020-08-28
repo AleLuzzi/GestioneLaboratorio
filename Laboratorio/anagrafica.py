@@ -1,7 +1,3 @@
-from anagrafica_reparti import *
-# from anagrafica_dipendenti import *
-# from anagrafica_fornitori import *
-from anagrafica_ingredienti import *
 from anagrafica_produzione import *
 from anagrafica_merceologie import *
 from anagrafica_tagli import *
@@ -24,7 +20,7 @@ class Anagrafica(tk.Toplevel):
         anagraficamenu.add_command(label="Fornitori", command=self._fornitori)
         anagraficamenu.add_command(label="Ingredienti", command=self._ingredienti)
         anagraficamenu.add_command(label="Produzione")
-        anagraficamenu.add_command(label="Reparti")
+        anagraficamenu.add_command(label="Reparti", command=self._reparti)
         anagraficamenu.add_command(label="Merceologie")
         anagraficamenu.add_command(label="Tagli")
         menubar.add_cascade(label="Anagrafica", menu=anagraficamenu)
@@ -46,30 +42,10 @@ class Anagrafica(tk.Toplevel):
         self.notebook = ttk.Notebook(self)
         self.notebook.grid(row='1', column='0')
         '''
-        TAB 1 per Dipendenti
-        '''
-        # self.tab1 = Dipendenti(self.notebook)
-        # self.notebook.add(self.tab1,  text='Dipendenti', compound='left', image=self.img_btn1)
-        '''
-        TAB 2 per Fornitori
-        '''
-        # self.tab2 = Fornitori(self.notebook)
-        # self.notebook.add(self.tab2, text='Fornitori', compound='left', image=self.img_btn1)
-        '''
-        TAB 3 per Ingredienti
-        '''
-        # self.tab3 = Ingredienti(self.notebook)
-        # self.notebook.add(self.tab3, text='Ingredienti', compound='left', image=self.img_btn1)
-        '''
         TAB 4 per Produzione
         '''
         self.tab4 = Produzione(self.notebook)
         self.notebook.add(self.tab4, text='Produzione', compound='left', image=self.img_btn1)
-        '''
-        TAB 5 per Reparti
-        '''
-        self.tab5 = Reparti(self.notebook)
-        self.notebook.add(self.tab5, text='Reparti', compound='left', image=self.img_btn1)
         '''
         TAB 6 per Merceologia Cucina
         '''
@@ -105,6 +81,11 @@ class Anagrafica(tk.Toplevel):
     def _ingredienti():
         from anagrafica_ingredienti import Ingredienti
         Ingredienti()
+
+    @staticmethod
+    def _reparti():
+        from anagrafica_reparti import Reparti
+        Reparti()
 
 
 if __name__ == '__main__':

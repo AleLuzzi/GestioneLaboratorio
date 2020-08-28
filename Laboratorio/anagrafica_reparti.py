@@ -4,9 +4,9 @@ import mysql.connector
 import configparser
 
 
-class Reparti(tk.Frame):
-    def __init__(self, parent):
-        tk.Frame.__init__(self, parent)
+class Reparti(tk.Toplevel):
+    def __init__(self):
+        tk.Toplevel.__init__(self)
 
         self.item = ''
         self.valore_flag = dict()
@@ -180,8 +180,5 @@ class Reparti(tk.Frame):
 
 if __name__ == '__main__':
     root = tk.Tk()
-    notebook = ttk.Notebook(root)
-    notebook.grid(row='1', column='0')
-    new = Reparti(notebook)
-    notebook.add(new, text='Reparti')
+    new = Reparti()
     root.mainloop()
