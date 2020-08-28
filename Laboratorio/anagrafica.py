@@ -21,7 +21,7 @@ class Anagrafica(tk.Toplevel):
         anagraficamenu.add_command(label="Ingredienti", command=self._ingredienti)
         anagraficamenu.add_command(label="Produzione")
         anagraficamenu.add_command(label="Reparti", command=self._reparti)
-        anagraficamenu.add_command(label="Merceologie")
+        anagraficamenu.add_command(label="Merceologie", command=self._merceologie)
         anagraficamenu.add_command(label="Tagli")
         menubar.add_cascade(label="Anagrafica", menu=anagraficamenu)
 
@@ -46,11 +46,6 @@ class Anagrafica(tk.Toplevel):
         '''
         self.tab4 = Produzione(self.notebook)
         self.notebook.add(self.tab4, text='Produzione', compound='left', image=self.img_btn1)
-        '''
-        TAB 6 per Merceologia Cucina
-        '''
-        self.tab6 = MerceologieCucina(self.notebook)
-        self.notebook.add(self.tab6, text='Merceologia', compound='left', image=self.img_btn1)
         '''
         TAB 7 per gestione tagli
         '''
@@ -86,6 +81,11 @@ class Anagrafica(tk.Toplevel):
     def _reparti():
         from anagrafica_reparti import Reparti
         Reparti()
+
+    @staticmethod
+    def _merceologie():
+        from anagrafica_merceologie import MerceologieCucina
+        MerceologieCucina()
 
 
 if __name__ == '__main__':

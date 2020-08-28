@@ -5,9 +5,9 @@ import mysql.connector
 import configparser
 
 
-class MerceologieCucina(tk.Frame):
-    def __init__(self, parent):
-        tk.Frame.__init__(self, parent)
+class MerceologieCucina(tk.Toplevel):
+    def __init__(self):
+        tk.Toplevel.__init__(self)
 
         self.item = ''
         self.valore_flag = dict()
@@ -250,8 +250,5 @@ class MerceologieCucina(tk.Frame):
 
 if __name__ == '__main__':
     root = tk.Tk()
-    notebook = ttk.Notebook(root)
-    notebook.grid(row='1', column='0')
-    new = MerceologieCucina(notebook)
-    notebook.add(new, text='Reparti')
+    new = MerceologieCucina()
     root.mainloop()
