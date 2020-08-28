@@ -4,9 +4,9 @@ import mysql.connector
 import configparser
 
 
-class Tagli(tk.Frame):
-    def __init__(self, parent):
-        tk.Frame.__init__(self, parent)
+class Tagli(tk.Toplevel):
+    def __init__(self):
+        tk.Toplevel.__init__(self)
 
         self.item = ''
         self.config = self.leggi_file_ini()
@@ -196,8 +196,5 @@ class Tagli(tk.Frame):
 
 if __name__ == '__main__':
     root = tk.Tk()
-    notebook = ttk.Notebook(root)
-    notebook.grid(row='1', column='0')
-    new = Tagli(notebook)
-    notebook.add(new, text='Tagli')
+    new = Tagli()
     root.mainloop()
