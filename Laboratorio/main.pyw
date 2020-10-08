@@ -62,7 +62,7 @@ class Main(tk.Frame):
                                image=self.img_btn9_a)
 
         bottone9b = ttk.Button(self.frm_alto, text="Dosi", compound='bottom',
-                               image=self.img_btn9_b)
+                               image=self.img_btn9_b, command=self.dosi)
 
         bottone10 = ttk.Button(self.frm_alto, text="Uscita", compound='bottom',
                                image=self.img_btn10, command=self.quit)
@@ -144,6 +144,11 @@ class Main(tk.Frame):
     def nuovo_menu():
         from nuovo_menu import NuovoMenu
         NuovoMenu()
+
+    @staticmethod
+    def dosi():
+        from dosi import Dosi
+        Dosi()
 
     @staticmethod
     def anagrafica():
