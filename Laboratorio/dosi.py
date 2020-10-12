@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 
 
 class Dosi(tk.Toplevel):
@@ -11,17 +12,20 @@ class Dosi(tk.Toplevel):
         self.peso.set('')
 
         def _calcola():
-            sale = self.peso.get()*26
-            self.lbl_sale_gr['text'] = str(sale) + ' gr'
+            if self.peso.get() > 0:
+                sale = self.peso.get()*26
+                self.lbl_sale_gr['text'] = str(sale) + ' gr'
 
-            pepe = self.peso.get()*6
-            self.lbl_pepe_gr['text'] = str(pepe) + ' gr'
+                pepe = self.peso.get()*6
+                self.lbl_pepe_gr['text'] = str(pepe) + ' gr'
 
-            aglio = round(((self.peso.get()/100)*20), 2)
-            self.lbl_aglio_gr['text'] = str(aglio) + ' gr'
+                aglio = round(((self.peso.get()/100)*20), 2)
+                self.lbl_aglio_gr['text'] = str(aglio) + ' gr'
 
-            aromyl= self.peso.get()*8
-            self.lbl_aromyl_gr['text'] = str(aromyl) + ' gr'
+                aromyl= self.peso.get()*8
+                self.lbl_aromyl_gr['text'] = str(aromyl) + ' gr'
+            else:
+                messagebox.showinfo("-- ERRORE --", "Valore inserito non valido", icon="warning")
 
         def _reset():
             self.ent_peso.delete(0, 'end')
@@ -29,6 +33,7 @@ class Dosi(tk.Toplevel):
             self.lbl_pepe_gr['text'] = '0 gr'
             self.lbl_aglio_gr['text'] = '0 gr'
             self.lbl_aromyl_gr['text'] = '0 gr'
+            self.ent_peso.focus()
             
         def _chiudi():
             self.destroy()
