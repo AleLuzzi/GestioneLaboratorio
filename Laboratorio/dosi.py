@@ -12,11 +12,14 @@ class Dosi(tk.Toplevel):
         self.peso.set('')
 
         def _calcola():
-            if self.peso.get() > 0:
+            if self.peso.get() == 0 or self.peso.get() == 1:
+                messagebox.showinfo("-- ERRORE --", "Valore inserito non valido", icon="warning")
+                self.ent_peso.focus()
+            if self.peso.get() > 1:
                 sale = self.peso.get()*26
                 self.lbl_sale_gr['text'] = str(sale) + ' gr'
 
-                pepe = self.peso.get()*6
+                pepe = self.peso.get()*5
                 self.lbl_pepe_gr['text'] = str(pepe) + ' gr'
 
                 aglio = round(((self.peso.get()/100)*20), 2)
@@ -24,8 +27,6 @@ class Dosi(tk.Toplevel):
 
                 aromyl= self.peso.get()*8
                 self.lbl_aromyl_gr['text'] = str(aromyl) + ' gr'
-            else:
-                messagebox.showinfo("-- ERRORE --", "Valore inserito non valido", icon="warning")
 
         def _reset():
             self.ent_peso.delete(0, 'end')
@@ -61,10 +62,13 @@ class Dosi(tk.Toplevel):
         self.lbl_aromyl_gr = tk.Label(self, text='0 gr', font=('Verdana', 15))
         
         self.lbl_acqua = tk.Label(self, text='ACQUA', font=('Verdana', 15))
+
+        style = ttk.Style()
+        style.configure('W.TButton', font =('Verdana', 12, 'bold'))
         
-        self.calcola = ttk.Button(self, text='CALCOLA', command=_calcola)
-        self.reset = ttk.Button(self, text='Reset', command=_reset)
-        self.chiudi = ttk.Button(self, text='Chiudi', command=_chiudi)
+        self.calcola = ttk.Button(self, text='CALCOLA', style = 'W.TButton', command=_calcola)
+        self.reset = ttk.Button(self, text='Reset', style = 'W.TButton', command=_reset)
+        self.chiudi = ttk.Button(self, text='Chiudi', style = 'W.TButton', command=_chiudi)
         
         # LAYOUT
         self.lbl_peso.grid(row=0, column=0, sticky='ns')
