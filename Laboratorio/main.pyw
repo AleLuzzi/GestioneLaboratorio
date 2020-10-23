@@ -164,7 +164,7 @@ class Main(tk.Frame):
 
             toplevel.geometry("+%d+%d" % (x, y))
             
-        def _try_login():
+        def _try_login(event=None):
             if ent_password.get() == password:
                 from anagrafica import Anagrafica
                 Anagrafica()
@@ -177,6 +177,7 @@ class Main(tk.Frame):
         _centra(window)
 
         window.title("Log-In")
+        window.bind('<Return>', _try_login)
 
         lbl_password = tk.Label(window, text="Password:", font=('Verdana', 15))
         ent_password = tk.Entry(window, show="*")
