@@ -8,7 +8,7 @@ class Dosi(tk.Toplevel):
         tk.Toplevel.__init__(self)
         self.title('Dosi')
 
-        self.peso = tk.IntVar()
+        self.peso = tk.DoubleVar()
         self.peso.set('')
 
         def _calcola(event=None):
@@ -16,16 +16,16 @@ class Dosi(tk.Toplevel):
                 messagebox.showinfo("-- ERRORE --", "Valore inserito non valido", icon="warning")
                 self.ent_peso.focus()
             if self.peso.get() > 1:
-                sale = self.peso.get() * 26
+                sale = round(self.peso.get() * 26, 2)
                 self.lbl_sale_gr['text'] = str(sale) + ' gr'
 
-                pepe = self.peso.get() * 5
+                pepe = round(self.peso.get() * 5, 2)
                 self.lbl_pepe_gr['text'] = str(pepe) + ' gr'
 
                 aglio = round(((self.peso.get() / 100) * 20), 2)
                 self.lbl_aglio_gr['text'] = str(aglio) + ' gr'
 
-                aromyl = self.peso.get() * 8
+                aromyl = round(self.peso.get() * 8, 2)
                 self.lbl_aromyl_gr['text'] = str(aromyl) + ' gr'
 
         def _reset():
