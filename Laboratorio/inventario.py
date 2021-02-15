@@ -14,6 +14,7 @@ class Inventario(tk.Toplevel):
         self.value = tk.StringVar()
         self.data = dt.date.today()
         self.config = self.leggi_file_ini()
+        self.dati_da_salvare = []
 
         # connessione database
         self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
@@ -33,7 +34,8 @@ class Inventario(tk.Toplevel):
         # TREEVIEW riepilogo inventario
         self.tree_riepilogo = ttk.Treeview(self.frame_sx, height=18)
 
-        self.tree_riepilogo['columns'] = ('Taglio', 'Merceologia', 'Peso')
+        self.tree_riepilogo['columns'] = ('Data', 'Taglio', 'Merceologia', 'Peso')
+        self.tree_riepilogo['displaycolumns'] = ('Taglio', 'Merceologia', 'Peso')
         self.tree_riepilogo['show'] = 'headings'
         self.tree_riepilogo.heading('Taglio', text="Taglio")
         self.tree_riepilogo.heading('Merceologia', text='Merceologia')
@@ -65,7 +67,8 @@ class Inventario(tk.Toplevel):
                                             command=self.ins_peso)
 
         # BUTTON salva dati
-        self.btn_salva_dati = tk.Button(self.frame_dx, text='SALVA DATI', font=('Verdana', 15))
+        self.btn_salva_dati = tk.Button(self.frame_dx, text='SALVA DATI', font=('Verdana', 15),
+                                        command=self._salva_esci)
 
         # BUTTON chiudi finestra
         self.btn_chiudi = tk.Button(self.frame_dx, text='CHIUDI FINESTRA', font=('Verdana', 15), command=self.destroy)
@@ -175,16 +178,34 @@ class Inventario(tk.Toplevel):
 
     def ins_peso(self):
         if self.value.get() != '' and self.peso.get() != '':
+            data = self.data
             taglio = self.value.get()
             cat_merc = self.notebook.tab(self.notebook.select(), "text")
+            self.tree_riepilogo.insert('', 'end', values=(data, taglio, cat_merc, self.peso.get()))
             self.c.execute("SELECT Id FROM merceologie WHERE merceologia = %s", (cat_merc,))
             id_merc = self.c.fetchone()
-            dati = [taglio, id_merc, self.peso.get(), self.data]
-            self.tree_riepilogo.insert('', 'end', values=(taglio, cat_merc, self.peso.get()))
+            self.c.execute("SELECT Id FROM tagli WHERE taglio = %s", (taglio,))
+            id_taglio = self.c.fetchone()
+            dati = [self.data, id_taglio, id_merc, self.peso.get()]
+            self.dati_da_salvare.append(dati)
+            # print(self.dati_da_salvare)
             self.ent_peso.delete(0, tk.END)
-            print(dati)
         else:
             messagebox.showinfo('ATTENZIONE', 'dati mancanti.. controlla!!!')
+
+    def _salva_esci(self):
+        for items in self.tree_riepilogo.get_children():
+            print(self.tree_riepilogo.item(items)['values'][0])
+            self.c.execute("SELECT Id FROM tagli WHERE taglio = %s",
+                           (self.tree_riepilogo.item(items)['values'][1],))
+            id_taglio = self.c.fetchone()
+            self.c.execute("SELECT Id FROM merceologie WHERE merceologia = %s",
+                           (self.tree_riepilogo.item(items)['values'][2],))
+            id_merc = self.c.fetchone()
+            print(id_taglio)
+            print(id_merc)
+            print(self.tree_riepilogo.item(items)['values'][3])
+        # TODO scrivere codice per salvataggio dati su db
 
 
 if __name__ == '__main__':
