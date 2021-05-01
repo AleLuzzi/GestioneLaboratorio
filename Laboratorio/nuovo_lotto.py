@@ -4,13 +4,14 @@ import datetime as dt
 import mysql.connector
 from tkinter import messagebox
 import configparser
+from tastiera_num import Tast_num
 
 
 class NuovoLotto(tk.Toplevel):
     def __init__(self):
         tk.Toplevel.__init__(self)
         self.title("Nuovo Lotto")
-        # self.geometry('1024x540+0+0')
+        self.img_btn = tk.PhotoImage(file=".//immagini//modifica.gif")
         self.data = dt.date.today()
 
         self.config = self.leggi_file_ini()
@@ -87,6 +88,7 @@ class NuovoLotto(tk.Toplevel):
         # ENTRY per inserimento del peso
         self.entry_peso = ttk.Entry(self.frame_dx, font=('Verdana', 20), width=16, textvariable=self.peso_da_inserire)
         self.entry_peso.focus()
+        self.btn_ins_qta_prodotto = tk.Button(self.frame_dx, image=self.img_btn, command=self._ins_peso)
 
         # BOTTONE ESCI E SALVA
         self.btn_elimina_riga = tk.Button(self.frame_dx_r,
@@ -106,7 +108,7 @@ class NuovoLotto(tk.Toplevel):
                                         command=self.esci_salva)
 
         # LAYOUT
-        self.frame_sx.grid(row=0, column=0, sticky='n')
+        self.frame_sx.grid(row=0, column=0, pady=10, sticky='n')
         self.frame_dx.grid(row=0, column=1, sticky='n')
         self.frame_dx_r.grid(row=0, column=2, sticky='n')
         self.frame_dx_basso.grid(row=0, column=1, columnspan=2, sticky='s')
@@ -120,6 +122,7 @@ class NuovoLotto(tk.Toplevel):
 
         self.lbl_qta_prodotto.grid(row=2, column=0, sticky='we')
         self.entry_peso.grid(row=3, column=0, sticky='w')
+        self.btn_ins_qta_prodotto.grid(row=3, column=1)
 
         self.tree_lotti_selezionati.grid(row=0, column=0, sticky='we')
         self.btn_elimina_riga.grid(row=1, column=0, sticky='we')
@@ -128,6 +131,11 @@ class NuovoLotto(tk.Toplevel):
 
         self.lotti_acq_aperti()
         self.riempi_lista_produzione()
+
+    def _ins_peso(self):
+        peso = Tast_num(self)
+        val = peso.value.get()
+        self.peso_da_inserire.set(val)
 
     @staticmethod
     def leggi_file_ini():
