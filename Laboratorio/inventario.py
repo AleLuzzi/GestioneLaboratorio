@@ -4,6 +4,7 @@ from tkinter import messagebox
 import datetime as dt
 import mysql.connector
 import configparser
+from tastiera_num import Tast_num
 
 
 class Inventario(tk.Toplevel):
@@ -17,10 +18,11 @@ class Inventario(tk.Toplevel):
         self.dati_da_salvare = []
 
         # connessione database
-        self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
-                                            database=self.config['DataBase']['db'],
-                                            user=self.config['DataBase']['user'],
-                                            password='')
+        self.conn = mysql.connector.connect(
+            host=self.config['DataBase']['host'],
+            database=self.config['DataBase']['db'],
+            user=self.config['DataBase']['user'],
+            password='')
         self.c = self.conn.cursor(buffered=True)
 
         self.img_btn1 = tk.PhotoImage(file=".//immagini//logo_piccolo.gif")
@@ -34,8 +36,10 @@ class Inventario(tk.Toplevel):
         # TREEVIEW riepilogo inventario
         self.tree_riepilogo = ttk.Treeview(self.frame_sx, height=18)
 
-        self.tree_riepilogo['columns'] = ('Data', 'IDTaglio', 'Taglio', 'IDMerc', 'Merceologia', 'Peso')
-        self.tree_riepilogo['displaycolumns'] = ('Taglio', 'Merceologia', 'Peso')
+        self.tree_riepilogo['columns'] = (
+            'Data', 'IDTaglio', 'Taglio', 'IDMerc', 'Merceologia', 'Peso')
+        self.tree_riepilogo['displaycolumns'] = (
+            'Taglio', 'Merceologia', 'Peso')
         self.tree_riepilogo['show'] = 'headings'
         self.tree_riepilogo.heading('Taglio', text="Taglio")
         self.tree_riepilogo.heading('Merceologia', text='Merceologia')
@@ -44,34 +48,53 @@ class Inventario(tk.Toplevel):
         self.tree_riepilogo.column("Peso", width=80)
 
         # LABEL che mostra il numero della settimana
-        self.lbl_settimana = tk.Label(self.frame_dx, text='SETTIMANA NUMERO ',
-                                      foreground='blue', font=('Verdana', 20), relief='ridge', padx=20)
-        self.lbl_nr_settimana = tk.Label(self.frame_dx, text=str(1 + int(self.data.strftime('%W'))),
-                                         font=('Verdana', 20), bg='white', relief='sunken', padx=20)
+        self.lbl_settimana = tk.Label(
+            self.frame_dx, text='SETTIMANA NUMERO ',
+            foreground='blue', font=('Verdana', 20), relief='ridge', padx=20)
+        self.lbl_nr_settimana = tk.Label(
+            self.frame_dx, text=str(1 + int(self.data.strftime('%W'))),
+            font=('Verdana', 20), bg='white', relief='sunken', padx=20)
 
         # BUTTON elimina riga
-        self.btn_rimuovi_riga = tk.Button(self.frame_sx,
-                                          text="RIMUOVI RIGA",
-                                          font=('Verdana', 15),
-                                          command=self.rimuovi_riga_selezionata)
+        self.btn_rimuovi_riga = tk.Button(
+            self.frame_sx,
+            text="RIMUOVI RIGA",
+            font=('Verdana', 15),
+            command=self.rimuovi_riga_selezionata)
 
         # ENTRY peso inserito
         self.peso = tk.StringVar()
-        self.ent_peso = tk.Entry(self.frame_sx, textvariable=self.peso, font=('Verdana', 15))
+        self.ent_peso = tk.Entry(
+            self.frame_sx, textvariable=self.peso, font=('Verdana', 15))
 
-        self.img_btn_focus_ean = tk.PhotoImage(file=".//immagini//modifica.gif")
-        self.btn_focus_ean = ttk.Button(self.frame_sx, image=self.img_btn_focus_ean, command=self.ent_peso.focus)
+        self.img_btn_focus_ean = tk.PhotoImage(
+            file=".//immagini//modifica.gif")
+
+        self.btn_focus_ean = ttk.Button(
+            self.frame_sx,
+            image=self.img_btn_focus_ean,
+            command=self._ins_peso_da_tastiera)
 
         # BUTTON inserimento peso
-        self.btn_inserisci_peso = tk.Button(self.frame_sx, text='INSERISCI PESO', font=('Verdana', 15),
-                                            command=self.ins_peso)
+        self.btn_inserisci_peso = tk.Button(
+            self.frame_sx,
+            text='INSERISCI PESO',
+            font=('Verdana', 15),
+            command=self.ins_peso)
 
         # BUTTON salva dati
-        self.btn_salva_dati = tk.Button(self.frame_dx, text='SALVA DATI', font=('Verdana', 15),
-                                        command=self._salva_esci)
+        self.btn_salva_dati = tk.Button(
+            self.frame_dx,
+            text='SALVA DATI',
+            font=('Verdana', 15),
+            command=self._salva_esci)
 
         # BUTTON chiudi finestra
-        self.btn_chiudi = tk.Button(self.frame_dx, text='CHIUDI FINESTRA', font=('Verdana', 15), command=self.destroy)
+        self.btn_chiudi = tk.Button(
+            self.frame_dx,
+            text='CHIUDI FINESTRA',
+            font=('Verdana', 15),
+            command=self.destroy)
 
         # LAYOUT
         self.frame_sx.grid(row=0, column=0, rowspan=2)
@@ -92,7 +115,8 @@ class Inventario(tk.Toplevel):
 
         # TAB 1 AGNELLO
         self.tab1 = tk.Frame(self.notebook)
-        self.notebook.add(self.tab1, text='AGNELLO', compound='left', image=self.img_btn1)
+        self.notebook.add(self.tab1, text='AGNELLO',
+                          compound='left', image=self.img_btn1)
 
         lst_agnello = []
         self.c.execute("SELECT taglio FROM tagli WHERE Id_Merceologia = 12")
@@ -104,14 +128,20 @@ class Inventario(tk.Toplevel):
             if r % 10 == 0:
                 c += 1
                 r = 1
-            tk.Radiobutton(self.tab1, text=lst_agnello[i].upper(), indicatoron=0, variable=self.value,
-                           font='Verdana', width=20,
-                           value=lst_agnello[i]).grid(row=r, column=c)
+            tk.Radiobutton(
+                self.tab1,
+                text=lst_agnello[i].upper(),
+                indicatoron=0,
+                variable=self.value,
+                font='Verdana',
+                width=20,
+                value=lst_agnello[i]).grid(row=r, column=c)
             r += 1
 
         # TAB 2 BOVINO
         self.tab2 = tk.Frame(self.notebook)
-        self.notebook.add(self.tab2, text='BOVINO', compound='left', image=self.img_btn1)
+        self.notebook.add(self.tab2, text='BOVINO',
+                          compound='left', image=self.img_btn1)
 
         lst_bovino = []
         self.c.execute("SELECT taglio FROM tagli WHERE Id_Merceologia = 10")
@@ -123,14 +153,20 @@ class Inventario(tk.Toplevel):
             if r % 10 == 0:
                 c += 1
                 r = 1
-            tk.Radiobutton(self.tab2, text=lst_bovino[i].upper(), indicatoron=0, variable=self.value,
-                           font='Verdana', width=20,
-                           value=lst_bovino[i]).grid(row=r, column=c)
+            tk.Radiobutton(
+                self.tab2,
+                text=lst_bovino[i].upper(),
+                indicatoron=0,
+                variable=self.value,
+                font='Verdana',
+                width=20,
+                value=lst_bovino[i]).grid(row=r, column=c)
             r += 1
 
         # TAB 3 SUINO
         self.tab3 = tk.Frame(self.notebook)
-        self.notebook.add(self.tab3, text='SUINO', compound='left', image=self.img_btn1)
+        self.notebook.add(self.tab3, text='SUINO',
+                          compound='left', image=self.img_btn1)
 
         lst_suino = []
         self.c.execute("SELECT taglio FROM tagli WHERE Id_Merceologia = 11")
@@ -142,14 +178,20 @@ class Inventario(tk.Toplevel):
             if r % 10 == 0:
                 c += 1
                 r = 1
-            tk.Radiobutton(self.tab3, text=lst_suino[i].upper(), indicatoron=0, variable=self.value,
-                           font='Verdana', width=20,
-                           value=lst_suino[i]).grid(row=r, column=c)
+            tk.Radiobutton(
+                self.tab3,
+                text=lst_suino[i].upper(),
+                indicatoron=0,
+                variable=self.value,
+                font='Verdana',
+                width=20,
+                value=lst_suino[i]).grid(row=r, column=c)
             r += 1
 
         # TAB 4 VITELLO
         self.tab4 = tk.Frame(self.notebook)
-        self.notebook.add(self.tab4, text='VITELLO', compound='left', image=self.img_btn1)
+        self.notebook.add(self.tab4, text='VITELLO',
+                          compound='left', image=self.img_btn1)
 
         lst_vitello = []
         self.c.execute("SELECT taglio FROM tagli WHERE Id_Merceologia = 13")
@@ -161,9 +203,14 @@ class Inventario(tk.Toplevel):
             if r % 10 == 0:
                 c += 1
                 r = 1
-            tk.Radiobutton(self.tab4, text=lst_vitello[i].upper(), indicatoron=0, variable=self.value,
-                           font='Verdana', width=20,
-                           value=lst_vitello[i]).grid(row=r, column=c)
+            tk.Radiobutton(
+                self.tab4,
+                text=lst_vitello[i].upper(),
+                indicatoron=0,
+                variable=self.value,
+                font='Verdana',
+                width=20,
+                value=lst_vitello[i]).grid(row=r, column=c)
             r += 1
 
     @staticmethod
@@ -171,6 +218,11 @@ class Inventario(tk.Toplevel):
         ini = configparser.ConfigParser()
         ini.read('config.ini')
         return ini
+
+    def _ins_peso_da_tastiera(self):
+        peso = Tast_num(self)
+        val = peso.value.get()
+        self.peso.set(val)
 
     def rimuovi_riga_selezionata(self):
         curitem = self.tree_riepilogo.selection()[0]
@@ -181,12 +233,22 @@ class Inventario(tk.Toplevel):
             data = self.data
             taglio = self.value.get()
             cat_merc = self.notebook.tab(self.notebook.select(), "text")
-            self.c.execute("SELECT Id FROM merceologie WHERE merceologia = %s", (cat_merc,))
+            self.c.execute(
+                "SELECT Id FROM merceologie WHERE merceologia = %s",
+                (cat_merc,))
             id_merc = self.c.fetchone()
             self.c.execute("SELECT Id FROM tagli WHERE taglio = %s", (taglio,))
             id_taglio = self.c.fetchone()
-            self.tree_riepilogo.insert('', 'end', values=(data, id_taglio[0], taglio,
-                                                          id_merc[0], cat_merc, self.peso.get()))
+            self.tree_riepilogo.insert(
+                '',
+                'end',
+                values=(
+                    data,
+                    id_taglio[0],
+                    taglio,
+                    id_merc[0],
+                    cat_merc,
+                    self.peso.get()))
             self.ent_peso.delete(0, tk.END)
         else:
             messagebox.showinfo('ATTENZIONE', 'dati mancanti.. controlla!!!')
