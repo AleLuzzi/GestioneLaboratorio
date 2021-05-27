@@ -8,29 +8,41 @@ class Main(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
         tk.Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
-        
+
         self.frm_alto = tk.Frame(self, bd=1, relief="raised", bg="yellow")
-        self.frm_centrale = tk.Frame(self, height=300, width=self.winfo_screenwidth(),
-                                     bd=1, relief="raised", bg="white")
+        self.frm_centrale = tk.Frame(self, height=200, width=800, bd=1, relief="raised", bg="white")
         self.frm_basso = tk.Frame(self, bd=1, relief="raised")
 
-        self.img_btn1 = tk.PhotoImage(file=os.path.join('immagini', 'lbeef.gif'))
-        self.img_btn2 = tk.PhotoImage(file=os.path.join('immagini', 'documentnew.gif'))
-        self.img_btn3 = tk.PhotoImage(file=os.path.join('immagini', 'drun.gif'))
-        self.img_btn4 = tk.PhotoImage(file=os.path.join('immagini', 'lfood.gif'))
-        self.img_btn4_a = tk.PhotoImage(file=os.path.join('immagini', 'list.gif'))
-        self.img_btn5 = tk.PhotoImage(file=os.path.join('immagini', 'ingredienti.gif'))
-        self.img_btn6 = tk.PhotoImage(file=os.path.join('immagini', 'lock.gif'))
-        self.img_btn7 = tk.PhotoImage(file=os.path.join('immagini', 'lvendita.gif'))
-        self.img_btn8 = tk.PhotoImage(file=os.path.join('immagini', 'impostazioni.gif'))
-        self.img_btn9 = tk.PhotoImage(file=os.path.join('immagini', 'menu.gif'))
-        self.img_btn9_a = tk.PhotoImage(file=os.path.join('immagini', 'Order.gif'))
-        self.img_btn9_b = tk.PhotoImage(file=os.path.join('immagini', 'bilancia.gif'))
-        self.img_btn10 = tk.PhotoImage(file=os.path.join('immagini', 'exit.gif'))
+        self.img_btn1 = tk.PhotoImage(
+            file=os.path.join('immagini', 'lbeef.gif'))
+        self.img_btn2 = tk.PhotoImage(
+            file=os.path.join('immagini', 'documentnew.gif'))
+        self.img_btn3 = tk.PhotoImage(
+            file=os.path.join('immagini', 'drun.gif'))
+        self.img_btn4 = tk.PhotoImage(
+            file=os.path.join('immagini', 'lfood.gif'))
+        self.img_btn4_a = tk.PhotoImage(
+            file=os.path.join('immagini', 'list.gif'))
+        self.img_btn5 = tk.PhotoImage(
+            file=os.path.join('immagini', 'ingredienti.gif'))
+        self.img_btn6 = tk.PhotoImage(
+            file=os.path.join('immagini', 'lock.gif'))
+        self.img_btn7 = tk.PhotoImage(
+            file=os.path.join('immagini', 'lvendita.gif'))
+        self.img_btn8 = tk.PhotoImage(
+            file=os.path.join('immagini', 'impostazioni.gif'))
+        self.img_btn9 = tk.PhotoImage(
+            file=os.path.join('immagini', 'menu.gif'))
+        self.img_btn9_a = tk.PhotoImage(
+            file=os.path.join('immagini', 'Order.gif'))
+        self.img_btn9_b = tk.PhotoImage(
+            file=os.path.join('immagini', 'bilancia.gif'))
+        self.img_btn10 = tk.PhotoImage(
+            file=os.path.join('immagini', 'exit.gif'))
 
         bottone1 = ttk.Button(self.frm_alto, text="Ingresso Merce", compound='bottom',
                               image=self.img_btn1, command=self.ingresso_merce)
-    
+
         bottone2 = ttk.Button(self.frm_alto, text="Nuovo Lotto", compound='bottom',
                               image=self.img_btn2, command=self.nuovo_lotto)
 
@@ -67,7 +79,8 @@ class Main(tk.Frame):
         bottone10 = ttk.Button(self.frm_alto, text="Uscita", compound='bottom',
                                image=self.img_btn10, command=self.quit)
 
-        self.immagine1 = tk.PhotoImage(file=os.path.join('immagini', 'dlogo.gif'))
+        self.immagine1 = tk.PhotoImage(
+            file=os.path.join('immagini', 'dlogo.gif'))
 
         label1 = tk.Label(self.frm_centrale, image=self.immagine1, bd=0)
 
@@ -158,12 +171,13 @@ class Main(tk.Frame):
             screen_width = toplevel.winfo_screenwidth()
             screen_height = toplevel.winfo_screenheight()
 
-            size = tuple(int(_) for _ in toplevel.geometry().split('+')[0].split('x'))
+            size = tuple(int(_)
+                         for _ in toplevel.geometry().split('+')[0].split('x'))
             x = screen_width / 3 - size[0] / 2
             y = screen_height / 3 - size[1] / 2
 
             toplevel.geometry("+%d+%d" % (x, y))
-            
+
         def _try_login(event=None):
             if ent_password.get() == password:
                 from anagrafica import Anagrafica
@@ -172,7 +186,7 @@ class Main(tk.Frame):
             else:
                 messagebox.showinfo("-- ERRORE --", "Non sei autorizzato ad entrare qui!", icon="warning")
                 window.destroy()
-                
+
         window = tk.Toplevel()
         _centra(window)
 
