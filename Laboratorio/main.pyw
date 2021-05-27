@@ -10,7 +10,8 @@ class Main(tk.Frame):
         self.parent = parent
 
         self.frm_alto = tk.Frame(self, bd=1, relief="raised", bg="yellow")
-        self.frm_centrale = tk.Frame(self, height=200, width=800, bd=1, relief="raised", bg="white")
+        self.frm_centrale = tk.Frame(
+            self, height=200, width=800, bd=1, relief="raised", bg="white")
         self.frm_basso = tk.Frame(self, bd=1, relief="raised")
 
         self.img_btn1 = tk.PhotoImage(
@@ -40,11 +41,13 @@ class Main(tk.Frame):
         self.img_btn10 = tk.PhotoImage(
             file=os.path.join('immagini', 'exit.gif'))
 
-        bottone1 = ttk.Button(self.frm_alto, text="Ingresso Merce", compound='bottom',
-                              image=self.img_btn1, command=self.ingresso_merce)
+        bottone1 = ttk.Button(
+            self.frm_alto, text="Ingresso Merce", compound='bottom',
+            image=self.img_btn1, command=self.ingresso_merce)
 
-        bottone2 = ttk.Button(self.frm_alto, text="Nuovo Lotto", compound='bottom',
-                              image=self.img_btn2, command=self.nuovo_lotto)
+        bottone2 = ttk.Button(
+            self.frm_alto, text="Nuovo Lotto", compound='bottom',
+            image=self.img_btn2, command=self.nuovo_lotto)
 
         bottone3 = ttk.Button(self.frm_alto, text="Inventario", compound='bottom',
                               image=self.img_btn3, command=self.inventario)
@@ -184,7 +187,8 @@ class Main(tk.Frame):
                 Anagrafica()
                 window.destroy()
             else:
-                messagebox.showinfo("-- ERRORE --", "Non sei autorizzato ad entrare qui!", icon="warning")
+                messagebox.showinfo(
+                    "-- ERRORE --", "Non sei autorizzato ad entrare qui!", icon="warning")
                 window.destroy()
 
         window = tk.Toplevel()
