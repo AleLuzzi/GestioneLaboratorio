@@ -11,15 +11,7 @@ class Inventario(tk.Toplevel):
     def __init__(self):
         tk.Toplevel.__init__(self)
 
-        screen_width = self.winfo_screenwidth()
-        screen_height = self.winfo_screenheight()
-
-        size = tuple(int(_)
-            for _ in self.geometry().split('+')[0].split('x'))
-        x = screen_width / 3 - size[0] / 2
-        y = screen_height / 3 - size[1] / 2
-
-        self.geometry("+%d+%d" % (x, y))
+        self.geometry("+25+25")
 
         self.title("Inventario")
 
