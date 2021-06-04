@@ -8,7 +8,7 @@ per funzionare bisogna scaricare:
 -- mysql-connector-python
 
 # usare data.sql
-il programma è stato scritto per usare un database installato nel Nas aziendale
-il file data.sql contiene la struttura ed alcuni dati di prova 
-per farlo funzionare in locale bisogna importare il file data.sql tramite phpmyadmin ed
+il programma è stato scritto per usare un database installato nel Nas aziendale.
+Il file data.sql contiene la struttura ed alcuni dati di prova. 
+Per provarlo in locale bisogna importare il file data.sql tramite phpmyadmin ed
 editare il file config.ini per farlo puntare al database creato
