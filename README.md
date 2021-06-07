@@ -7,9 +7,10 @@ Le variabili sono scritte in italiano e nel codice sorgente potete trovare indir
 
 # Installazione
 per funzionare bisogna scaricare:
--- Reportlab
--- Pywin32
--- mysql-connector-python
+
+1. Reportlab
+2. Pywin32
+3. mysql-connector-python
 
 # usare data.sql
 il programma è stato scritto per usare un database installato nel Nas aziendale.
