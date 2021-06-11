@@ -170,6 +170,7 @@ class NuovoLotto(tk.Toplevel):
                            variable=self.nuova_produzione,
                            width=27,
                            indicatoron=0,
+                           selectcolor = "light green",
                            value=self.lista_nuova_produzione[i],
                            font='Helvetica').grid(row=row, column=col, sticky="w", pady=2)
             row += 1
