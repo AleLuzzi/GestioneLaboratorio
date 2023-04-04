@@ -125,11 +125,16 @@ class LottiInVenditaCucina(tk.Toplevel):
         self.progress_bar = ttk.Progressbar(self.frame_dx_basso, orient=tk.HORIZONTAL, mode='determinate')
 
         # LABELFAME visualizza lotti del giorno
+        self.filtro_gg = tk.StringVar()
+        self.filtro_gg.set(1)
         self.lblfrm_vis_lotti_del = ttk.LabelFrame(self.frame_dx, text='Visualizza lotti del giorno')
         self.data_filtro = tk.StringVar()
         self.data_filtro.set(dt.date.today().strftime('%d-%m-%Y'))
         self.picker = Datepicker(self.lblfrm_vis_lotti_del, datevar=self.data_filtro, dateformat='%d-%m-%Y', )
-        self.btn_filtra = tk.Button(self.lblfrm_vis_lotti_del, text='Filtra')
+        self.btn_filtra = tk.Button(self.lblfrm_vis_lotti_del, text='Filtra', command=self.filtra)
+        self.rdbtn_30gg = tk.Radiobutton(self.lblfrm_vis_lotti_del, text='Ultimi 30 giorni',
+                                         variable=self.filtro_gg, value=1)
+        
         # TODO aggiungere funzioni per selezione data e filtro
 
         # crea LABEL formato ingredienti
@@ -160,6 +165,7 @@ class LottiInVenditaCucina(tk.Toplevel):
         self.lblfrm_vis_lotti_del.grid(row=5, column=0, columnspan=2)
         self.picker.grid(row=0, column=0)
         self.btn_filtra.grid(row=0, column=1)
+        self.rdbtn_30gg.grid(row=1, column=0)
 
         self.lblfrm_plu_prod_sel.grid(row=3, column=3, sticky='n')
         self.lbl_txt_plu_selezionato.grid(row=1, column=0, padx=20)
@@ -196,6 +202,29 @@ class LottiInVenditaCucina(tk.Toplevel):
             except:
                 self.tree.insert(lista[0], 'end', text=lista[1],
                                  values=(lista[2]))
+                self.tree.item(lista[0], open='true')
+
+    def filtra(self):
+        self.tree.delete(*self.tree.get_children())
+
+        giorni = self.data - dt.timedelta(days=31*int(self.filtro_gg.get())) 
+
+        print(giorni)
+        self.c.execute("SELECT DISTINCT progressivo_ven_c,prodotto,data_prod,quantita "
+                       "FROM lotti_vendita_cucina "
+                       "WHERE lotti_vendita_cucina.data_prod > %s"
+                       "ORDER BY data_prod DESC", (giorni,))
+        
+        for lista in self.c:
+            # self.tot_qta += float(lista[3])
+            try:
+                self.tree.insert('', 'end', lista[0], text=lista[0], tags=('odd',))
+                self.tree.insert(lista[0], 'end', text=lista[1],
+                                 values=(dt.date.strftime(lista[2], '%d/%m/%y'), lista[3]))
+                self.tree.item(lista[0], open='true')
+            except:
+                self.tree.insert(lista[0], 'end', text=lista[1],
+                                 values=(dt.date.strftime(lista[2], '%d/%m/%y'), lista[3]))
                 self.tree.item(lista[0], open='true')
 
     def ondoubleclick(self, event):
