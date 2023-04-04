@@ -1,6 +1,7 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import messagebox
+import configparser
 import os
 
 
@@ -8,6 +9,8 @@ class Main(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
         tk.Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
+
+        self.config = self.leggi_file_ini()
 
         self.frm_alto = tk.Frame(self, bd=1, relief="raised", bg="yellow")
         self.frm_centrale = tk.Frame(
@@ -87,9 +90,12 @@ class Main(tk.Frame):
 
         label1 = tk.Label(self.frm_centrale, image=self.immagine1, bd=0)
 
-        label1.grid(row=0, column=0)
+        lbl_utente = tk.Label(self.frm_basso, text='Utente Collegato : ')
 
-        label2 = tk.Label(self.frm_basso, text=os.environ['COMPUTERNAME'])
+        lbl_nome_utente = tk.Label(self.frm_basso, text=os.environ['COMPUTERNAME'])
+
+        lbl_winswgx = tk.Label(self.frm_basso, text='Percorso Winswgx = ')
+        lbl_winswgx_percorso = tk.Label(self.frm_basso, text=self.config['Winswgx']['dir'])
 
         bottone1.grid(row=0, column=0, padx=4, pady=4)
         bottone2.grid(row=0, column=1, padx=4, pady=4, sticky='we')
@@ -114,8 +120,18 @@ class Main(tk.Frame):
         self.frm_basso.grid(row=2, column=0, sticky="we")
         self.frm_centrale.grid(row=1, column=0)
 
-        label2.grid(row=0, column=0, padx=4, pady=4)
+        label1.grid(row=0, column=0)
+        lbl_utente.grid(row=0, column=0)
+        lbl_nome_utente.grid(row=0, column=1, padx=4, pady=4)
+        lbl_winswgx.grid(row=0, column=2)
+        lbl_winswgx_percorso.grid(row=0, column=3)
 
+    @staticmethod
+    def leggi_file_ini():
+        ini = configparser.ConfigParser()
+        ini.read('config.ini')
+        return ini
+    
     @staticmethod
     def ingresso_merce():
         from ingresso_merce import IngressoMerce
