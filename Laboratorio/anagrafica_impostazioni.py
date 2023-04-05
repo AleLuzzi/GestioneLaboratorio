@@ -4,6 +4,7 @@ import configparser
 import win32print
 from datepicker import Datepicker
 import datetime
+from tkinter import messagebox
 
 
 class Impostazioni(tk.Frame):
@@ -141,6 +142,8 @@ class Impostazioni(tk.Frame):
         self.config.set('Winswgx', 'dir', new_dirname)
         self.config.write(cfg_file)
         self.win_dir.set(new_dirname)
+        messagebox.showinfo('Attenzione', 'Per vedere l"impostazione \n '
+                                              'riavvia l"applicazione ')
 
     def controlla_token(self):
         if self.config['Facebook']['token']:
