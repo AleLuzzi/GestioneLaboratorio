@@ -24,6 +24,8 @@ class IngressoMerce(tk.Toplevel):
                                             password='')
         self.c = self.conn.cursor()
 
+        self.img_btn1 = tk.PhotoImage(file=".//immagini//logo_piccolo.gif")
+
         # Lettura progressivo lotto acquisto da db
         self.c.execute("SELECT prog_acq FROM progressivi")
         self.prog_lotto_acq = self.c.fetchone()[0]
@@ -95,24 +97,114 @@ class IngressoMerce(tk.Toplevel):
             row += 1
 
         # LABELFRAME contiene bottoni per i tagli suino
+
+        
         self.labelframe_taglio = tk.LabelFrame(self.frame_centrale,
                                                text="TAGLIO",
                                                font=('Verdana', 15),
                                                labelanchor='n')
 
-        row, col = 1, 0
-        for i in range(0, len(self.lista_tagli)):
-            if row % 8 == 0:
-                col += 1
-                row = 1
-            tk.Radiobutton(self.labelframe_taglio,
-                           text=self.lista_tagli[i],
-                           indicatoron=0,
-                           width=15,
-                           variable=self.taglio_s,
-                           value=self.lista_tagli[i],
-                           font='Verdana').grid(row=row, column=col, sticky='w')
-            row += 1
+        self.notebook = ttk.Notebook(self.labelframe_taglio)
+
+        # TAB 1 AGNELLO
+        self.tab1 = tk.Frame(self.notebook)
+        self.notebook.add(self.tab1, text='AGNELLO', state='disabled',
+                          compound='left', image=self.img_btn1)
+
+        lst_agnello = []
+        self.c.execute("SELECT taglio FROM tagli WHERE Id_Merceologia = 12")
+        for row in self.c:
+            lst_agnello.extend(row)
+
+        r, c = 1, 0
+        for i in range(0, len(lst_agnello)):
+            if r % 10 == 0:
+                c += 1
+                r = 1
+            tk.Radiobutton(
+                self.tab1,
+                text=lst_agnello[i].upper(),
+                indicatoron=0,
+                variable=self.taglio_s,
+                font='Verdana',
+                width=20,
+                value=lst_agnello[i]).grid(row=r, column=c)
+            r += 1
+
+        # TAB 2 BOVINO
+        self.tab2 = tk.Frame(self.notebook)
+        self.notebook.add(self.tab2, text='BOVINO', state='disabled',
+                          compound='left', image=self.img_btn1)
+
+        lst_bovino = []
+        self.c.execute("SELECT taglio FROM tagli WHERE Id_Merceologia = 10")
+        for row in self.c:
+            lst_bovino.extend(row)
+
+        r, c = 1, 0
+        for i in range(0, len(lst_bovino)):
+            if r % 10 == 0:
+                c += 1
+                r = 1
+            tk.Radiobutton(
+                self.tab2,
+                text=lst_bovino[i].upper(),
+                indicatoron=0,
+                variable=self.taglio_s,
+                font='Verdana',
+                width=20,
+                value=lst_bovino[i]).grid(row=r, column=c)
+            r += 1
+
+        # TAB 3 SUINO
+        self.tab3 = tk.Frame(self.notebook)
+        self.notebook.add(self.tab3, text='SUINO',
+                          compound='left', image=self.img_btn1)
+
+        lst_suino = []
+        self.c.execute("SELECT taglio FROM tagli WHERE Id_Merceologia = 11")
+        for row in self.c:
+            lst_suino.extend(row)
+
+        r, c = 1, 0
+        for i in range(0, len(lst_suino)):
+            if r % 8 == 0:
+                c += 1
+                r = 1
+            tk.Radiobutton(
+                self.tab3,
+                text=lst_suino[i].upper(),
+                indicatoron=0,
+                variable=self.taglio_s,
+                font='Verdana',
+                width=20,
+                value=lst_suino[i]).grid(row=r, column=c)
+            r += 1
+
+        # TAB 4 VITELLO
+        self.tab4 = tk.Frame(self.notebook)
+        self.notebook.add(self.tab4, text='VITELLO', state='disabled',
+                          compound='left', image=self.img_btn1)
+
+        lst_vitello = []
+        self.c.execute("SELECT taglio FROM tagli WHERE Id_Merceologia = 13")
+        for row in self.c:
+            lst_vitello.extend(row)
+
+        r, c = 1, 0
+        for i in range(0, len(lst_vitello)):
+            if r % 10 == 0:
+                c += 1
+                r = 1
+            tk.Radiobutton(
+                self.tab4,
+                text=lst_vitello[i].upper(),
+                indicatoron=0,
+                variable=self.taglio_s,
+                font='Verdana',
+                width=20,
+                value=lst_vitello[i]).grid(row=r, column=c)
+            r += 1
 
         # LABEL che mostra il progressivo lotto
         self.label_lotto = tk.Label(self.frame_alto,
@@ -196,6 +288,7 @@ class IngressoMerce(tk.Toplevel):
 
         self.labelframe_fornitori.grid(row=1, column=0, sticky='n')
         self.labelframe_taglio.grid(row=1, column=1)
+        self.notebook.grid(row=1, column=0, columnspan=2, sticky='we')
 
         self.label_lotto.grid(row=1, column=0, sticky='w')
         self.label_prog_lotto.grid(row=1, column=1)
