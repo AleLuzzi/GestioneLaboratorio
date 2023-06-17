@@ -47,13 +47,6 @@ class IngressoMerce(tk.Toplevel):
         for row in self.c:
             self.lista_fornitori.extend(row)
             
-        # Creazione lista tagli suino
-        self.lista_tagli = []
-        self.c.execute("SELECT taglio FROM tagli WHERE id_merceologia = 11")
-
-        for row in self.c:
-            self.lista_tagli.extend(row)
-
         # LAYOUT dei frame per impaginazione
         self.frame_alto = tk.Frame(self, bd=3)
         self.frame_centrale = tk.Frame(self, bd=3)
