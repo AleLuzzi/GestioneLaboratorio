@@ -56,7 +56,7 @@ class IngressoMerce(tk.Toplevel):
         self.tree = ttk.Treeview(self.frame_alto, height=8)
 
         self.tree['columns'] = ('prog_acq', 'data', 'num_ddt', 'fornitore',
-                                'taglio', 'peso_i', 'peso_f', 'lotto_chiuso')
+                                'taglio', 'peso_i', 'peso_f', 'lotto_chiuso', 'id_merc')
 
         self.tree['displaycolumns'] = ('data', 'fornitore', 'taglio', 'peso_i')
         self.tree['show'] = 'headings'
@@ -311,7 +311,7 @@ class IngressoMerce(tk.Toplevel):
             curitem = self.tree.selection()[0]
             self.tree.delete(curitem)
 
-    def _invio(self):
+    def _invio(self, merc='11'):
         self.tree.insert("", 'end', values=((str(self.prog_lotto_acq)+'A'),
                                             datetime.datetime.strptime(self.data.get(), "%d-%m-%Y").date(),
                                             self.num_ddt.get(),
@@ -319,13 +319,14 @@ class IngressoMerce(tk.Toplevel):
                                             self.taglio_s.get(),
                                             self.peso.get(),
                                             self.peso.get(),
-                                            'no'))
+                                            'no',
+                                            merc))
         self.entry.delete(0, tk.END)
 
     def _salva_esci(self):
         for child in self.tree.get_children():
             self.lista_da_salvare.append(self.tree.item(child)['values'])
-        self.c.executemany('INSERT INTO ingresso_merce VALUES (%s,%s,%s,%s,%s,%s,%s,%s)', self.lista_da_salvare)
+        self.c.executemany('INSERT INTO ingresso_merce VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)', self.lista_da_salvare)
         self.conn.commit()
         self.c.execute('UPDATE progressivi SET prog_acq = %s', (self.prog_lotto_acq + 1,))
         self.conn.commit()
