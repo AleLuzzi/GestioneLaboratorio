@@ -3,7 +3,7 @@ piccolo programmino di utility per il mio laboratorio di lavorazione carni e cuc
 
 Le variabili sono scritte in italiano e nel codice sorgente potete trovare indirizzi lan.Lo so' non si fa', ma questo programma non è destinato alla vendita.
 
-![Immagine](https://user-images.githubusercontent.com/19917285/120833303-e9350e00-c561-11eb-9fcb-c55b1d4b5583.png)
+
 
 # Installazione
 per funzionare bisogna scaricare:
