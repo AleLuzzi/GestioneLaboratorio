@@ -1,5 +1,5 @@
 # GestioneLaboratorio
-piccolo programmino di utility per il mio laboratorio di lavorazione carni e cucina scritto in python.
+piccolo programmino di utility per carni e cucina scritto in python.
 
 Le variabili sono scritte in italiano e nel codice sorgente potete trovare indirizzi lan.Lo so' non si fa', ma questo programma non è destinato alla vendita.
 
@@ -13,7 +13,7 @@ per funzionare bisogna scaricare:
 3. mysql-connector-python
 
 # usare data.sql
-il programma è stato scritto per usare un database installato nel Nas aziendale.
+il programma è stato scritto per usare un database installato nel Nas.
 Il file data.sql contiene la struttura ed alcuni dati di prova. 
 Per provarlo in locale bisogna importare il file data.sql tramite phpmyadmin ed
 editare il file config.ini per farlo puntare al database creato
