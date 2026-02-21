@@ -22,7 +22,7 @@ class Ingredienti(tk.Toplevel):
         self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
                                             database=self.config['DataBase']['db'],
                                             user=self.config['DataBase']['user'],
-                                            password='')
+                                            password=self.config['DataBase']['pwd'])
         self.c = self.conn.cursor()
 
         # FRAME definizione
