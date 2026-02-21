@@ -4,6 +4,10 @@ from tkinter import messagebox
 import configparser
 import os
 
+# Run with script directory as cwd so config.ini and immagini/ are found
+# (works when run as "python main.pyw" or "python Laboratorio/main.pyw")
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
 
 class Main(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
