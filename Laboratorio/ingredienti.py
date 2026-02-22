@@ -2,7 +2,9 @@ import tkinter as tk
 from tkinter import ttk
 import datetime
 import mysql.connector
-import configparser
+
+from config import get_config
+from db import get_connection, close_connection
 
 
 class Ingredienti(tk.Toplevel):
@@ -11,7 +13,7 @@ class Ingredienti(tk.Toplevel):
         self.title("Ingredienti")
         self.geometry("1024x525+0+0")
 
-        self.config = self.leggi_file_ini()
+        self.config = get_config()
         self.lista_da_salvare = []
         self.value = tk.StringVar()
         self.peso = tk.StringVar()
@@ -19,10 +21,7 @@ class Ingredienti(tk.Toplevel):
         self.img_btn1 = tk.PhotoImage(file=".//immagini//logo_piccolo.gif")
 
         # connessione database
-        self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
-                                            database=self.config['DataBase']['db'],
-                                            user=self.config['DataBase']['user'],
-                                            password=self.config['DataBase']['pwd'])
+        self.conn = get_connection()
         self.c = self.conn.cursor()
 
         # FRAME definizione
@@ -197,12 +196,6 @@ class Ingredienti(tk.Toplevel):
         self.crea_bottoni_pasta_fresca()
         self.crea_bottoni_carne()
 
-    @staticmethod
-    def leggi_file_ini():
-        ini = configparser.ConfigParser()
-        ini.read('config.ini')
-        return ini
-
     def crea_bottoni_surgelati(self):
         lst_surgelati = []
         self.c.execute("SELECT ingrediente_base FROM ingredienti_base WHERE merceologia LIKE 'Surgelati'")
@@ -290,6 +283,10 @@ class Ingredienti(tk.Toplevel):
         self.conn.commit()
         self.conn.close()
         self.destroy()
+
+    def destroy(self):
+        close_connection(getattr(self, "conn", None))
+        tk.Toplevel.destroy(self)
 
 
 if __name__ == '__main__':

@@ -5,7 +5,9 @@ import mysql.connector
 import random
 import os
 # import facebook
-import configparser
+
+from config import get_config
+from db import get_connection, close_connection
 
 
 class NuovoMenu(tk.Toplevel):
@@ -15,12 +17,9 @@ class NuovoMenu(tk.Toplevel):
         self.geometry("1024x525+0+0")
 
         self.data = dt.date.today()
-        self.config = self.leggi_file_ini()
+        self.config = get_config()
 
-        self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
-                                            database=self.config['DataBase']['db'],
-                                            user=self.config['DataBase']['user'],
-                                            password=self.config['DataBase']['pwd'])
+        self.conn = get_connection()
         self.c = self.conn.cursor()
 
         self.lista_da_salvare = []
@@ -162,12 +161,6 @@ class NuovoMenu(tk.Toplevel):
         self.btn_esci.grid(row=0, column=4, padx=10, pady=20)
 
         self.crea_nuovo_menu()
-
-    @staticmethod
-    def leggi_file_ini():
-        ini = configparser.ConfigParser()
-        ini.read('config.ini')
-        return ini
 
     def rimuovi_riga_selezionata(self):
         curitem = self.tree.selection()[0]
@@ -314,6 +307,10 @@ class NuovoMenu(tk.Toplevel):
         pass
         # graph = facebook.GraphAPI(access_token='token', version='2.7')
         # graph.put_wall_post(message=self.primi)
+
+    def destroy(self):
+        close_connection(getattr(self, "conn", None))
+        tk.Toplevel.destroy(self)
 
 
 if __name__ == '__main__':

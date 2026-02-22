@@ -1,7 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 import mysql.connector
-import configparser
+from config import get_config
+from db import get_connection, close_connection
 
 
 class Tagli(tk.Toplevel):
@@ -9,13 +10,10 @@ class Tagli(tk.Toplevel):
         tk.Toplevel.__init__(self)
 
         self.item = ''
-        self.config = self.leggi_file_ini()
+        self.config = get_config()
 
         # Connessione al Database
-        self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
-                                            database=self.config['DataBase']['db'],
-                                            user=self.config['DataBase']['user'],
-                                            password=self.config['DataBase']['pwd'])
+        self.conn = get_connection()
         self.c = self.conn.cursor()
 
         # Definizione Frame
@@ -136,12 +134,6 @@ class Tagli(tk.Toplevel):
         self.cmb_box_filtro.grid(row=0, column=0, padx=10)
         self.btn_applica_filtro.grid(row=0, column=1, sticky='we')
 
-    @staticmethod
-    def leggi_file_ini():
-        ini = configparser.ConfigParser()
-        ini.read('config.ini')
-        return ini
-
     def filtra(self):
         self.tree_tagli.delete(*self.tree_tagli.get_children())
         stringa = self.box_value.get()
@@ -192,6 +184,10 @@ class Tagli(tk.Toplevel):
         for self.row in self.c:
             self.entry_taglio.insert(0, self.row[1])
             self.cmb_box_merc_value.set(self.row[4])
+
+    def destroy(self):
+        close_connection(getattr(self, "conn", None))
+        tk.Toplevel.destroy(self)
 
 
 if __name__ == '__main__':

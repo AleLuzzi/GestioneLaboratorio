@@ -1,7 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 import mysql.connector
-import configparser
+from config import get_config
+from db import get_connection, close_connection
 
 
 class Reparti(tk.Toplevel):
@@ -10,13 +11,10 @@ class Reparti(tk.Toplevel):
 
         self.item = ''
         self.valore_flag = dict()
-        self.config = self.leggi_file_ini()
+        self.config = get_config()
 
         # Connessione al Database
-        self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
-                                            database=self.config['DataBase']['db'],
-                                            user=self.config['DataBase']['user'],
-                                            password=self.config['DataBase']['pwd'])
+        self.conn = get_connection()
         self.c = self.conn.cursor()
 
         # Definizione Frame
@@ -81,12 +79,6 @@ class Reparti(tk.Toplevel):
         self.lbl_frame_scegli.grid(row=3, column=0)
         self.btn_modifica.grid(sticky='we')
         self.btn_inserisci.grid(sticky='we')
-
-    @staticmethod
-    def leggi_file_ini():
-        ini = configparser.ConfigParser()
-        ini.read('config.ini')
-        return ini
 
     def crea_label_entry(self):
         r = 1
@@ -176,6 +168,10 @@ class Reparti(tk.Toplevel):
                 if self.row[i] == 1:
                     self.ckbutton[attributo].select()
                 i += 1
+
+    def destroy(self):
+        close_connection(getattr(self, "conn", None))
+        tk.Toplevel.destroy(self)
 
 
 if __name__ == '__main__':

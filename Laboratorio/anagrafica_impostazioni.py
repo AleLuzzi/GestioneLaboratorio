@@ -1,7 +1,8 @@
 import tkinter as tk
 from tkinter import ttk, filedialog
-import configparser
 import win32print
+
+from config import get_config, save_config
 from datepicker import Datepicker
 import datetime
 from tkinter import messagebox
@@ -11,7 +12,7 @@ class Impostazioni(tk.Frame):
     def __init__(self, parent):
         tk.Frame.__init__(self, parent)
 
-        self.config = self.leggi_file_ini()
+        self.config = get_config()
         self.token_fb_status = self.controlla_token()
         self.img_btn = tk.PhotoImage(file=".//immagini//Save-icon.gif")
 
@@ -130,17 +131,10 @@ class Impostazioni(tk.Frame):
         self.picker_lot_vend_carne.grid(row=1, column=1)
         self.btn_salva_data.grid(row=1, column=2)
 
-    @staticmethod
-    def leggi_file_ini():
-        ini = configparser.ConfigParser()
-        ini.read('config.ini')
-        return ini
-
     def open_dir(self):
         new_dirname = filedialog.askdirectory(parent=self.frame_centrale, initialdir='c:\\')
-        cfg_file = open('config.ini', 'w')
         self.config.set('Winswgx', 'dir', new_dirname)
-        self.config.write(cfg_file)
+        save_config()
         self.win_dir.set(new_dirname)
         messagebox.showinfo('Attenzione', 'Per vedere l"impostazione \n '
                                               'riavvia l"applicazione ')
@@ -153,16 +147,14 @@ class Impostazioni(tk.Frame):
 
     def salva_stampante(self):
         scelta = self.stampante_value.get()
-        cfg_file = open('config.ini', 'w')
         self.config.set('Stampante', 'stampa', scelta)
-        self.config.write(cfg_file)
+        save_config()
 
     def _salva_data(self):
         scelta = self.data.get()
         print(scelta)
-        cfg_file = open('config.ini', 'w')
         self.config.set('Modulo_lotti_vendita', 'data_dal', scelta)
-        self.config.write(cfg_file)
+        save_config()
 
 
 if __name__ == '__main__':

@@ -4,7 +4,9 @@ from datepicker import Datepicker
 import datetime
 import mysql.connector
 from tastiera_num import Tast_num
-import configparser
+
+from config import get_config
+from db import get_connection, close_connection
 
 
 class IngressoMerce(tk.Toplevel):
@@ -15,13 +17,10 @@ class IngressoMerce(tk.Toplevel):
 
         self.title("Ingresso Merce")
 
-        self.config = self.leggi_file_ini()
+        self.config = get_config()
 
         # Connessione al database
-        self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
-                                            database=self.config['DataBase']['db'],
-                                            user=self.config['DataBase']['user'],
-                                            password=self.config['DataBase']['pwd'])
+        self.conn = get_connection()
         self.c = self.conn.cursor()
 
         self.img_btn1 = tk.PhotoImage(file=".//immagini//logo_piccolo.gif")
@@ -301,12 +300,6 @@ class IngressoMerce(tk.Toplevel):
         self.btn_chiudi_finestra.grid(row=0, column=2, sticky='we')
         self.btn_rimuovi_riga.grid(row=5, column=3, sticky='we')
 
-    @staticmethod
-    def leggi_file_ini():
-        ini = configparser.ConfigParser()
-        ini.read('config.ini')
-        return ini
-
     def _rimuovi_riga_selezionata(self):
             curitem = self.tree.selection()[0]
             self.tree.delete(curitem)
@@ -345,6 +338,10 @@ class IngressoMerce(tk.Toplevel):
 
     def _chiudi(self):
         self.destroy()
+
+    def destroy(self):
+        close_connection(getattr(self, "conn", None))
+        tk.Toplevel.destroy(self)
 
 
 if __name__ == '__main__':

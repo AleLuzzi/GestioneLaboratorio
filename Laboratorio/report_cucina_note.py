@@ -10,20 +10,19 @@ from reportlab.lib.units import inch
 # from reportlab.lib.styles import getSampleStyleSheet
 import mysql.connector
 # import os
-import configparser
+
+from config import get_config
+from db import get_connection, close_connection
 
 
 class ReportCucina(tk.Frame):
     def __init__(self, parent):
         tk.Frame.__init__(self, parent)
 
-        self.config = self.leggi_file_ini()
+        self.config = get_config()
 
         # Connessione al database
-        self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
-                                            database=self.config['DataBase']['db'],
-                                            user=self.config['DataBase']['user'],
-                                            password=self.config['DataBase']['pwd'])
+        self.conn = get_connection()
         self.c = self.conn.cursor()
 
         # Treeview per merce ingresso
@@ -79,12 +78,6 @@ class ReportCucina(tk.Frame):
         self.btn.grid()
         self.entry_settimana_s.grid()
         self.stampa.grid()
-
-    @staticmethod
-    def leggi_file_ini():
-        ini = configparser.ConfigParser()
-        ini.read('config.ini')
-        return ini
 
     def inserisci(self, anno=strftime('%Y')):
 
@@ -163,6 +156,10 @@ class ReportCucina(tk.Frame):
         # start the construction of the pdf
         doc.addPageTemplates([PageTemplate(id='TwoCol', frames=[frame1, frame2])])
         doc.build(Elements)
+
+    def destroy(self):
+        close_connection(getattr(self, "conn", None))
+        tk.Frame.destroy(self)
 
 
 if __name__ == '__main__':

@@ -2,7 +2,9 @@ import tkinter as tk
 from tkinter import ttk
 import datetime as dt
 import mysql.connector
-import configparser
+
+from config import get_config
+from db import get_connection, close_connection
 
 
 class ChiudiLotto(tk.Toplevel):
@@ -11,13 +13,10 @@ class ChiudiLotto(tk.Toplevel):
         self.title("Chiudi Lotto")
         self.geometry("1024x525+0+0")
 
-        self.config = self._leggi_file_ini()
+        self.config = get_config()
 
         # Connessione al database
-        self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
-                                            database=self.config['DataBase']['db'],
-                                            user=self.config['DataBase']['user'],
-                                            password=self.config['DataBase']['pwd'])
+        self.conn = get_connection()
         self.c = self.conn.cursor()
 
         self.lotti_da_chiudere = []
@@ -90,12 +89,6 @@ class ChiudiLotto(tk.Toplevel):
 
         self._aggiorna()
 
-    @staticmethod
-    def _leggi_file_ini():
-        ini = configparser.ConfigParser()
-        ini.read('config.ini')
-        return ini
-
     def _rimuovi_riga_selezionata(self):
             curitem = self.tree_lotti_selezionati.selection()[0]
             self.tree_lotti_selezionati.delete(curitem)
@@ -130,6 +123,10 @@ class ChiudiLotto(tk.Toplevel):
                 self.tree.insert(lista[0], 'end', text=lista[4],
                                  values=(dt.date.strftime(lista[1], '%d/%m/%y'), lista[3], lista[5], lista[6]))
                 self.tree.item(lista[0], open='true')
+
+    def destroy(self):
+        close_connection(getattr(self, "conn", None))
+        tk.Toplevel.destroy(self)
 
 
 if __name__ == '__main__':

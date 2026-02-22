@@ -3,7 +3,8 @@ from tkinter import ttk
 from tkinter import messagebox
 import datetime as dt
 import mysql.connector
-import configparser
+from config import get_config
+from db import get_connection, close_connection
 from tastiera_num import Tast_num
 
 
@@ -17,15 +18,11 @@ class Inventario(tk.Toplevel):
 
         self.value = tk.StringVar()
         self.data = dt.date.today()
-        self.config = self.leggi_file_ini()
+        self.config = get_config()
         self.dati_da_salvare = []
 
         # connessione database
-        self.conn = mysql.connector.connect(
-            host=self.config['DataBase']['host'],
-            database=self.config['DataBase']['db'],
-            user=self.config['DataBase']['user'],
-            password=self.config['DataBase']['pwd'])
+        self.conn = get_connection()
         self.c = self.conn.cursor(buffered=True)
 
         self.img_btn1 = tk.PhotoImage(file=".//immagini//logo_piccolo.gif")
@@ -216,12 +213,6 @@ class Inventario(tk.Toplevel):
                 value=lst_vitello[i]).grid(row=r, column=c)
             r += 1
 
-    @staticmethod
-    def leggi_file_ini():
-        ini = configparser.ConfigParser()
-        ini.read('config.ini')
-        return ini
-
     def _ins_peso_da_tastiera(self):
         peso = Tast_num(self)
         val = peso.value.get()
@@ -273,6 +264,10 @@ class Inventario(tk.Toplevel):
         self.conn.commit()
         self.conn.close()
         self.destroy()
+
+    def destroy(self):
+        close_connection(getattr(self, "conn", None))
+        tk.Toplevel.destroy(self)
 
 
 if __name__ == '__main__':

@@ -3,7 +3,8 @@ from tkinter import ttk
 import mysql.connector
 import os
 import shutil
-import configparser
+from config import get_config
+from db import get_connection, close_connection
 from tkinter import messagebox
 import datetime as dt
 import win32api
@@ -32,13 +33,10 @@ class Produzione(tk.Frame):
         self.filtro_merceologia = tk.StringVar()
         self.valore_ckb_flag1 = tk.StringVar()
         self.valore_ckb_flag1.set(0)
-        self.config = self.leggi_file_ini()
+        self.config = get_config()
 
         # Connessione al Database
-        self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
-                                            database=self.config['DataBase']['db'],
-                                            user=self.config['DataBase']['user'],
-                                            password=self.config['DataBase']['pwd'])
+        self.conn = get_connection()
         self.c = self.conn.cursor()
 
         # Definizione Frame
@@ -208,12 +206,6 @@ class Produzione(tk.Frame):
         # self.aggiorna()
         self.riempi_combo_reparto()
         self.riempi_combo_merceologie()
-
-    @staticmethod
-    def leggi_file_ini():
-        ini = configparser.ConfigParser()
-        ini.read('config.ini')
-        return ini
 
     def riempi_combo_reparto(self):
         lista_rep = []
@@ -439,6 +431,10 @@ class Produzione(tk.Frame):
         f = open('../laboratorio/bz00vate.dat', "w")
         f.write(stringa)
         f.close()
+
+    def destroy(self):
+        close_connection(getattr(self, "conn", None))
+        tk.Frame.destroy(self)
 
 
 if __name__ == '__main__':

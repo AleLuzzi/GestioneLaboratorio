@@ -1,7 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 import mysql.connector
-import configparser
+from config import get_config
+from db import get_connection, close_connection
 
 
 class Ingredienti(tk.Toplevel):
@@ -10,14 +11,12 @@ class Ingredienti(tk.Toplevel):
 
         self.item = ''
         self.valore_flag = dict()
-        self.config = self.leggi_file_ini()
+        self.config = get_config()
 
         # Connessione al Database
-        self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
-                                            database=self.config['DataBase']['db'],
-                                            user=self.config['DataBase']['user'],
-                                            password=self.config['DataBase']['pwd'])
+        self.conn = get_connection()
         self.c = self.conn.cursor()
+
         # Definizione Frame
         self.frame_sx = ttk.Frame(self)
         self.frame_dx = ttk.Frame(self)
@@ -150,12 +149,6 @@ class Ingredienti(tk.Toplevel):
 
         self.aggiorna()
 
-    @staticmethod
-    def leggi_file_ini():
-        ini = configparser.ConfigParser()
-        ini.read('config.ini')
-        return ini
-
     def inserisci(self):
         lista_da_salvare = []
         for campo in self.campi:
@@ -230,6 +223,10 @@ class Ingredienti(tk.Toplevel):
         self.c.execute("SELECT * FROM ingredienti_base WHERE merceologia like %s", ('%' + stringa + '%',))
         for lista in self.c:
             self.tree_ingredienti.insert('', 'end', values=(lista[0], lista[1], lista[2], lista[4]))
+
+    def destroy(self):
+        close_connection(getattr(self, "conn", None))
+        tk.Toplevel.destroy(self)
 
 
 if __name__ == '__main__':

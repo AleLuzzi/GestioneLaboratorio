@@ -2,7 +2,8 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 import mysql.connector
-import configparser
+from config import get_config
+from db import get_connection, close_connection
 
 
 class Dipendenti(tk.Toplevel):
@@ -10,13 +11,10 @@ class Dipendenti(tk.Toplevel):
         tk.Toplevel.__init__(self)
 
         self.item = ''
-        self.config = self.leggi_file_ini()
+        self.config = get_config()
 
         # Connessione al Database
-        self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
-                                            database=self.config['DataBase']['db'],
-                                            user=self.config['DataBase']['user'],
-                                            password=self.config['DataBase']['pwd'])
+        self.conn = get_connection()
         self.c = self.conn.cursor()
 
         # Definizione Frame
@@ -100,12 +98,6 @@ class Dipendenti(tk.Toplevel):
         self.btn_inserisci.grid(row=2, column=0, columnspan=2, sticky='we')
 
         self._aggiorna()
-
-    @staticmethod
-    def leggi_file_ini():
-        ini = configparser.ConfigParser()
-        ini.read('config.ini')
-        return ini
 
     def modifica(self):
         self.item = self.tree_dipendenti.item(self.tree_dipendenti.selection(), 'values')
@@ -214,7 +206,11 @@ class Dipendenti(tk.Toplevel):
 
         btn_salva.grid(row=4, column=0, sticky='we')
         btn_chiudi.grid(row=4, column=1, sticky='we')
-	
+
+    def destroy(self):
+        close_connection(getattr(self, "conn", None))
+        tk.Toplevel.destroy(self)
+
 
 if __name__ == '__main__':
     root = tk.Tk()

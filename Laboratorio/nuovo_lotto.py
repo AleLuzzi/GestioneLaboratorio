@@ -3,8 +3,10 @@ from tkinter import ttk
 import datetime as dt
 import mysql.connector
 from tkinter import messagebox
-import configparser
 from tastiera_num import Tast_num
+
+from config import get_config
+from db import get_connection, close_connection
 
 
 class NuovoLotto(tk.Toplevel):
@@ -16,12 +18,9 @@ class NuovoLotto(tk.Toplevel):
         self.img_btn = tk.PhotoImage(file=".//immagini//modifica.gif")
         self.data = dt.date.today()
 
-        self.config = self.leggi_file_ini()
+        self.config = get_config()
 
-        self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
-                                            database=self.config['DataBase']['db'],
-                                            user=self.config['DataBase']['user'],
-                                            password=self.config['DataBase']['pwd'])
+        self.conn = get_connection()
         self.c = self.conn.cursor()
 
         self.lista_da_salvare = []
@@ -139,12 +138,6 @@ class NuovoLotto(tk.Toplevel):
         val = peso.value.get()
         self.peso_da_inserire.set(val)
 
-    @staticmethod
-    def leggi_file_ini():
-        ini = configparser.ConfigParser()
-        ini.read('config.ini')
-        return ini
-
     def rimuovi_riga_selezionata(self):
         curitem = self.tree_lotti_selezionati.selection()[0]
         self.tree_lotti_selezionati.delete(curitem)
@@ -216,6 +209,10 @@ class NuovoLotto(tk.Toplevel):
                                                                   (self.tree.item(item, 'text'))))
         else:
             pass
+
+    def destroy(self):
+        close_connection(getattr(self, "conn", None))
+        tk.Toplevel.destroy(self)
 
 
 if __name__ == '__main__':

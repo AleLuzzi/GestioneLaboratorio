@@ -1,8 +1,9 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import messagebox
-import configparser
 import os
+
+from config import get_config
 
 # Run with script directory as cwd so config.ini and immagini/ are found
 # (works when run as "python main.pyw" or "python Laboratorio/main.pyw")
@@ -14,7 +15,7 @@ class Main(tk.Frame):
         tk.Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
 
-        self.config = self.leggi_file_ini()
+        self.config = get_config()
 
         self.frm_alto = tk.Frame(self, bd=1, relief="raised", bg="yellow")
         self.frm_centrale = tk.Frame(
@@ -81,13 +82,13 @@ class Main(tk.Frame):
                               image=self.img_btn9, command=self.nuovo_menu)
 
         bottone9a = ttk.Button(self.frm_alto, text="Ordine", compound='bottom',
-                               image=self.img_btn9_a)
+                               image=self.img_btn9_a, state='disabled')  # da implementare
 
         bottone9b = ttk.Button(self.frm_alto, text="Dosi", compound='bottom',
                                image=self.img_btn9_b, command=self.dosi)
 
         bottone10 = ttk.Button(self.frm_alto, text="Uscita", compound='bottom',
-                               image=self.img_btn10, command=self.quit)
+                               image=self.img_btn10, command=self._esci)
 
         self.immagine1 = tk.PhotoImage(
             file=os.path.join('immagini', 'dlogo.gif'))
@@ -122,7 +123,6 @@ class Main(tk.Frame):
         self.frm_alto.grid(row=0, column=0)
         self.frm_centrale.grid(row=1, column=0)
         self.frm_basso.grid(row=2, column=0, sticky="we")
-        self.frm_centrale.grid(row=1, column=0)
 
         label1.grid(row=0, column=0)
         lbl_utente.grid(row=0, column=0)
@@ -130,12 +130,6 @@ class Main(tk.Frame):
         lbl_winswgx.grid(row=0, column=2)
         lbl_winswgx_percorso.grid(row=0, column=3)
 
-    @staticmethod
-    def leggi_file_ini():
-        ini = configparser.ConfigParser()
-        ini.read('config.ini')
-        return ini
-    
     @staticmethod
     def ingresso_merce():
         from ingresso_merce import IngressoMerce
@@ -185,6 +179,10 @@ class Main(tk.Frame):
     def dosi():
         from dosi import Dosi
         Dosi()
+
+    def _esci(self):
+        """Chiude l'applicazione."""
+        self.parent.destroy()
 
     @staticmethod
     def anagrafica():

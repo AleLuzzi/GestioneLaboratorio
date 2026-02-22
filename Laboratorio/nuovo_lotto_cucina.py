@@ -3,7 +3,9 @@ from tkinter import ttk
 import datetime as dt
 import mysql.connector
 from tkinter import messagebox
-import configparser
+
+from config import get_config
+from db import get_connection, close_connection
 
 
 class NuovoLottoCucina(tk.Toplevel):
@@ -13,12 +15,9 @@ class NuovoLottoCucina(tk.Toplevel):
         self.geometry("+0+0")
 
         self.data = dt.date.today()
-        self.config = self.leggi_file_ini()
+        self.config = get_config()
 
-        self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
-                                            database=self.config['DataBase']['db'],
-                                            user=self.config['DataBase']['user'],
-                                            password=self.config['DataBase']['pwd'])
+        self.conn = get_connection()
         self.c = self.conn.cursor()
 
         self.lista_da_salvare = []
@@ -280,12 +279,6 @@ class NuovoLottoCucina(tk.Toplevel):
         self.btn_esci_salva.grid(row=0, column=2, padx=10, pady=10)
         self.btn_esci.grid(row=0, column=3, padx=10, pady=10)
 
-    @staticmethod
-    def leggi_file_ini():
-        ini = configparser.ConfigParser()
-        ini.read('config.ini')
-        return ini
-
     def rimuovi_riga_selezionata(self):
         curitem = self.tree.selection()[0]
         self.tree.delete(curitem)
@@ -313,6 +306,10 @@ class NuovoLottoCucina(tk.Toplevel):
         self.conn.commit()
         self.conn.close()
         self.destroy()
+
+    def destroy(self):
+        close_connection(getattr(self, "conn", None))
+        tk.Toplevel.destroy(self)
 
 
 if __name__ == '__main__':

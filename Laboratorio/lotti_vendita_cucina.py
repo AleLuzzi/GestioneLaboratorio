@@ -1,5 +1,7 @@
-import configparser
 import datetime as dt
+
+from config import get_config
+from db import get_connection, close_connection
 import os
 import shutil
 import tkinter as tk
@@ -33,12 +35,9 @@ class LottiInVenditaCucina(tk.Toplevel):
         self.geometry("+0+0")
         self.title('Lotti in vendita Cucina')
 
-        self.config = self.leggi_file_ini()
+        self.config = get_config()
 
-        self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
-                                            database=self.config['DataBase']['db'],
-                                            user=self.config['DataBase']['user'],
-                                            password=self.config['DataBase']['pwd'])
+        self.conn = get_connection()
         self.c = self.conn.cursor()
 
         self.data = dt.date.today()
@@ -180,12 +179,6 @@ class LottiInVenditaCucina(tk.Toplevel):
         self.progress_bar.grid(row='1', column='0', columnspan='2', sticky='we')
 
         self.riempi_tutti()
-
-    @staticmethod
-    def leggi_file_ini():
-        ini = configparser.ConfigParser()
-        ini.read('config.ini')
-        return ini
 
     def riempi_tutti(self):
         self.tree.delete(*self.tree.get_children())
@@ -347,6 +340,10 @@ class LottiInVenditaCucina(tk.Toplevel):
         f = open('../laboratorio/bz00vate.dat', "w")
         f.write(stringa)
         f.close()
+
+    def destroy(self):
+        close_connection(getattr(self, "conn", None))
+        tk.Toplevel.destroy(self)
 
 
 if __name__ == "__main__":

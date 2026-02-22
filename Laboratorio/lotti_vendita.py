@@ -13,7 +13,9 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_CENTER
 import win32api
 from tkinter import messagebox
-import configparser
+
+from config import get_config
+from db import get_connection, close_connection
 
 
 class LottiInVendita(tk.Toplevel):
@@ -22,12 +24,9 @@ class LottiInVendita(tk.Toplevel):
         self.geometry("1024x525+0+0")
         self.title('Lotti in vendita')
 
-        self.config = self.leggi_file_ini()
+        self.config = get_config()
 
-        self.conn = mysql.connector.connect(host=self.config['DataBase']['host'],
-                                            database=self.config['DataBase']['db'],
-                                            user=self.config['DataBase']['user'],
-                                            password=self.config['DataBase']['pwd'])
+        self.conn = get_connection()
         self.c = self.conn.cursor()
 
         self.data = dt.date.today()
@@ -172,12 +171,6 @@ class LottiInVendita(tk.Toplevel):
 
         self.riempi_combo()
         self.riempi_tutti()
-
-    @staticmethod
-    def leggi_file_ini():
-        ini = configparser.ConfigParser()
-        ini.read('config.ini')
-        return ini
 
     def riempi_combo(self):
         lista = []
@@ -354,6 +347,10 @@ class LottiInVendita(tk.Toplevel):
         doc.build(parts)
         if messagebox.askyesno('STAMPA', 'Vuoi stampare il pdf?'):
             win32api.ShellExecute(None, "print", "traccia.pdf", None, ".", 0)
+
+    def destroy(self):
+        close_connection(getattr(self, "conn", None))
+        tk.Toplevel.destroy(self)
 
 
 if __name__ == "__main__":
