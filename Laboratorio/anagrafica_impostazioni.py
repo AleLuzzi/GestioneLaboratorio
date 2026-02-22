@@ -3,6 +3,7 @@ from tkinter import ttk, filedialog
 import win32print
 
 from config import get_config, save_config
+from theme import COLORS, get_font
 from datepicker import Datepicker
 import datetime
 from tkinter import messagebox
@@ -11,7 +12,7 @@ from tkinter import messagebox
 class Impostazioni(tk.Frame):
     def __init__(self, parent):
         tk.Frame.__init__(self, parent)
-
+        self.configure(bg=COLORS["bg_light"])
         self.config = get_config()
         self.token_fb_status = self.controlla_token()
         self.img_btn = tk.PhotoImage(file=".//immagini//Save-icon.gif")
@@ -23,24 +24,22 @@ class Impostazioni(tk.Frame):
         self.stampante_value.set(self.config['Stampante']['stampa'])
 
         # FRAME
-        self.frame_sx = tk.Frame(self)
-        self.frame_centrale = tk.Frame(self)
-        self.frame_dx = tk.Frame(self)
+        self.frame_sx = tk.Frame(self, bg=COLORS["bg_light"], padx=8, pady=8)
+        self.frame_centrale = tk.Frame(self, bg=COLORS["bg_light"], padx=8, pady=8)
+        self.frame_dx = tk.Frame(self, bg=COLORS["bg_light"], padx=8, pady=8)
 
         # LABELFRAME Database
-        self.lblfrm_imp_database = tk.LabelFrame(self, text='DataBase', foreground='blue')
+        self.lblfrm_imp_database = tk.LabelFrame(self, text='DataBase',
+                                                  font=get_font(12, bold=True), fg=COLORS["text_dark"], bg=COLORS["bg_light"])
 
         # LABELFRAME winswgx
-        self.lblfrm_winswgx = tk.LabelFrame(self, text='Winswgx-net', foreground='blue')
+        self.lblfrm_winswgx = tk.LabelFrame(self, text='Winswgx-net',
+                                            font=get_font(12, bold=True), fg=COLORS["text_dark"], bg=COLORS["bg_light"])
 
-        # LABELFRAME Facebook
-        self.lblfrm_facebook = tk.LabelFrame(self, text='Facebook', foreground='blue')
-
-        # LABELFRAME Stampante
-        self.lblfrm_stampante = tk.LabelFrame(self, text='Stampante', foreground='blue')
-
-        # LABELFRAME Lotti_vendita_carne
-        self.lblfrm_lotti_vendita_carne = tk.LabelFrame(self, text='Modulo Lotti Vendita Carne', foreground='blue')
+        lf_opts = dict(font=get_font(12, bold=True), fg=COLORS["text_dark"], bg=COLORS["bg_light"])
+        self.lblfrm_facebook = tk.LabelFrame(self, text='Facebook', **lf_opts)
+        self.lblfrm_stampante = tk.LabelFrame(self, text='Stampante', **lf_opts)
+        self.lblfrm_lotti_vendita_carne = tk.LabelFrame(self, text='Modulo Lotti Vendita Carne', **lf_opts)
         self.lbl_visualizza_lotti = tk.Label(self.lblfrm_lotti_vendita_carne, text='Visualizza lotti dal ')
         self.data = tk.StringVar()
         self.data.set(self.config['Modulo_lotti_vendita']['data_dal'])

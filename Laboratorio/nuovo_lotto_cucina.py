@@ -6,11 +6,13 @@ from tkinter import messagebox
 
 from config import get_config
 from db import get_connection, close_connection
+from theme import COLORS, get_font
 
 
 class NuovoLottoCucina(tk.Toplevel):
     def __init__(self):
         super(NuovoLottoCucina, self).__init__()
+        self.configure(bg=COLORS["bg_light"])
         self.title("Nuovo Lotto Cucina")
         self.geometry("+0+0")
 
@@ -29,22 +31,21 @@ class NuovoLottoCucina(tk.Toplevel):
         self.value_peso = tk.StringVar()
 
         # DISPOSIZIONE FRAME
-        self.frame_alto = tk.Frame(self, bd='3', relief='groove')
+        self.frame_alto = tk.Frame(self, bg=COLORS["bg_light"], padx=8, pady=8)
         self.frame_centro = tk.Frame(self, height=450, width=self.winfo_screenwidth(),
-                                     bd='3', relief='groove')
-        self.frame_basso = tk.Frame(self, bd='3', background='white', relief='groove')
+                                     bg=COLORS["bg_light"], padx=8, pady=8)
+        self.frame_basso = tk.Frame(self, bg=COLORS["bg_light"], padx=8, pady=8)
 
         # LABEL nuovo lotto vendita
-        self.lbl_nuovo_lotto = tk.Label(self.frame_alto, text='NUOVO LOTTO VENDITA', font=('Helvetica', 20),
-                                        foreground='blue', relief='ridge', padx=20)
+        self.lbl_nuovo_lotto = ttk.Label(self.frame_alto, text='Nuovo lotto vendita',
+                                         font=get_font(14, bold=True))
         self.lbl_prog_lotto_vendita = tk.Label(self.frame_alto, text=str(self.prog_lotto_ven),
-                                               font=('Helvetica', 20), bg='white', relief='sunken', padx=20)
-
-        # LABEL che mostra il numero della settimana
-        self.lbl_settimana = tk.Label(self.frame_alto, text='SETTIMANA NUMERO ',
-                                      foreground='blue', font=('Verdana', 20), relief='ridge', padx=20)
+                                               font=get_font(12), bg=COLORS["bg_content"],
+                                               fg=COLORS["text_dark"], padx=12, pady=4)
+        self.lbl_settimana = ttk.Label(self.frame_alto, text='Settimana n. ', font=get_font(12, bold=True))
         self.lbl_nr_settimana = tk.Label(self.frame_alto, text=str(1 + int(self.data.strftime('%W'))),
-                                         font=('Verdana', 20), bg='white', relief='sunken', padx=20)
+                                         font=get_font(12), bg=COLORS["bg_content"],
+                                         fg=COLORS["text_dark"], padx=12, pady=4)
 
         # TREEVIEW per riepilogo immissioni
         self.tree = ttk.Treeview(self.frame_centro, height=15)
@@ -59,7 +60,7 @@ class NuovoLottoCucina(tk.Toplevel):
         self.tree.heading("prodotto", text="prodotto")
         self.tree.heading("peso", text="peso")
 
-        self.tree.tag_configure('odd', background='light green')
+        self.tree.tag_configure('odd', background=COLORS["bg_light"])
 
         # NOTEBOOK e posizione
         self.notebook = ttk.Notebook(self.frame_centro)
@@ -242,19 +243,10 @@ class NuovoLottoCucina(tk.Toplevel):
         self.entry_peso.focus()
 
         # BOTTONE ESCI E SALVA
-        self.btn_invia = tk.Button(self.frame_basso,
-                                   text="Invio",
-                                   font=('Helvetica', 20),
-                                   command=self.invia)
-        self.btn_esci = tk.Button(self.frame_basso,
-                                  text="Chiudi finestra",
-                                  font=('Helvetica', 20),
-                                  command=self.esci_senza_salvare)
-        self.btn_esci_salva = tk.Button(self.frame_basso,
-                                        text="Esci e salva",
-                                        font=('Helvetica', 20),
-                                        command=self.esci_salva)
-        self.btn_elimina_riga = tk.Button(self.frame_centro, text='Elimina riga', command=self.rimuovi_riga_selezionata)
+        self.btn_invia = ttk.Button(self.frame_basso, text="Invio", command=self.invia)
+        self.btn_esci = ttk.Button(self.frame_basso, text="Chiudi finestra", command=self.esci_senza_salvare)
+        self.btn_esci_salva = ttk.Button(self.frame_basso, text="Esci e salva", command=self.esci_salva)
+        self.btn_elimina_riga = ttk.Button(self.frame_centro, text='Elimina riga', command=self.rimuovi_riga_selezionata)
 
         # LAYOUT
         self.frame_alto.grid(row=0, column=0, padx=10)

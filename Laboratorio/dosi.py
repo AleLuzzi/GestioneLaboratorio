@@ -2,10 +2,13 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 
+from theme import COLORS, get_font
+
 
 class Dosi(tk.Toplevel):
     def __init__(self):
         tk.Toplevel.__init__(self)
+        self.configure(bg=COLORS["bg_light"])
         self.title('Dosi')
 
         self.peso = tk.DoubleVar()
@@ -42,35 +45,23 @@ class Dosi(tk.Toplevel):
         # DEFINIZIONE WIDGET
         self.bind('<Return>', _calcola)
 
-        self.lbl_peso = tk.Label(self, text='INSERISCI PESO',
-                                 foreground='blue',
-                                 font=('Verdana', 15),
-                                 relief='ridge',
-                                 bg='white')
-        self.ent_peso = tk.Entry(self, textvariable=self.peso,
-                                 width=5, font=('Verdana', 30))
+        self.lbl_peso = ttk.Label(self, text='Inserisci peso (kg)', font=get_font(12, bold=True))
+        self.ent_peso = ttk.Entry(self, textvariable=self.peso, width=8)
         self.ent_peso.focus()
 
-        self.lbl_sale = tk.Label(self, text='SALE', font=('Verdana', 15))
-        self.lbl_sale_gr = tk.Label(self, text='0 gr', font=('Verdana', 15))
+        self.lbl_sale = ttk.Label(self, text='Sale', font=get_font())
+        self.lbl_sale_gr = tk.Label(self, text='0 gr', font=get_font(), bg=COLORS["bg_light"], fg=COLORS["text_dark"])
+        self.lbl_pepe = ttk.Label(self, text='Pepe', font=get_font())
+        self.lbl_pepe_gr = tk.Label(self, text='0 gr', font=get_font(), bg=COLORS["bg_light"], fg=COLORS["text_dark"])
+        self.lbl_aglio = ttk.Label(self, text='Aglio', font=get_font())
+        self.lbl_aglio_gr = tk.Label(self, text='0 gr', font=get_font(), bg=COLORS["bg_light"], fg=COLORS["text_dark"])
+        self.lbl_aromyl = ttk.Label(self, text='Aromyl', font=get_font())
+        self.lbl_aromyl_gr = tk.Label(self, text='0 gr', font=get_font(), bg=COLORS["bg_light"], fg=COLORS["text_dark"])
+        self.lbl_acqua = ttk.Label(self, text='Acqua', font=get_font())
 
-        self.lbl_pepe = tk.Label(self, text='PEPE', font=('Verdana', 15))
-        self.lbl_pepe_gr = tk.Label(self, text='0 gr', font=('Verdana', 15))
-
-        self.lbl_aglio = tk.Label(self, text='AGLIO', font=('Verdana', 15))
-        self.lbl_aglio_gr = tk.Label(self, text='0 gr', font=('Verdana', 15))
-
-        self.lbl_aromyl = tk.Label(self, text='AROMYL', font=('Verdana', 15))
-        self.lbl_aromyl_gr = tk.Label(self, text='0 gr', font=('Verdana', 15))
-
-        self.lbl_acqua = tk.Label(self, text='ACQUA', font=('Verdana', 15))
-
-        style = ttk.Style()
-        style.configure('W.TButton', font=('Verdana', 12, 'bold'))
-
-        self.calcola = ttk.Button(self, text='CALCOLA', style='W.TButton', command=_calcola)
-        self.reset = ttk.Button(self, text='Reset', style='W.TButton', command=_reset)
-        self.chiudi = ttk.Button(self, text='Chiudi', style='W.TButton', command=_chiudi)
+        self.calcola = ttk.Button(self, text='Calcola', command=_calcola)
+        self.reset = ttk.Button(self, text='Reset', command=_reset)
+        self.chiudi = ttk.Button(self, text='Chiudi', command=_chiudi)
 
         # LAYOUT
         self.lbl_peso.grid(row=0, column=0, sticky='ns')

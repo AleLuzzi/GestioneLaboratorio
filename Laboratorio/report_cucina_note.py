@@ -13,12 +13,13 @@ import mysql.connector
 
 from config import get_config
 from db import get_connection, close_connection
+from theme import COLORS, get_font
 
 
 class ReportCucina(tk.Frame):
     def __init__(self, parent):
         tk.Frame.__init__(self, parent)
-
+        self.configure(bg=COLORS["bg_light"])
         self.config = get_config()
 
         # Connessione al database

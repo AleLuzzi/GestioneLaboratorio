@@ -5,14 +5,15 @@ import mysql.connector
 
 from config import get_config
 from db import get_connection, close_connection
+from theme import COLORS, get_font
 
 
 class ChiudiLotto(tk.Toplevel):
     def __init__(self):
         tk.Toplevel.__init__(self)
+        self.configure(bg=COLORS["bg_light"])
         self.title("Chiudi Lotto")
         self.geometry("1024x525+0+0")
-
         self.config = get_config()
 
         # Connessione al database
@@ -22,9 +23,9 @@ class ChiudiLotto(tk.Toplevel):
         self.lotti_da_chiudere = []
 
         # Disposizione Frame
-        self.frame_sx = tk.Frame(self)
-        self.frame_dx = tk.Frame(self)
-        self.frame_dx_basso = tk.Frame(self, background='white')
+        self.frame_sx = tk.Frame(self, bg=COLORS["bg_light"], padx=12, pady=12)
+        self.frame_dx = tk.Frame(self, bg=COLORS["bg_light"], padx=12, pady=12)
+        self.frame_dx_basso = tk.Frame(self, bg=COLORS["bg_light"], padx=12, pady=12)
 
         # Treeview con riepilogo lotti aperti
         self.tree = ttk.Treeview(self.frame_sx, height=25)
@@ -40,14 +41,14 @@ class ChiudiLotto(tk.Toplevel):
         self.tree.heading("peso", text="peso")
         self.tree.heading("residuo", text="residuo")
 
-        self.tree.tag_configure('odd', background='light green')
+        self.tree.tag_configure('odd', background=COLORS["bg_light"])
 
         self.tree.bind("<Double-1>", self._ondoubleclick)
 
         # LABEL lotti da chiudere
         self.lbl_nuovo_lotto = ttk.Label(self.frame_dx,
-                                         text='LOTTI DA CHIUDERE',
-                                         font=('Helvetica', 20))
+                                         text='Lotti da chiudere',
+                                         font=get_font(14, bold=True))
 
         # Treeview per lotti scelti da chiudere
         self.tree_lotti_selezionati = ttk.Treeview(self.frame_dx)
@@ -61,17 +62,13 @@ class ChiudiLotto(tk.Toplevel):
         self.tree_lotti_selezionati.heading("taglio", text="Taglio")
 
         # BOTTONE ESCI
-        self.btn_esci = tk.Button(self.frame_dx_basso,
-                                  text="Chiudi finestra",
-                                  font=('Helvetica', 20),
-                                  command=self.destroy)
-
-        self.btn_salva = tk.Button(self.frame_dx_basso,
-                                   text='salva dati',
-                                   font=('Helvetica', 20),
-                                   command=self._salva)
-
-        self.btn_rimuovi_riga = tk.Button(self.frame_dx, text="Rimuovi riga", command=self._rimuovi_riga_selezionata)
+        self.btn_esci = ttk.Button(self.frame_dx_basso,
+                                   text="Chiudi finestra",
+                                   command=self.destroy)
+        self.btn_salva = ttk.Button(self.frame_dx_basso,
+                                    text='Salva dati',
+                                    command=self._salva)
+        self.btn_rimuovi_riga = ttk.Button(self.frame_dx, text="Rimuovi riga", command=self._rimuovi_riga_selezionata)
         
 
         # LAYOUT

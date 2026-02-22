@@ -2,6 +2,7 @@ import datetime as dt
 
 from config import get_config
 from db import get_connection, close_connection
+from theme import COLORS, get_font
 import os
 import shutil
 import tkinter as tk
@@ -32,6 +33,7 @@ from reportlab.lib.units import mm
 class LottiInVenditaCucina(tk.Toplevel):
     def __init__(self):
         super(LottiInVenditaCucina, self).__init__()
+        self.configure(bg=COLORS["bg_light"])
         self.geometry("+0+0")
         self.title('Lotti in vendita Cucina')
 
@@ -53,9 +55,9 @@ class LottiInVenditaCucina(tk.Toplevel):
         self.entry = {}
 
         # Disposizione Frame e LabelFrame
-        self.frame_sx = tk.Frame(self)
-        self.frame_dx = tk.Frame(self)
-        self.frame_dx_basso = tk.Frame(self, background='white')
+        self.frame_sx = tk.Frame(self, bg=COLORS["bg_light"], padx=12, pady=12)
+        self.frame_dx = tk.Frame(self, bg=COLORS["bg_light"], padx=12, pady=12)
+        self.frame_dx_basso = tk.Frame(self, bg=COLORS["bg_light"], padx=12, pady=12)
 
         # Treeview con lotti disponibili
         self.tree = ttk.Treeview(self.frame_sx, height=16)
@@ -65,11 +67,11 @@ class LottiInVenditaCucina(tk.Toplevel):
 
         self.tree.column("peso", width=80)
 
-        self.tree.tag_configure('odd', background='light green')
+        self.tree.tag_configure('odd', background=COLORS["bg_light"])
         self.tree.bind("<Double-1>", self.ondoubleclick)
 
         # Label
-        self.label_selezionato = ttk.Label(self.frame_dx, text='Prodotto selezionato', font=('Helvetica', 20))
+        self.label_selezionato = ttk.Label(self.frame_dx, text='Prodotto selezionato', font=get_font(14, bold=True))
 
         # LABELFRAME dettagli prodotto selezionato
         self.lbl_frame_dettagli_selezionato = ttk.LabelFrame(self.frame_dx,

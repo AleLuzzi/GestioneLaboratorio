@@ -4,6 +4,11 @@ from tkinter import messagebox
 import os
 
 from config import get_config
+from theme import (
+    apply_theme, COLORS,
+    style_header_frame, style_content_frame, style_footer_frame,
+    get_font, FONT_SIZE_LARGE,
+)
 
 # Run with script directory as cwd so config.ini and immagini/ are found
 # (works when run as "python main.pyw" or "python Laboratorio/main.pyw")
@@ -14,13 +19,16 @@ class Main(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
         tk.Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
+        self.configure(bg=COLORS["bg_light"])
 
         self.config = get_config()
 
-        self.frm_alto = tk.Frame(self, bd=1, relief="raised", bg="yellow")
-        self.frm_centrale = tk.Frame(
-            self, height=200, width=800, bd=1, relief="raised", bg="white")
-        self.frm_basso = tk.Frame(self, bd=1, relief="raised")
+        self.frm_alto = tk.Frame(self, bd=0, highlightthickness=0)
+        style_header_frame(self.frm_alto)
+        self.frm_centrale = tk.Frame(self, height=200, width=800, bd=0, highlightthickness=0)
+        style_content_frame(self.frm_centrale)
+        self.frm_basso = tk.Frame(self, bd=0, highlightthickness=0)
+        style_footer_frame(self.frm_basso)
 
         self.img_btn1 = tk.PhotoImage(
             file=os.path.join('immagini', 'lbeef.gif'))
@@ -93,28 +101,35 @@ class Main(tk.Frame):
         self.immagine1 = tk.PhotoImage(
             file=os.path.join('immagini', 'dlogo.gif'))
 
-        label1 = tk.Label(self.frm_centrale, image=self.immagine1, bd=0)
+        label1 = tk.Label(self.frm_centrale, image=self.immagine1, bd=0, bg=COLORS["bg_content"])
 
-        lbl_utente = tk.Label(self.frm_basso, text='Utente Collegato : ')
+        lbl_utente = tk.Label(
+            self.frm_basso, text='Utente: ',
+            font=get_font(), fg=COLORS["text_dark"], bg=COLORS["bg_light"])
+        lbl_nome_utente = tk.Label(
+            self.frm_basso, text=os.environ.get('COMPUTERNAME', ''),
+            font=get_font(), fg=COLORS["text_dark"], bg=COLORS["bg_light"])
+        lbl_winswgx = tk.Label(
+            self.frm_basso, text='Winswgx: ',
+            font=get_font(), fg=COLORS["text_light"], bg=COLORS["bg_light"])
+        lbl_winswgx_percorso = tk.Label(
+            self.frm_basso, text=self.config['Winswgx']['dir'] or '(non impostato)',
+            font=get_font(), fg=COLORS["text_dark"], bg=COLORS["bg_light"])
 
-        lbl_nome_utente = tk.Label(self.frm_basso, text=os.environ['COMPUTERNAME'])
-
-        lbl_winswgx = tk.Label(self.frm_basso, text='Percorso Winswgx = ')
-        lbl_winswgx_percorso = tk.Label(self.frm_basso, text=self.config['Winswgx']['dir'])
-
-        bottone1.grid(row=0, column=0, padx=4, pady=4)
-        bottone2.grid(row=0, column=1, padx=4, pady=4, sticky='we')
-        bottone3.grid(row=0, column=2, padx=4, pady=4, sticky='we')
-        bottone6.grid(row=0, column=3, padx=4, pady=4)
-        bottone7.grid(row=0, column=4, padx=4, pady=4)
-        bottone8.grid(row=0, column=5, padx=4, pady=4)
-        bottone9a.grid(row=0, column=6, padx=4, pady=4)
-        bottone9b.grid(row=0, column=7, padx=4, pady=4)
-        bottone10.grid(row=0, column=8, padx=4, pady=4)
-        bottone5.grid(row=1, column=0, padx=4, pady=4)
-        bottone4.grid(row=1, column=1, padx=4, pady=4)
-        bottone4a.grid(row=1, column=2, padx=4, pady=4)
-        bottone9.grid(row=1, column=3, padx=4, pady=4)
+        pad = (8, 12)
+        bottone1.grid(row=0, column=0, padx=pad[0], pady=pad[1])
+        bottone2.grid(row=0, column=1, padx=pad[0], pady=pad[1], sticky='we')
+        bottone3.grid(row=0, column=2, padx=pad[0], pady=pad[1], sticky='we')
+        bottone6.grid(row=0, column=3, padx=pad[0], pady=pad[1])
+        bottone7.grid(row=0, column=4, padx=pad[0], pady=pad[1])
+        bottone8.grid(row=0, column=5, padx=pad[0], pady=pad[1])
+        bottone9a.grid(row=0, column=6, padx=pad[0], pady=pad[1])
+        bottone9b.grid(row=0, column=7, padx=pad[0], pady=pad[1])
+        bottone10.grid(row=0, column=8, padx=pad[0], pady=pad[1])
+        bottone5.grid(row=1, column=0, padx=pad[0], pady=pad[1])
+        bottone4.grid(row=1, column=1, padx=pad[0], pady=pad[1])
+        bottone4a.grid(row=1, column=2, padx=pad[0], pady=pad[1])
+        bottone9.grid(row=1, column=3, padx=pad[0], pady=pad[1])
 
         self.frm_centrale.grid_propagate(False)
         self.frm_centrale.grid_rowconfigure(0, weight=2)
@@ -211,24 +226,30 @@ class Main(tk.Frame):
 
         window = tk.Toplevel()
         _centra(window)
-
-        window.title("Log-In")
+        window.configure(bg=COLORS["bg_light"])
+        window.title("Accesso Impostazioni")
         window.bind('<Return>', _try_login)
 
-        lbl_password = tk.Label(window, text="Password:", font=('Verdana', 15))
-        ent_password = tk.Entry(window, show="*")
-
-        btn_login = tk.Button(window, text="Login", command=_try_login)
+        lbl_password = tk.Label(
+            window, text="Password:", font=get_font(FONT_SIZE_LARGE),
+            bg=COLORS["bg_light"], fg=COLORS["text_dark"])
+        ent_password = ttk.Entry(window, show="*", width=20)
+        btn_login = ttk.Button(window, text="Accedi", command=_try_login)
         ent_password.focus()
 
-        lbl_password.grid(row=0, column=0)
-        ent_password.grid(row=0, column=1)
-        btn_login.grid(row=1, column=0, columnspan=2, sticky='we')
+        lbl_password.grid(row=0, column=0, padx=8, pady=8)
+        ent_password.grid(row=0, column=1, padx=8, pady=8)
+        btn_login.grid(row=1, column=0, columnspan=2, padx=8, pady=12, sticky='we')
 
 
 if __name__ == "__main__":
     root = tk.Tk()
-    root.geometry('+0+0')
+    root.geometry('900x400+40+40')
+    root.minsize(800, 350)
     root.title('Gestione Laboratorio')
-    Main(root).grid()
+    root.configure(bg=COLORS["bg_light"])
+    apply_theme(root)
+    Main(root).grid(sticky='nsew')
+    root.grid_rowconfigure(1, weight=1)
+    root.grid_columnconfigure(0, weight=1)
     root.mainloop()

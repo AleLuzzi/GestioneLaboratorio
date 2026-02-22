@@ -16,11 +16,13 @@ from tkinter import messagebox
 
 from config import get_config
 from db import get_connection, close_connection
+from theme import COLORS, get_font
 
 
 class LottiInVendita(tk.Toplevel):
     def __init__(self):
         super(LottiInVendita, self).__init__()
+        self.configure(bg=COLORS["bg_light"])
         self.geometry("1024x525+0+0")
         self.title('Lotti in vendita')
 
@@ -35,9 +37,9 @@ class LottiInVendita(tk.Toplevel):
         self.tot_qta = 0
 
         # Disposizione Frame e LabelFrame
-        self.frame_sx = tk.Frame(self)
-        self.frame_dx = tk.Frame(self)
-        self.frame_dx_basso = tk.Frame(self, background='white')
+        self.frame_sx = tk.Frame(self, bg=COLORS["bg_light"], padx=12, pady=12)
+        self.frame_dx = tk.Frame(self, bg=COLORS["bg_light"], padx=12, pady=12)
+        self.frame_dx_basso = tk.Frame(self, bg=COLORS["bg_light"], padx=12, pady=12)
 
         self.lblframe_box = ttk.LabelFrame(self.frame_dx, text='visualizza lotti per articolo')
 
@@ -51,14 +53,14 @@ class LottiInVendita(tk.Toplevel):
         self.tree.column("data", width=80)
         self.tree.column("peso", width=80)
 
-        self.tree.tag_configure('odd', background='light green')
+        self.tree.tag_configure('odd', background=COLORS["bg_light"])
 
         self.tree.bind("<Double-1>", self.ondoubleclick)
 
         # Label
-        self.label = ttk.Label(self.frame_sx, text='Lotti disponibili alla vendita', font=('Helvetica', 20))
-        self.label_selezionato = ttk.Label(self.frame_dx, text='Lotto selezionato', font=('Helvetica', 20))
-        self.label_dettagli = ttk.Label(self.frame_dx, text='Dettagli lotto selezionato', font=('Helvetica', 20))
+        self.label = ttk.Label(self.frame_sx, text='Lotti disponibili alla vendita', font=get_font(14, bold=True))
+        self.label_selezionato = ttk.Label(self.frame_dx, text='Lotto selezionato', font=get_font(14, bold=True))
+        self.label_dettagli = ttk.Label(self.frame_dx, text='Dettagli lotto selezionato', font=get_font(14, bold=True))
 
         # Posizionamento Label
 

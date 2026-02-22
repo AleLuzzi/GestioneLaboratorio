@@ -6,10 +6,13 @@ from report_cucina_note import ReportCucina
 import tkinter as tk
 import tkinter.ttk as ttk
 
+from theme import COLORS
+
 
 class Anagrafica(tk.Toplevel):
     def __init__(self):
         tk.Toplevel.__init__(self)
+        self.configure(bg=COLORS["bg_light"])
         self.title("Anagrafica")
         '''
         Disposizione Menu

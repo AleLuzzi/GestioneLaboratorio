@@ -4,12 +4,13 @@ from tkinter import messagebox
 import mysql.connector
 from config import get_config
 from db import get_connection, close_connection
+from theme import COLORS, get_font
 
 
 class Fornitori(tk.Toplevel):
     def __init__(self):
         tk.Toplevel.__init__(self)
-
+        self.configure(bg=COLORS["bg_light"])
         self.item = ''
         self.valore_flag = dict()
         self.config = get_config()

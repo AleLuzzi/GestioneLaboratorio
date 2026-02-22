@@ -7,16 +7,15 @@ from tastiera_num import Tast_num
 
 from config import get_config
 from db import get_connection, close_connection
+from theme import COLORS, get_font
 
 
 class IngressoMerce(tk.Toplevel):
     def __init__(self):
         tk.Toplevel.__init__(self)
-
+        self.configure(bg=COLORS["bg_light"])
         self.geometry("+125+125")
-
         self.title("Ingresso Merce")
-
         self.config = get_config()
 
         # Connessione al database
@@ -47,9 +46,9 @@ class IngressoMerce(tk.Toplevel):
             self.lista_fornitori.extend(row)
             
         # LAYOUT dei frame per impaginazione
-        self.frame_alto = tk.Frame(self, bd=3)
-        self.frame_centrale = tk.Frame(self, bd=3)
-        self.frame_basso = tk.Frame(self)
+        self.frame_alto = tk.Frame(self, bd=0, bg=COLORS["bg_light"], padx=8, pady=8)
+        self.frame_centrale = tk.Frame(self, bd=0, bg=COLORS["bg_light"], padx=8, pady=8)
+        self.frame_basso = tk.Frame(self, bd=0, bg=COLORS["bg_light"], padx=8, pady=8)
 
         # TREEVIEW per riepilogo inserimenti
         self.tree = ttk.Treeview(self.frame_alto, height=8)
@@ -70,8 +69,9 @@ class IngressoMerce(tk.Toplevel):
 
         # LABELFRAME contiene bottoni per scelta fornitore
         self.labelframe_fornitori = tk.LabelFrame(self.frame_centrale,
-                                                  text="FORNITORE",
-                                                  font=('Verdana', 15),
+                                                  text="Fornitore",
+                                                  font=get_font(12, bold=True),
+                                                  fg=COLORS["text_dark"], bg=COLORS["bg_light"],
                                                   labelanchor='n')
 
         row, col = 1, 0
@@ -92,8 +92,9 @@ class IngressoMerce(tk.Toplevel):
 
         
         self.labelframe_taglio = tk.LabelFrame(self.frame_centrale,
-                                               text="TAGLIO",
-                                               font=('Verdana', 15),
+                                               text="Taglio",
+                                               font=get_font(12, bold=True),
+                                               fg=COLORS["text_dark"], bg=COLORS["bg_light"],
                                                labelanchor='n')
 
         self.notebook = ttk.Notebook(self.labelframe_taglio)

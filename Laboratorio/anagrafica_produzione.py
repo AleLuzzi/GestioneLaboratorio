@@ -5,6 +5,7 @@ import os
 import shutil
 from config import get_config
 from db import get_connection, close_connection
+from theme import COLORS, get_font
 from tkinter import messagebox
 import datetime as dt
 import win32api
@@ -16,7 +17,7 @@ from reportlab.lib.units import mm
 class Produzione(tk.Frame):
     def __init__(self, parent):
         super(Produzione, self).__init__(parent)
-
+        self.configure(bg=COLORS["bg_light"])
         self.item = ''
         self.lista_da_salvare = []
         self.data = dt.date.today()
@@ -40,10 +41,10 @@ class Produzione(tk.Frame):
         self.c = self.conn.cursor()
 
         # Definizione Frame
-        self.frame_sx = tk.Frame(self, bd=1, relief="raised")
-        self.frame_centrale_alto = tk.Frame(self, bd=1, relief="raised")
-        self.frame_centrale_basso = tk.Frame(self, bd=1, relief="raised")
-        self.frame_dx = tk.Frame(self, bd=1, relief="raised")
+        self.frame_sx = tk.Frame(self, bg=COLORS["bg_light"], padx=8, pady=8)
+        self.frame_centrale_alto = tk.Frame(self, bg=COLORS["bg_light"], padx=8, pady=8)
+        self.frame_centrale_basso = tk.Frame(self, bg=COLORS["bg_light"], padx=8, pady=8)
+        self.frame_dx = tk.Frame(self, bg=COLORS["bg_light"], padx=8, pady=8)
 
         self.lbl_lista_prodotti = ttk.LabelFrame(self.frame_sx, text='Lista Prodotti')
 

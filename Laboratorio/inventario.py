@@ -6,14 +6,14 @@ import mysql.connector
 from config import get_config
 from db import get_connection, close_connection
 from tastiera_num import Tast_num
+from theme import COLORS, get_font
 
 
 class Inventario(tk.Toplevel):
     def __init__(self):
         tk.Toplevel.__init__(self)
-
+        self.configure(bg=COLORS["bg_light"])
         self.geometry("+25+25")
-
         self.title("Inventario")
 
         self.value = tk.StringVar()
@@ -28,8 +28,8 @@ class Inventario(tk.Toplevel):
         self.img_btn1 = tk.PhotoImage(file=".//immagini//logo_piccolo.gif")
 
         # Definizione Frame
-        self.frame_sx = tk.Frame(self)
-        self.frame_dx = tk.Frame(self)
+        self.frame_sx = tk.Frame(self, bg=COLORS["bg_light"], padx=8, pady=8)
+        self.frame_dx = tk.Frame(self, bg=COLORS["bg_light"], padx=8, pady=8)
 
         self.notebook = ttk.Notebook(self.frame_dx)
 
@@ -48,24 +48,19 @@ class Inventario(tk.Toplevel):
         self.tree_riepilogo.column("Peso", width=80)
 
         # LABEL che mostra il numero della settimana
-        self.lbl_settimana = tk.Label(
-            self.frame_dx, text='SETTIMANA NUMERO ',
-            foreground='blue', font=('Verdana', 20), relief='ridge', padx=20)
+        self.lbl_settimana = ttk.Label(self.frame_dx, text='Settimana n. ',
+                                       font=get_font(12, bold=True))
         self.lbl_nr_settimana = tk.Label(
             self.frame_dx, text=str(1 + int(self.data.strftime('%W'))),
-            font=('Verdana', 20), bg='white', relief='sunken', padx=20)
+            font=get_font(12), bg=COLORS["bg_content"], fg=COLORS["text_dark"], padx=12, pady=4)
 
         # BUTTON elimina riga
-        self.btn_rimuovi_riga = tk.Button(
-            self.frame_sx,
-            text="RIMUOVI RIGA",
-            font=('Verdana', 15),
-            command=self.rimuovi_riga_selezionata)
+        self.btn_rimuovi_riga = ttk.Button(self.frame_sx, text="Rimuovi riga",
+                                           command=self.rimuovi_riga_selezionata)
 
         # ENTRY peso inserito
         self.peso = tk.StringVar()
-        self.ent_peso = tk.Entry(
-            self.frame_sx, textvariable=self.peso, font=('Verdana', 15))
+        self.ent_peso = ttk.Entry(self.frame_sx, textvariable=self.peso, width=12)
 
         self.img_btn_focus_ean = tk.PhotoImage(
             file=".//immagini//modifica.gif")
@@ -76,25 +71,13 @@ class Inventario(tk.Toplevel):
             command=self._ins_peso_da_tastiera)
 
         # BUTTON inserimento peso
-        self.btn_inserisci_peso = tk.Button(
-            self.frame_sx,
-            text='INSERISCI PESO',
-            font=('Verdana', 15),
-            command=self.ins_peso)
+        self.btn_inserisci_peso = ttk.Button(self.frame_sx, text='Inserisci peso', command=self.ins_peso)
 
         # BUTTON salva dati
-        self.btn_salva_dati = tk.Button(
-            self.frame_dx,
-            text='SALVA DATI',
-            font=('Verdana', 15),
-            command=self._salva_esci)
+        self.btn_salva_dati = ttk.Button(self.frame_dx, text='Salva dati', command=self._salva_esci)
 
         # BUTTON chiudi finestra
-        self.btn_chiudi = tk.Button(
-            self.frame_dx,
-            text='CHIUDI FINESTRA',
-            font=('Verdana', 15),
-            command=self.destroy)
+        self.btn_chiudi = ttk.Button(self.frame_dx, text='Chiudi finestra', command=self.destroy)
 
         # LAYOUT
         self.frame_sx.grid(row=0, column=0, rowspan=2)

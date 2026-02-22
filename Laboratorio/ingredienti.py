@@ -5,14 +5,15 @@ import mysql.connector
 
 from config import get_config
 from db import get_connection, close_connection
+from theme import COLORS, get_font
 
 
 class Ingredienti(tk.Toplevel):
     def __init__(self):
         tk.Toplevel.__init__(self)
+        self.configure(bg=COLORS["bg_light"])
         self.title("Ingredienti")
         self.geometry("1024x525+0+0")
-
         self.config = get_config()
         self.lista_da_salvare = []
         self.value = tk.StringVar()
@@ -25,28 +26,22 @@ class Ingredienti(tk.Toplevel):
         self.c = self.conn.cursor()
 
         # FRAME definizione
-        self.frame_sx = tk.Frame(self, bd=3, relief='groove')
-        self.frame_dx = tk.Frame(self, bd=3, relief='groove')
-        self.frame_basso = tk.Frame(self, background='white')
+        self.frame_sx = tk.Frame(self, bg=COLORS["bg_light"], padx=8, pady=8)
+        self.frame_dx = tk.Frame(self, bg=COLORS["bg_light"], padx=8, pady=8)
+        self.frame_basso = tk.Frame(self, bg=COLORS["bg_light"], padx=8, pady=8)
 
         # LABEL che mostra il numero della settimana
         self.data = datetime.date.today()
         self.n_sett = str(1 + int(self.data.strftime('%W')))
 
-        self.lbl_settimana = tk.Label(self.frame_sx, text='SETTIMANA NUMERO ',
-                                      foreground='blue', font=('Verdana', 20),
-                                      relief='ridge', padx=20)
-
+        self.lbl_settimana = ttk.Label(self.frame_sx, text='Settimana n. ', font=get_font(12, bold=True))
         self.lbl_nr_settimana = tk.Label(self.frame_sx, text=str(1 + int(self.data.strftime('%W'))),
-                                         font=('Verdana', 20), bg='white', relief='sunken', padx=20)
-
-        self.label_data_utilizzo = tk.Label(self.frame_sx, text="DATA",
-                                            foreground='blue', font=('Verdana', 20),
-                                            relief='ridge', padx=80)
-
+                                         font=get_font(12), bg=COLORS["bg_content"],
+                                         fg=COLORS["text_dark"], padx=12, pady=4)
+        self.label_data_utilizzo = ttk.Label(self.frame_sx, text="Data", font=get_font(12, bold=True))
         self.label_data = tk.Label(self.frame_sx, anchor='center',
-                                   text=self.data.strftime('%d/%m/%y'), font=('Verdana', 20),
-                                   bg='white', relief='sunken', padx=20)
+                                   text=self.data.strftime('%d/%m/%y'), font=get_font(12),
+                                   bg=COLORS["bg_content"], fg=COLORS["text_dark"], padx=12, pady=4)
 
         # TREEVIEW per riepilogo ingredienti inseriti
         self.tree = ttk.Treeview(self.frame_sx)
@@ -61,25 +56,20 @@ class Ingredienti(tk.Toplevel):
         self.tree.heading("cod_ean", text="Cod EAN")
 
         # BOTTONE elimina riga
-        self.btn_elimina_riga = tk.Button(self.frame_sx,
-                                          text='Elimina riga selezionata',
-                                          font=('Verdana', 15),
-                                          command=self.rimuovi_riga_selezionata)
+        self.btn_elimina_riga = ttk.Button(self.frame_sx, text='Elimina riga selezionata',
+                                           command=self.rimuovi_riga_selezionata)
 
         # LABEL peso da inserire
-        self.lbl_peso = tk.Label(self.frame_sx, text='Merce utilizzata',
-                                 foreground='blue', relief='ridge',
-                                 font=('Verdana', 15), padx=30)
+        self.lbl_peso = ttk.Label(self.frame_sx, text='Merce utilizzata', font=get_font(12, bold=True))
 
         # ENTRY peso da inserire
-        self.entry_peso = ttk.Entry(self.frame_sx,
-                                    textvariable=self.peso,
-                                    font=('Verdana', 10))
+        self.entry_peso = ttk.Entry(self.frame_sx, textvariable=self.peso, width=14)
 
         # LABELFRAME per inserimento EAN
         self.lblfr_ins_ean = tk.LabelFrame(self.frame_sx,
-                                           text='Inserimento ean',
-                                           font=('Verdana', 15),
+                                           text='Inserimento EAN',
+                                           font=get_font(12, bold=True),
+                                           fg=COLORS["text_dark"], bg=COLORS["bg_light"],
                                            labelanchor='n')
 
         # NOTEBOOK e posizione
@@ -141,21 +131,9 @@ class Ingredienti(tk.Toplevel):
                                           command=self.entry_pezzi.focus)
 
         # BOTTONI per inserimento salvataggio e chiusura finestra
-        self.btn_invio = tk.Button(self.frame_basso,
-                                   text="Conferma",
-                                   font=('Verdana', 15),
-                                   width=20,
-                                   command=self.invio)
-        self.btn_salva = tk.Button(self.frame_basso,
-                                   text='salva',
-                                   font=('Verdana', 15),
-                                   width=20,
-                                   command=self.salva)
-        self.btn_chiudi = tk.Button(self.frame_basso,
-                                    text="Chiudi finestra",
-                                    font=('Verdana', 15),
-                                    width=20,
-                                    command=self.destroy)
+        self.btn_invio = ttk.Button(self.frame_basso, text="Conferma", command=self.invio)
+        self.btn_salva = ttk.Button(self.frame_basso, text='Salva', command=self.salva)
+        self.btn_chiudi = ttk.Button(self.frame_basso, text="Chiudi finestra", command=self.destroy)
 
         # LAYOUT
         self.frame_sx.grid(row=0, column=0, sticky='ns')

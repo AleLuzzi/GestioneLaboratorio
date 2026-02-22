@@ -8,11 +8,13 @@ import os
 
 from config import get_config
 from db import get_connection, close_connection
+from theme import COLORS, get_font
 
 
 class NuovoMenu(tk.Toplevel):
     def __init__(self):
         tk.Toplevel.__init__(self)
+        self.configure(bg=COLORS["bg_light"])
         self.title("Nuovo Lotto Cucina")
         self.geometry("1024x525+0+0")
 
@@ -31,9 +33,9 @@ class NuovoMenu(tk.Toplevel):
         self.nuova_produzione = tk.StringVar()
 
         # DISPOSIZIONE FRAME
-        self.frame_treeview = tk.Frame(self, bd='3', relief='groove')
-        self.frame_nuovolotto = tk.Frame(self, bd='3', relief='groove')
-        self.frame_basso = tk.Frame(self, bd='3', background='white', relief='groove')
+        self.frame_treeview = tk.Frame(self, bg=COLORS["bg_light"], padx=8, pady=8)
+        self.frame_nuovolotto = tk.Frame(self, bg=COLORS["bg_light"], padx=8, pady=8)
+        self.frame_basso = tk.Frame(self, bg=COLORS["bg_light"], padx=8, pady=8)
 
         # IMMAGINI
         self.img_sync = tk.PhotoImage(file=os.path.join('immagini', 'sync.gif'))
@@ -52,38 +54,21 @@ class NuovoMenu(tk.Toplevel):
         self.tree.heading("prodotto", text="prodotto")
         self.tree.heading("peso", text="peso")
 
-        self.tree.tag_configure('odd', background='light green')
+        self.tree.tag_configure('odd', background=COLORS["bg_light"])
 
         # LABEL nuovo lotto vendita
-        self.lbl_nuovo_lotto = ttk.Label(self.frame_treeview,
-                                         text='NUOVO LOTTO VENDITA',
-                                         font=('Helvetica', 20))
-
+        self.lbl_nuovo_lotto = ttk.Label(self.frame_treeview, text='Nuovo lotto vendita',
+                                         font=get_font(14, bold=True))
         self.lbl_prog_lotto_vendita = ttk.Label(self.frame_treeview,
                                                 text=str(self.prog_lotto_ven) + 'V',
-                                                font=('Helvetica', 40))
+                                                font=get_font(18))
 
         # LABELFRAME nuova produzione
-        self.labelframe_primi_piatti = tk.LabelFrame(self.frame_nuovolotto,
-                                                     text="PRIMI",
-                                                     font=('Verdana', 15),
-                                                     foreground='blue',
-                                                     labelanchor='n')
-        self.labelframe_secondi_piatti = tk.LabelFrame(self.frame_nuovolotto,
-                                                       text="SECONDI",
-                                                       font=('Verdana', 15),
-                                                       foreground='blue',
-                                                       labelanchor='n')
-        self.labelframe_contorni = tk.LabelFrame(self.frame_nuovolotto,
-                                                 text="CONTORNI",
-                                                 font=('Verdana', 15),
-                                                 foreground='blue',
-                                                 labelanchor='n')
-        self.labelframe_piatti_freddi = tk.LabelFrame(self.frame_nuovolotto,
-                                                      text='PIATTI FREDDI',
-                                                      font=('Verdana', 15),
-                                                      foreground='blue',
-                                                      labelanchor='n')
+        lf_opts = dict(font=get_font(12, bold=True), fg=COLORS["text_dark"], bg=COLORS["bg_light"], labelanchor='n')
+        self.labelframe_primi_piatti = tk.LabelFrame(self.frame_nuovolotto, text="Primi", **lf_opts)
+        self.labelframe_secondi_piatti = tk.LabelFrame(self.frame_nuovolotto, text="Secondi", **lf_opts)
+        self.labelframe_contorni = tk.LabelFrame(self.frame_nuovolotto, text="Contorni", **lf_opts)
+        self.labelframe_piatti_freddi = tk.LabelFrame(self.frame_nuovolotto, text='Piatti freddi', **lf_opts)
 
         # LABELFRAME per peso da inserire
         self.lblframe_peso = ttk.LabelFrame(self.frame_basso,
@@ -122,14 +107,11 @@ class NuovoMenu(tk.Toplevel):
         self.btn_rigenera_contorni = tk.Button(self.frame_nuovolotto,
                                                image=self.img_sync,
                                                command=self.crea_articoli_nuova_produzione_contorni)
-        self.btn_rigenera_piatti_freddi = tk.Button(self.frame_nuovolotto,
-                                                    image=self.img_sync,
-                                                    command=self.crea_articoli_nuova_produzione_piatti_freddi)
-
-        # BOTTONE rimuovi riga dal treeview riepilogativo
-        self.btn_rimuovi_riga = tk.Button(self.frame_treeview,
-                                          text="Rimuovi riga",
-                                          command=self.rimuovi_riga_selezionata)
+        self.btn_rigenera_piatti_freddi = ttk.Button(self.frame_nuovolotto,
+                                                     image=self.img_sync,
+                                                     command=self.crea_articoli_nuova_produzione_piatti_freddi)
+        self.btn_rimuovi_riga = ttk.Button(self.frame_treeview, text="Rimuovi riga",
+                                           command=self.rimuovi_riga_selezionata)
 
         # LAYOUT
         self.frame_nuovolotto.grid(row=0, column=0, rowspan=2, sticky='n')
