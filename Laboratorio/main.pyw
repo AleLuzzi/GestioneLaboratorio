@@ -244,7 +244,7 @@ class Main(tk.Frame):
 
 if __name__ == "__main__":
     root = tk.Tk()
-    root.geometry('900x400+40+40')
+    root.geometry('1200x500+40+40')
     root.minsize(800, 350)
     root.title('Gestione Laboratorio')
     root.configure(bg=COLORS["bg_light"])
