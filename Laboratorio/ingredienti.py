@@ -74,7 +74,9 @@ class Ingredienti(tk.Toplevel):
 
         # NOTEBOOK e posizione
         self.notebook = ttk.Notebook(self.frame_dx)
-        self.notebook.bind_all("<<NotebookTabChanged>>", self.rimetti_focus)
+        # Solo questo notebook: bind_all resterebbe attivo dopo destroy() e
+        # richiamerebbe rimetti_focus su widget gia' distrutti (TclError).
+        self.notebook.bind("<<NotebookTabChanged>>", self.rimetti_focus)
 
         # Definizione dizionari per ingredienti
         # self.lista_surgelati = {'spinaci': '1950', 'cicoria': '1973', 'seppia': '2033', 'baccala': '2038',
@@ -235,7 +237,11 @@ class Ingredienti(tk.Toplevel):
             r += 1
 
     def rimetti_focus(self, event):
-        self.entry_peso.focus()
+        try:
+            if self.winfo_exists() and self.entry_peso.winfo_exists():
+                self.entry_peso.focus_set()
+        except tk.TclError:
+            pass
 
     def rimuovi_riga_selezionata(self):
         curitem = self.tree.selection()[0]
