@@ -6,15 +6,18 @@ import mysql.connector
 from config import get_config
 from db import get_connection, close_connection
 from theme import COLORS, get_font
+from chiudi_lotto_TKinter import setup_window, build_ui
 
 
 class ChiudiLotto(tk.Toplevel):
     def __init__(self):
         tk.Toplevel.__init__(self)
-        self.configure(bg=COLORS["bg_light"])
+        """ self.configure(bg=COLORS["bg_light"])
         self.title("Chiudi Lotto")
         self.geometry("1024x525+0+0")
-        self.config = get_config()
+        self.config = get_config() """
+
+        setup_window(self)
 
         # Connessione al database
         self.conn = get_connection()
@@ -22,7 +25,9 @@ class ChiudiLotto(tk.Toplevel):
 
         self.lotti_da_chiudere = []
 
-        # Disposizione Frame
+        build_ui(self)
+
+        """ # Disposizione Frame
         self.frame_sx = tk.Frame(self, bg=COLORS["bg_light"], padx=12, pady=12)
         self.frame_dx = tk.Frame(self, bg=COLORS["bg_light"], padx=12, pady=12)
         self.frame_dx_basso = tk.Frame(self, bg=COLORS["bg_light"], padx=12, pady=12)
@@ -84,7 +89,7 @@ class ChiudiLotto(tk.Toplevel):
         self.btn_esci.grid(row=2, column=0, pady=20, padx=20)
         self.btn_salva.grid(row=2, column=1, pady=20, padx=20)
 
-        self._aggiorna()
+        self._aggiorna() """
 
     def _rimuovi_riga_selezionata(self):
             curitem = self.tree_lotti_selezionati.selection()[0]

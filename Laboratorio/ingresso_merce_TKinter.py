@@ -61,7 +61,7 @@ def build_ui(app):
     # LAYOUT dei frame per impaginazione
     app.frame_alto = ctk.CTkFrame(app, fg_color=COLORS["bg_light"], corner_radius=0)
     app.frame_centrale = ctk.CTkFrame(app, fg_color=COLORS["bg_light"], corner_radius=0)
-    app.frame_basso = ctk.CTkFrame(app, fg_color=COLORS["bg_light"], corner_radius=0)
+    app.frame_basso_azioni = ctk.CTkFrame(app, fg_color=COLORS["bg_light"], corner_radius=0)
 
     # TREEVIEW per riepilogo inserimenti
     app.tree = ttk.Treeview(app.frame_alto, height=8)
@@ -220,7 +220,7 @@ def build_ui(app):
 
     # BOTTONI principali
     app.btn_invio = ctk.CTkButton(
-        app.frame_basso,
+        app.frame_basso_azioni,
         text="INVIO",
         font=ctk.CTkFont(family=FONT_FAMILY, size=14, weight="bold"),
         height=38,
@@ -229,7 +229,7 @@ def build_ui(app):
         command=app._invio,
     )
     app.btn_salva_esci = ctk.CTkButton(
-        app.frame_basso,
+        app.frame_basso_azioni,
         text="SALVA ed ESCI",
         font=ctk.CTkFont(family=FONT_FAMILY, size=14, weight="bold"),
         height=38,
@@ -238,7 +238,7 @@ def build_ui(app):
         command=app._salva_esci,
     )
     app.btn_chiudi_finestra = ctk.CTkButton(
-        app.frame_basso,
+        app.frame_basso_azioni,
         text="CHIUDI FINESTRA",
         font=ctk.CTkFont(family=FONT_FAMILY, size=14, weight="bold"),
         height=38,
@@ -258,7 +258,7 @@ def build_ui(app):
     # Posizionamento layout
     app.frame_alto.grid(row=0, column=1, padx=8, pady=6, sticky="we")
     app.frame_centrale.grid(row=1, column=1, padx=8, pady=6, sticky="we")
-    app.frame_basso.grid(row=2, column=1, columnspan=2, padx=8, pady=6, sticky="we")
+    app.frame_basso_azioni.grid(row=2, column=1, columnspan=2, padx=8, pady=6, sticky="we")
 
     app.tree.grid(row=1, column=3, rowspan=4, padx=10)
     app.labelframe_fornitori.grid(row=1, column=0, sticky="n")

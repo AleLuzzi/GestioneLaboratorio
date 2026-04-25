@@ -92,7 +92,7 @@ class NuovoLotto(tk.Toplevel):
                                                                   (self.peso_da_inserire.get()),
                                                                   (self.tree.item(item, 'text'))))
         else:
-            pass
+            pass 
 
     def destroy(self):
         close_connection(getattr(self, "conn", None))

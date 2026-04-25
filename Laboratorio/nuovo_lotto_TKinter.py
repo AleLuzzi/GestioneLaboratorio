@@ -61,6 +61,7 @@ def build_ui(app):
     app.frame_dx = ctk.CTkFrame(app, fg_color=COLORS["bg_light"], corner_radius=0)
     app.frame_dx_r = ctk.CTkFrame(app, fg_color=COLORS["bg_light"], corner_radius=0)
     app.frame_dx_basso = ctk.CTkFrame(app, fg_color=COLORS["bg_light"], corner_radius=0)
+    app.frame_basso_azioni = ctk.CTkFrame(app, fg_color=COLORS["bg_light"], corner_radius=0)
 
     # TREEVIEW per riepilogo immissioni
     app.tree = ttk.Treeview(app.frame_sx, height=20)
@@ -116,6 +117,7 @@ def build_ui(app):
         "peso",
         "taglio",
     )
+
     app.tree_lotti_selezionati["displaycolumns"] = ("lotto ingresso", "taglio")
     app.tree_lotti_selezionati["show"] = "headings"
     app.tree_lotti_selezionati.column("lotto ingresso", width=100)
@@ -184,7 +186,7 @@ def build_ui(app):
         command=app.rimuovi_riga_selezionata,
     )
     app.btn_esci = ctk.CTkButton(
-        app.frame_sx,
+        app.frame_basso_azioni,
         text="CHIUDI FINESTRA",
         font=action_font,
         height=38,
@@ -193,7 +195,7 @@ def build_ui(app):
         command=app.esci_senza_salvare,
     )
     app.btn_esci_salva = ctk.CTkButton(
-        app.frame_sx,
+        app.frame_basso_azioni,
         text="SALVA ed ESCI",
         font=action_font,
         height=38,
@@ -203,15 +205,16 @@ def build_ui(app):
     )
 
     # LAYOUT
-    app.frame_sx.grid(row=0, column=0, rowspan=2, padx=8, pady=6, sticky="we")
+    app.frame_sx.grid(row=0, column=0, rowspan=2, padx=8, pady=6, sticky="nsew")
     app.frame_dx.grid(row=0, column=1, padx=8, pady=6, sticky="we")
     app.frame_dx_r.grid(row=0, column=2, padx=8, pady=6, sticky="we")
     # Area "Nuova produzione" sotto i pannelli centrali/destro per evitare sovrapposizioni.
     app.frame_dx_basso.grid(row=1, column=1, columnspan=2, padx=8, pady=(0, 6), sticky="new")
+    app.frame_basso_azioni.grid(row=2, column=0, columnspan=2, padx=8, pady=6, sticky="we")
 
-    app.tree.grid(row=0, column=0, columnspan=2, padx=10)
-    app.btn_esci.grid(row=1, column=0, sticky="we")
-    app.btn_esci_salva.grid(row=1, column=1, sticky="we")
+    app.tree.grid(row=0, column=0, rowspan=2, padx=10, sticky="nsew")
+    app.btn_esci_salva.grid(row=1, column=0, sticky="we")
+    app.btn_esci.grid(row=1, column=1, sticky="we")
 
     app.lbl_nuovo_lotto.grid(row=0, column=0, sticky="we")
     app.lbl_prog_lotto_vendita.grid(row=1, column=0, sticky="w")
@@ -222,8 +225,8 @@ def build_ui(app):
     app.tree_lotti_selezionati.grid(row=0, column=0, sticky="we", padx=10)
     app.btn_elimina_riga.grid(row=1, column=0, sticky="we")
 
-    app.lbl_nuova_produzione.grid(row=3, column=0, columnspan=2, sticky="w", pady=(10, 4))
-    app.labelframe.grid(row=3, column=0, columnspan=2, sticky="we")
+    app.lbl_nuova_produzione.grid(row=0, column=0, columnspan=2, sticky="w", pady=(10, 4))
+    app.labelframe.grid(row=1, column=0, columnspan=2, sticky="we")
 
 
 def populate_produzione_radio(app):
