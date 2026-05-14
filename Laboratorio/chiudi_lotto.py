@@ -12,11 +12,7 @@ from chiudi_lotto_TKinter import setup_window, build_ui
 class ChiudiLotto(tk.Toplevel):
     def __init__(self):
         tk.Toplevel.__init__(self)
-        """ self.configure(bg=COLORS["bg_light"])
-        self.title("Chiudi Lotto")
-        self.geometry("1024x525+0+0")
-        self.config = get_config() """
-
+       
         setup_window(self)
 
         # Connessione al database
@@ -26,71 +22,7 @@ class ChiudiLotto(tk.Toplevel):
         self.lotti_da_chiudere = []
 
         build_ui(self)
-
-        """ # Disposizione Frame
-        self.frame_sx = tk.Frame(self, bg=COLORS["bg_light"], padx=12, pady=12)
-        self.frame_dx = tk.Frame(self, bg=COLORS["bg_light"], padx=12, pady=12)
-        self.frame_dx_basso = tk.Frame(self, bg=COLORS["bg_light"], padx=12, pady=12)
-
-        # Treeview con riepilogo lotti aperti
-        self.tree = ttk.Treeview(self.frame_sx, height=25)
-        self.tree['columns'] = ('data ingresso', 'fornitore', 'peso', 'residuo')
-
-        self.tree.column("data ingresso", width=80)
-        self.tree.column("fornitore", width=80)
-        self.tree.column("peso", width=80)
-        self.tree.column("residuo", width=60)
-
-        self.tree.heading("data ingresso", text="data ingresso")
-        self.tree.heading("fornitore", text="fornitore")
-        self.tree.heading("peso", text="peso")
-        self.tree.heading("residuo", text="residuo")
-
-        self.tree.tag_configure('odd', background=COLORS["bg_light"])
-
-        self.tree.bind("<Double-1>", self._ondoubleclick)
-
-        # LABEL lotti da chiudere
-        self.lbl_nuovo_lotto = ttk.Label(self.frame_dx,
-                                         text='Lotti da chiudere',
-                                         font=get_font(14, bold=True))
-
-        # Treeview per lotti scelti da chiudere
-        self.tree_lotti_selezionati = ttk.Treeview(self.frame_dx)
-        self.tree_lotti_selezionati['columns'] = ('lotto', 'taglio')
-
-        self.tree_lotti_selezionati['show'] = 'headings'
-
-        self.tree_lotti_selezionati.column("lotto", width=70)
-        self.tree_lotti_selezionati.column("taglio", width=170)
-        self.tree_lotti_selezionati.heading("lotto", text="Lotto")
-        self.tree_lotti_selezionati.heading("taglio", text="Taglio")
-
-        # BOTTONE ESCI
-        self.btn_esci = ttk.Button(self.frame_dx_basso,
-                                   text="Chiudi finestra",
-                                   command=self.destroy)
-        self.btn_salva = ttk.Button(self.frame_dx_basso,
-                                    text='Salva dati',
-                                    command=self._salva)
-        self.btn_rimuovi_riga = ttk.Button(self.frame_dx, text="Rimuovi riga", command=self._rimuovi_riga_selezionata)
         
-
-        # LAYOUT
-        self.frame_sx.grid(row=0, column=0, rowspan=2)
-        self.frame_dx.grid(row=0, column=1, columnspan=2, padx=30)
-        self.frame_dx_basso.grid(row=1, column=1)
-
-        self.tree.grid(row=0, column=0, sticky='w')
-        self.lbl_nuovo_lotto.grid(row=0, column=0)
-        self.tree_lotti_selezionati.grid(row=1, column=0)
-        self.btn_rimuovi_riga.grid(row=2, column=0, sticky='we')
-
-        self.btn_esci.grid(row=2, column=0, pady=20, padx=20)
-        self.btn_salva.grid(row=2, column=1, pady=20, padx=20)
-
-        self._aggiorna() """
-
     def _rimuovi_riga_selezionata(self):
             curitem = self.tree_lotti_selezionati.selection()[0]
             self.tree_lotti_selezionati.delete(curitem)

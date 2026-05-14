@@ -67,8 +67,8 @@ class Anagrafica(tk.Toplevel):
 
     @staticmethod
     def _fornitori():
-        from anagrafica_fornitori import Fornitori
-        Fornitori()
+        from anag_fornitori_controller import AnagFornitoriController
+        AnagFornitoriController()
 
     @staticmethod
     def _ingredienti():
