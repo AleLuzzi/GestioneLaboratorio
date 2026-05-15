@@ -3,7 +3,6 @@ from tkinter import messagebox
 from tkinter import ttk
 
 import customtkinter as ctk
-import mysql.connector
 
 from theme import COLORS, FONT_FAMILY, get_font
 

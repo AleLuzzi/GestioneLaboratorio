@@ -1,5 +1,10 @@
 dist
 build
-__pycache__
+
+# Bytecode Python (cache locale, non versionare)
+__pycache__/
+*.py[cod]
+*$py.class
+
 config.ini
 venv
