@@ -67,10 +67,6 @@ def build_ui(app):
 
     # Il frame dettagli riempie TUTTA la riga 1 sia in larghezza che in altezza (sticky="nsew")
     app.frame_dettagli.grid(row=1, column=1, sticky="nsew", padx=(8, 0), pady=0)
-
-    # app.frame_elenco.grid(row=0, column=0, rowspan=2, sticky="nsew", padx=(0, 8), pady=0)
-    # app.frame_toolbar.grid(row=0, column=1, sticky="new", padx=(8, 0), pady=0)
-    # app.frame_dettagli.grid(row=1, column=1, sticky="new", padx=4, pady=0)
     
     app.frame_elenco.rowconfigure(0, weight=1)
     app.frame_elenco.columnconfigure(0, weight=1)
@@ -91,15 +87,34 @@ def build_ui(app):
     anchor="w"
     )
     titolo_elenco.grid(row=0, column=0, sticky="ew", padx=12, pady=(10, 5))
+    
+    # 3. Creazione del sotto-contenitore per affiancare barra e pulsante X
+    app.frame_ricerca_sub = ctk.CTkFrame(app.label_frame_elenco, fg_color="transparent")
+    app.frame_ricerca_sub.grid(row=1, column=0, sticky="ew", padx=12, pady=(0, 10))
+    app.frame_ricerca_sub.columnconfigure(0, weight=1)  # La barra di ricerca prende tutto lo spazio
+    app.frame_ricerca_sub.columnconfigure(1, weight=0)  # Il pulsante mantiene la sua dimensione fissa
 
-    # 3. NUOVO: Campo di inserimento per il filtro (Riga 1)
+    # Campo di inserimento per il filtro (Spostato dentro il frame_ricerca_sub alla colonna 0)
     app.entry_filtro = ctk.CTkEntry(
-        app.label_frame_elenco, 
+        app.frame_ricerca_sub, 
         placeholder_text="Cerca azienda..."
     )
-    app.entry_filtro.grid(row=1, column=0, sticky="ew", padx=12, pady=(0, 10))
-    # Collega l'evento "tasto rilasciato" alla funzione di filtraggio
+    app.entry_filtro.grid(row=0, column=0, sticky="ew", padx=(0, 4), pady=0)
     app.entry_filtro.bind("<KeyRelease>", app._filtra_aziende)
+
+    # NUOVO: Piccolo pulsante di reset a fianco (Colonna 1)
+    app.btn_reset_filtro = ctk.CTkButton(
+        app.frame_ricerca_sub,
+        text="✕",               # Simbolo della X di chiusura
+        width=30,               # Stretto e compatto
+        height=28,
+        font=ctk.CTkFont(size=12, weight="bold"),
+        fg_color=COLORS["border"],         # Colore neutro iniziale
+        hover_color=COLORS["accent_hover"], # Colore d'evidenziazione al passaggio del mouse
+        text_color=COLORS["text_dark"],
+        command=app._reset_ricerca          # Punta al nuovo metodo nel controller
+    )
+    app.btn_reset_filtro.grid(row=0, column=1, sticky="e", padx=0, pady=0)
 
     # 4. Il tuo tree_wrap originale (Spostato alla Riga 2)
     tree_wrap = ctk.CTkFrame(app.label_frame_elenco, fg_color=COLORS["bg_content"], corner_radius=0)
@@ -142,6 +157,7 @@ def build_ui(app):
         fg_color=COLORS["bg_content"],
         border_color=COLORS["border"],
         text_color=COLORS["text_dark"],
+        state="disabled"
     )
     app.ent_azienda.grid(row=0, column=1, padx=8, pady=8, sticky="ew")
     app.lbl_frame_dettagli_selezionato.columnconfigure(1, weight=1)
@@ -170,6 +186,7 @@ def build_ui(app):
         hover_color=COLORS["accent_hover"],
         border_color=COLORS["border"],
         text_color=COLORS["text_dark"],
+        state="disabled"
     )
     app.ckbtn_ing_merce.grid(row=0, column=0, padx=8, pady=10, sticky="w")
 
@@ -184,6 +201,7 @@ def build_ui(app):
         hover_color=COLORS["accent_hover"],
         border_color=COLORS["border"],
         text_color=COLORS["text_dark"],
+        state="disabled"
     )
     app.ckbtn_inv.grid(row=1, column=0, padx=8, pady=10, sticky="w")
 
@@ -207,7 +225,7 @@ def build_ui(app):
         height=38,
         fg_color=COLORS["success"],
         hover_color="#1e8449",
-        command=app._inserisci,
+        command=app._nuovo,
     )
 
     app.btn_modifica = ctk.CTkButton(
@@ -217,7 +235,7 @@ def build_ui(app):
         height=38,
         fg_color=COLORS["success"],
         hover_color="#1e8449",
-        # command=app._modifica,
+        command=app._modifica,
     )
 
     app.btn_salva = ctk.CTkButton(
@@ -228,6 +246,7 @@ def build_ui(app):
         fg_color=COLORS["accent"],
         hover_color=COLORS["accent_hover"],
         command=app._salva,
+        state="disabled"
     )
 
     app.btn_annulla = ctk.CTkButton(
@@ -237,7 +256,8 @@ def build_ui(app):
         height=38,
         fg_color=COLORS["accent"],
         hover_color="#a93226",
-        # command=app._annulla,
+        state="disabled",
+        command=app._annulla,
     )
 
     app.btn_elimina = ctk.CTkButton(
@@ -247,7 +267,8 @@ def build_ui(app):
         height=38,
         fg_color=COLORS["danger"],
         hover_color=COLORS["accent_hover"],
-        # command=app._elimina,
+        state="disabled",
+        command=app._elimina,
     )
 
     
@@ -262,142 +283,3 @@ def build_ui(app):
 
     app._aggiorna()
 
-
-def show_insert_fornitore_dialog(app):
-    """Finestra modale inserimento nuovo fornitore (solo UI + commit su `app`)."""
-
-    def _centra(toplevel):
-        toplevel.update_idletasks()
-        screen_width = toplevel.winfo_screenwidth()
-        screen_height = toplevel.winfo_screenheight()
-        w = toplevel.winfo_reqwidth()
-        h = toplevel.winfo_reqheight()
-        x = max(0, int(screen_width / 2 - w / 2))
-        y = max(0, int(screen_height / 2 - h / 2))
-        toplevel.geometry(f"+{x}+{y}")
-
-    def _salva_nuovo():
-        nome_azienda = ent_azienda_new.get().strip()
-        if nome_azienda:
-            lista_da_salvare = [
-                nome_azienda,
-                ckbtn_ing_merce_value.get(),
-                ckbtn_inventario_value.get(),
-            ]
-            try:
-                app.c.execute(
-                    "INSERT INTO fornitori(azienda, flag1_ing_merce, flag2_inventario) "
-                    "VALUES (%s, %s, %s)",
-                    lista_da_salvare,
-                )
-                app.conn.commit()
-                app._aggiorna()
-                nuovo_fornitore.destroy()
-            except mysql.connector.Error as e:
-                messagebox.showerror("Errore Database", str(e))
-        else:
-            messagebox.showwarning("Attenzione", "Nome azienda obbligatorio.")
-
-    nuovo_fornitore = tk.Toplevel(app)
-    nuovo_fornitore.title("Nuovo fornitore")
-    nuovo_fornitore.configure(bg=COLORS["bg_light"])
-    nuovo_fornitore.resizable(False, False)
-
-    body_font_dlg = ctk.CTkFont(family=FONT_FAMILY, size=12)
-    label_font_dlg = ctk.CTkFont(family=FONT_FAMILY, size=13, weight="bold")
-    btn_font_dlg = ctk.CTkFont(family=FONT_FAMILY, size=13, weight="bold")
-
-    root_dlg = ctk.CTkFrame(nuovo_fornitore, fg_color=COLORS["bg_light"], corner_radius=0)
-    root_dlg.pack(fill="both", expand=True, padx=14, pady=14)
-
-    lbl_azienda_new = ctk.CTkLabel(
-        root_dlg,
-        text="Fornitore",
-        font=label_font_dlg,
-        text_color=COLORS["text_dark"],
-    )
-    lbl_azienda_new.grid(row=0, column=0, padx=(0, 8), pady=8, sticky="w")
-
-    ent_azienda_new = ctk.CTkEntry(
-        root_dlg,
-        width=280,
-        height=34,
-        font=body_font_dlg,
-        fg_color=COLORS["bg_content"],
-        border_color=COLORS["border"],
-        text_color=COLORS["text_dark"],
-    )
-    ent_azienda_new.grid(row=0, column=1, pady=8, sticky="ew")
-    root_dlg.columnconfigure(1, weight=1)
-
-    lblfrm_scelta_attributi = tk.LabelFrame(
-        root_dlg,
-        text="Mostra nei moduli",
-        font=get_font(12, bold=True),
-        fg=COLORS["text_dark"],
-        bg=COLORS["bg_light"],
-        labelanchor="n",
-    )
-    lblfrm_scelta_attributi.grid(row=1, column=0, columnspan=2, sticky="ew", pady=(8, 4))
-
-    ckbtn_ing_merce_value = tk.IntVar()
-    ckbtn_inventario_value = tk.IntVar()
-
-    ckbtn_ingresso_merce = ctk.CTkCheckBox(
-        lblfrm_scelta_attributi,
-        text="Ingresso merce",
-        variable=ckbtn_ing_merce_value,
-        onvalue=1,
-        offvalue=0,
-        font=body_font_dlg,
-        fg_color=COLORS["accent"],
-        hover_color=COLORS["accent_hover"],
-        border_color=COLORS["border"],
-        text_color=COLORS["text_dark"],
-    )
-    ckbtn_ingresso_merce.grid(row=0, column=0, padx=8, pady=10, sticky="w")
-
-    ckbtn_inventario = ctk.CTkCheckBox(
-        lblfrm_scelta_attributi,
-        text="Inventario",
-        variable=ckbtn_inventario_value,
-        onvalue=1,
-        offvalue=0,
-        font=body_font_dlg,
-        fg_color=COLORS["accent"],
-        hover_color=COLORS["accent_hover"],
-        border_color=COLORS["border"],
-        text_color=COLORS["text_dark"],
-    )
-    ckbtn_inventario.grid(row=1, column=0, padx=8, pady=10, sticky="w")
-
-    btn_row = ctk.CTkFrame(root_dlg, fg_color=COLORS["bg_light"], corner_radius=0)
-    btn_row.grid(row=2, column=0, columnspan=2, sticky="ew", pady=(12, 0))
-    btn_row.columnconfigure(0, weight=1)
-    btn_row.columnconfigure(1, weight=1)
-
-    btn_salva = ctk.CTkButton(
-        btn_row,
-        text="Salva dati",
-        font=btn_font_dlg,
-        height=36,
-        fg_color=COLORS["success"],
-        hover_color="#1e8449",
-        command=_salva_nuovo,
-    )
-    btn_salva.grid(row=0, column=0, padx=(0, 6), sticky="ew")
-
-    btn_chiudi = ctk.CTkButton(
-        btn_row,
-        text="Chiudi",
-        font=btn_font_dlg,
-        height=36,
-        fg_color=COLORS["danger"],
-        hover_color="#a93226",
-        command=nuovo_fornitore.destroy,
-    )
-    btn_chiudi.grid(row=0, column=1, padx=(6, 0), sticky="ew")
-
-    nuovo_fornitore.transient(app)
-    nuovo_fornitore.grab_set()
-    _centra(nuovo_fornitore)
