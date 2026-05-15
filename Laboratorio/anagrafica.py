@@ -62,7 +62,7 @@ class Anagrafica(tk.Toplevel):
 
     @staticmethod
     def _dipendenti():
-        from anagrafica_dipendenti import Dipendenti
+        from anag_dipendenti_controller import Dipendenti
         Dipendenti()
 
     @staticmethod
