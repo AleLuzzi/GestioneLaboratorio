@@ -1,5 +1,6 @@
 dist
 build
+traccia.pdf
 
 # Bytecode Python (cache locale, non versionare)
 __pycache__/
