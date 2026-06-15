@@ -2,10 +2,10 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 import mysql.connector
-from dipendente import Dipendente
+from anag_dipendenti.dipendente import Dipendente
 from config import get_config
 
-from anag_dipendenti_TKinter import setup_window, build_ui
+from anag_dipendenti.anag_dipendenti_TKinter import setup_window, build_ui
 from db import get_connection, close_connection
 from theme import COLORS, get_font
 

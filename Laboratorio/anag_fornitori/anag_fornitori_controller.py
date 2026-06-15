@@ -4,8 +4,8 @@ from tkinter import messagebox
 import mysql.connector
 
 from db import get_connection, close_connection
-from anag_fornitori_TKinter import setup_window, build_ui
-from fornitore import Fornitore
+from anag_fornitori.anag_fornitori_TKinter import setup_window, build_ui
+from anag_fornitori.fornitore import Fornitore
 
 
 class AnagFornitoriController(tk.Toplevel):
