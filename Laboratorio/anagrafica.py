@@ -72,8 +72,9 @@ class Anagrafica(tk.Toplevel):
 
     @staticmethod
     def _ingredienti():
-        from anagrafica_ingredienti import Ingredienti
-        Ingredienti()
+        #from anagrafica_ingredienti import Ingredienti
+        from anag_ingredienti.anag_ingredienti_controller import AnagIngredientiController
+        AnagIngredientiController()
 
     @staticmethod
     def _reparti():
