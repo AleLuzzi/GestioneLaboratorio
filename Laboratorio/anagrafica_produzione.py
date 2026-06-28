@@ -8,10 +8,22 @@ from db import get_connection, close_connection
 from theme import COLORS, get_font
 from tkinter import messagebox
 import datetime as dt
+import platform
+'''
 import win32api
 import win32print
+'''
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import mm
+
+# Gestione dinamica e sicura delle librerie Windows
+if platform.system() == "Windows":
+    try:
+        import win32print
+    except ImportError:
+        win32print = None
+else:
+    win32print = None
 
 
 class Produzione(tk.Frame):
