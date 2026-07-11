@@ -90,8 +90,10 @@ class Anagrafica(tk.Toplevel):
 
     @staticmethod
     def _tagli():
-        from anagrafica_tagli import Tagli
-        Tagli()
+        from anag_tagli.anag_tagli_controller import AnagTagliController
+        AnagTagliController()
+        #from anagrafica_tagli import Tagli
+        #Tagli()
 
 
 if __name__ == '__main__':

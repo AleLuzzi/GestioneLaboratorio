@@ -19,6 +19,11 @@ class AnagIngredientiController(tk.Toplevel):
         self.c = self.conn.cursor()
 
         build_ui(self)
+
+        # FIX: popola la cache usata dal filtro (_filtra_ingrediente)
+        if hasattr(self, "_aggiorna"):
+            self._aggiorna()
+
         
         
     def _nuovo(self):
@@ -242,13 +247,13 @@ class AnagIngredientiController(tk.Toplevel):
             return
 
         for r in self.dati_ingredienti_totali:
-            if (testo_ricerca in str(r.ingrediente).lower() or 
+            if (testo_ricerca in str(r.ingrediente_base).lower() or 
                 testo_ricerca in str(r.id) or 
                 testo_ricerca in str(getattr(r, 'cod_ean', '')).lower()):
                 
                 self.tree_ingredienti.insert(
                     "", "end", 
-                    values=(r.id, r.ingrediente, getattr(r, 'cod_ean', ''), getattr(r, 'merceologia', ''))
+                    values=(r.id, r.ingrediente_base, getattr(r, 'cod_ean', ''), getattr(r, 'merceologia', ''))
                 )
     
     def _onsingleclick(self, event):
@@ -320,7 +325,7 @@ class AnagIngredientiController(tk.Toplevel):
             for r in self.dati_ingredienti_totali:
                 self.tree_ingredienti.insert(
                     "", "end", 
-                    values=(r.id, r.ingrediente, getattr(r, 'cod_ean', ''), getattr(r, 'merceologia', ''))
+                    values=(r.id, r.ingrediente_base, getattr(r, 'cod_ean', ''), getattr(r, 'merceologia', ''))
                 )
 
         self.ent_ingrediente.configure(state="normal")
