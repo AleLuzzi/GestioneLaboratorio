@@ -35,6 +35,7 @@ class AnagIngredientiController(tk.Toplevel):
         self.ent_ingrediente.configure(state="normal")
         self.ent_cod_ean.configure(state="normal")
         self.ent_merceologia.configure(state="normal")
+        self.ckbtn_allergene.configure(state="normal")
 
         self.ent_ingrediente.delete(0, "end")
         self.ent_cod_ean.delete(0, "end")
@@ -58,6 +59,7 @@ class AnagIngredientiController(tk.Toplevel):
         self.ent_ingrediente.configure(state="normal")
         self.ent_cod_ean.configure(state="normal")
         self.ent_merceologia.configure(state="normal")   
+        self.ckbtn_allergene.configure(state="normal")
 
         self.btn_nuovo.configure(state="disabled")
         self.btn_modifica.configure(state="disabled")
@@ -119,11 +121,12 @@ class AnagIngredientiController(tk.Toplevel):
             self.ent_ingrediente.configure(state="normal")
             self.ent_cod_ean.configure(state="normal")
             self.ent_merceologia.configure(state="normal")
+            self.ckbtn_allergene.configure(state="normal")
             
             self.ent_ingrediente.delete(0, "end")
             self.ent_cod_ean.delete(0, "end")
             self.ent_merceologia.delete(0, "end")
-            self.ckbtn_allergene.configure(state="normal")
+            
 
         self._disabilita_campi()
        
