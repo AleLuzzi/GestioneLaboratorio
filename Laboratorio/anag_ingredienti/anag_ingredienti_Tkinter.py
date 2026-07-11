@@ -212,13 +212,14 @@ def build_ui(app):
     )
     app.lbl_titolo_attributi.grid(row=0, column=0, padx=8, pady=8, sticky="n")
 
-    app.valori_flag_dip = tk.IntVar()
-    app.valori_flag_prod = tk.IntVar()
+    #app.valori_flag_dip = tk.IntVar()
+    #app.valori_flag_prod = tk.IntVar()
+    app.valori_allergene = tk.IntVar()
 
-    app.ckbtn_dip = ctk.CTkCheckBox(
+    '''app.ckbtn_dip = ctk.CTkCheckBox(
         app.lbl_frame_attributi_ingrediente,
         text="Mostra nel tab dipendenti",
-        variable=app.valori_flag_dip,
+        variable=app.valori_allergene,
         onvalue=1,
         offvalue=0,
         font=body_font,
@@ -228,12 +229,14 @@ def build_ui(app):
         text_color=COLORS["text_dark"],
         state="disabled",
     )
-    app.ckbtn_dip.grid(row=1, column=0, padx=8, pady=10, sticky="w")
+    '''
 
-    app.ckbtn_prod = ctk.CTkCheckBox(
+    #app.ckbtn_dip.grid(row=1, column=0, padx=8, pady=10, sticky="w")
+   
+    app.ckbtn_allergene = ctk.CTkCheckBox(
         app.lbl_frame_attributi_ingrediente,
-        text="Mostra nel tab produzione",
-        variable=app.valori_flag_prod,
+        text="Allergene",
+        variable=app.valori_allergene,
         onvalue=1,
         offvalue=0,
         font=body_font,
@@ -243,7 +246,7 @@ def build_ui(app):
         text_color=COLORS["text_dark"],
         state="disabled",
     )
-    app.ckbtn_prod.grid(row=2, column=0, padx=8, pady=10, sticky="w")
+    app.ckbtn_allergene.grid(row=2, column=0, padx=8, pady=10, sticky="w")
 
     app.lbl_frame_scegli = ctk.CTkFrame(
         app.frame_toolbar,

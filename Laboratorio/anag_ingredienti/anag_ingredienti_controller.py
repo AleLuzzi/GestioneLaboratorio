@@ -20,8 +20,6 @@ class AnagIngredientiController(tk.Toplevel):
 
         build_ui(self)
         
-        # Inizializza la variabile per memorizzare i dati degli ingredienti
-        self.dati_ingredienti_totali = []
         
     def _nuovo(self):
         """Prepara l'interfaccia principale per l'inserimento di un nuovo ingrediente."""
@@ -32,14 +30,10 @@ class AnagIngredientiController(tk.Toplevel):
         self.ent_ingrediente.configure(state="normal")
         self.ent_cod_ean.configure(state="normal")
         self.ent_merceologia.configure(state="normal")
-        self.ckbtn_dip.configure(state="normal")
-        self.ckbtn_prod.configure(state="normal")
 
         self.ent_ingrediente.delete(0, "end")
         self.ent_cod_ean.delete(0, "end")
         self.ent_merceologia.delete(0, "end")
-        self.valori_flag_dip.set(0)
-        self.valori_flag_prod.set(0)
 
         self.btn_nuovo.configure(state="disabled")
         self.btn_modifica.configure(state="disabled")
@@ -59,8 +53,6 @@ class AnagIngredientiController(tk.Toplevel):
         self.ent_ingrediente.configure(state="normal")
         self.ent_cod_ean.configure(state="normal")
         self.ent_merceologia.configure(state="normal")
-        self.ckbtn_dip.configure(state="normal")
-        self.ckbtn_prod.configure(state="normal")
 
         self.btn_nuovo.configure(state="disabled")
         self.btn_modifica.configure(state="disabled")
@@ -77,8 +69,8 @@ class AnagIngredientiController(tk.Toplevel):
         self.ent_ingrediente.configure(state="disabled")
         self.ent_cod_ean.configure(state="disabled")
         self.ent_merceologia.configure(state="disabled")
-        self.ckbtn_dip.configure(state="disabled")
-        self.ckbtn_prod.configure(state="disabled")
+        self.ckbtn_allergene.configure(state="disabled")
+        self.valori_allergene.set(0)
 
         self.btn_nuovo.configure(state="normal")
         self.btn_modifica.configure(state="normal")
@@ -98,14 +90,13 @@ class AnagIngredientiController(tk.Toplevel):
             self.ent_ingrediente.configure(state="normal")
             self.ent_cod_ean.configure(state="normal")
             self.ent_merceologia.configure(state="normal")
-            self.ckbtn_dip.configure(state="normal")
-            self.ckbtn_prod.configure(state="normal")
+            self.ckbtn_allergene.configure(state="normal")
+            self.valori_allergene.set(0)
 
             self.ent_ingrediente.delete(0, "end")
             self.ent_cod_ean.delete(0, "end")
             self.ent_merceologia.delete(0, "end")
-            self.valori_flag_dip.set(0)
-            self.valori_flag_prod.set(0)
+            self.ckbtn_allergene.configure(state="normal")
 
             self.item = self.tree_ingredienti.item(sel[0], "values")
             id_selezionato = int(self.item[0])
@@ -117,9 +108,9 @@ class AnagIngredientiController(tk.Toplevel):
                 self.ent_cod_ean.insert(0, getattr(ingrediente, 'cod_ean', ''))
                 self.ent_merceologia.insert(0, getattr(ingrediente, 'merceologia', ''))
                 if ingrediente.flag1_allergene == 1:
-                    self.valori_flag_dip.set(1)
+                    self.valori_allergene.set(1)
                 else:
-                    self.valori_flag_dip.set(0)
+                    self.valori_allergene.set(0)
                         
             self.ent_ingrediente.configure(state="normal")
             self.ent_cod_ean.configure(state="normal")
@@ -128,8 +119,7 @@ class AnagIngredientiController(tk.Toplevel):
             self.ent_ingrediente.delete(0, "end")
             self.ent_cod_ean.delete(0, "end")
             self.ent_merceologia.delete(0, "end")
-            self.valori_flag_dip.set(0)
-            self.valori_flag_prod.set(0)
+            self.ckbtn_allergene.configure(state="normal")
 
         self._disabilita_campi()
        
@@ -138,8 +128,7 @@ class AnagIngredientiController(tk.Toplevel):
         ingrediente_nome = self.ent_ingrediente.get().strip()
         cod_ean = self.ent_cod_ean.get().strip()
         merceologia = self.ent_merceologia.get().strip()
-        flag_dip = self.valori_flag_dip.get()
-        flag_prod = self.valori_flag_prod.get()
+        flag_allergene = self.valori_allergene.get()
 
         if not ingrediente_nome:
             messagebox.showwarning("Attenzione", "Il campo Ingrediente è obbligatorio.")
@@ -151,7 +140,7 @@ class AnagIngredientiController(tk.Toplevel):
                     id=None,
                     ingrediente_base=ingrediente_nome,
                     cod_ean=cod_ean,
-                    flag1_allergene=int(flag_dip), # Mappato correttamente
+                    flag1_allergene=int(flag_allergene), # Mappato correttamente
                     merceologia=merceologia
                 )
 
@@ -171,7 +160,7 @@ class AnagIngredientiController(tk.Toplevel):
                     id=id_selezionato,
                     ingrediente_base=ingrediente_nome,
                     cod_ean=cod_ean,
-                    flag1_allergene=int(flag_dip),
+                    flag1_allergene=int(flag_allergene),
                     merceologia=merceologia
                 )
 
@@ -234,13 +223,14 @@ class AnagIngredientiController(tk.Toplevel):
             self.ent_ingrediente.configure(state="normal")
             self.ent_cod_ean.configure(state="normal")
             self.ent_merceologia.configure(state="normal")
-            
+            self.ckbtn_allergene.configure(state="normal")
+           
             self.ent_ingrediente.delete(0, "end")
             self.ent_cod_ean.delete(0, "end")
             self.ent_merceologia.delete(0, "end")
-            self.valori_flag_dip.set(0)
-            self.valori_flag_prod.set(0)
-
+            self.ckbtn_allergene.configure(state="normal")
+            self.valori_allergene.set(0)
+            self.ent_ingrediente.delete(0, "end")
         except mysql.connector.Error as e:
             messagebox.showerror("Errore Database", f"Impossibile eliminare l'ingrediente: {e}")
 
@@ -263,45 +253,55 @@ class AnagIngredientiController(tk.Toplevel):
                 )
     
     def _onsingleclick(self, event):
+        # ------------------------------------------------------------------------------------------------
+        # Se l'utente sta scrivendo (Nuovo o Modifica), blocca gli eventi della tabella ---
         if getattr(self, "modalita_inserimento", False) or getattr(self, "modalita_modifica", False):
             return
-
+        # ------------------------------------------------------------------------------------------------
+        # Recupera la riga selezionata nel Treeview
         sel = self.tree_ingredienti.selection()
         if not sel:
             return
-
+        # ------------------------------------------------------------------------------------------------
         self.ent_ingrediente.configure(state="normal")
         self.ent_cod_ean.configure(state="normal")
         self.ent_merceologia.configure(state="normal")
-        self.ckbtn_dip.configure(state="normal")
-        self.ckbtn_prod.configure(state="normal")
+        self.ckbtn_allergene.configure(state="normal")
 
+        # ------------------------------------------------------------------------------------------------
+        # Reset completo dei campi della UI grafica
         self.ent_ingrediente.delete(0, "end")
         self.ent_cod_ean.delete(0, "end")
         self.ent_merceologia.delete(0, "end")
-        self.valori_flag_dip.set(0)
-        self.valori_flag_prod.set(0)
-
+        self.valori_allergene.set(0)
+        # ------------------------------------------------------------------------------------------------
+        # Recupera l'ID dell'ingrediente selezionato
         self.item = self.tree_ingredienti.item(sel[0], "values")
         id_selezionato = int(self.item[0])
-
+        # ------------------------------------------------------------------------------------------------
+        # Recupera l'oggetto ingrediente selezionato
         ingrediente = next((r for r in self.dati_ingredienti_totali if r.id == id_selezionato), None)
 
         if not ingrediente:
+            # ------------------------------------------------------------------------------------------------
+            # Se l'oggetto ingrediente non è in cache, lo recupera dal database
             ingrediente = Ingrediente.find_by_id(self.c, id_selezionato)
 
         if not ingrediente:
             return
 
+        # ------------------------------------------------------------------------------------------------
+        # Popola l'interfaccia grafica leggendo le proprietà dell'oggetto
         self.ent_ingrediente.insert(0, ingrediente.ingrediente_base)
         self.ent_cod_ean.insert(0, getattr(ingrediente, 'cod_ean', ''))
         self.ent_merceologia.insert(0, getattr(ingrediente, 'merceologia', ''))
+        # ------------------------------------------------------------------------------------------------
+        # Popola il campo allergene
+        if ingrediente.flag1_allergene == 1:
+            self.valori_allergene.set(1)
         
-        if ingrediente.flag1_dip == 1:
-            self.valori_flag_dip.set(1)
-        if ingrediente.flag2_prod == 1:
-            self.valori_flag_prod.set(1)
-
+        # ------------------------------------------------------------------------------------------------
+        # Blocca nuovamente i campi in modalità sola lettura dopo il popolamento ---
         self._disabilita_campi()    
 
     def _reset_ricerca(self):
@@ -330,8 +330,7 @@ class AnagIngredientiController(tk.Toplevel):
         self.ent_cod_ean.delete(0, "end")
         self.ent_merceologia.configure(state="normal")
         self.ent_merceologia.delete(0, "end")
-        self.valori_flag_dip.set(0)
-        self.valori_flag_prod.set(0)
+        self.valori_allergene.set(0)
 
         self._disabilita_campi()
 
