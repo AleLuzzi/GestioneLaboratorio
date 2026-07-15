@@ -1,5 +1,5 @@
 from anagrafica_produzione import *
-from anagrafica_merceologie import *
+#from anagrafica_merceologie import *
 from anagrafica_tagli import *
 from anagrafica_impostazioni import *
 from report_cucina_note import ReportCucina

@@ -171,27 +171,52 @@ def build_ui(app):
     )
     app.ent_dipendente.grid(row=1, column=1, padx=8, pady=8, sticky="ew")
 
+    app.lbl_email = ctk.CTkLabel(
+        app.lbl_frame_dettagli_selezionato,
+        text="Email",
+        font=label_font,
+        text_color=COLORS["text_dark"],
+    )
+    app.lbl_email.grid(row=2, column=0, padx=8, pady=8, sticky="w")
+
+    app.ent_email = ctk.CTkEntry(
+        app.lbl_frame_dettagli_selezionato,
+        width=240,
+        height=34,
+        font=body_font,
+        fg_color=COLORS["bg_content"],
+        border_color=COLORS["border"],
+        text_color=COLORS["text_dark"],
+        state="disabled"
+    )
+    app.ent_email.grid(row=2, column=1, padx=8, pady=8, sticky="ew")
+
+    # --- NUOVO: Reparto (label + combobox) ---
+    app.lbl_reparto = ctk.CTkLabel(
+        app.lbl_frame_dettagli_selezionato,
+        text="Reparto",
+        font=label_font,
+        text_color=COLORS["text_dark"],
+    )
+    app.lbl_reparto.grid(row=3, column=0, padx=8, pady=8, sticky="w")
+
+    # Combobox Tkinter: userà values impostati dal controller
+    app.cb_reparto = ttk.Combobox(
+        app.lbl_frame_dettagli_selezionato,
+        width=27,
+        state="disabled",
+    )
+    app.cb_reparto.grid(row=3, column=1, padx=8, pady=8, sticky="ew")
+
+    app.lbl_frame_dettagli_selezionato.rowconfigure(2, weight=0)
+    app.lbl_frame_dettagli_selezionato.rowconfigure(3, weight=0)
+
+
+
     app.lbl_frame_dettagli_selezionato.columnconfigure(1, weight=1)
 
     # Contenitore moderno CustomTkinter
-    app.lbl_frame_attributi_dipendente = ctk.CTkFrame(
-    app.frame_dettagli,
-    fg_color=COLORS["bg_light"],
-    border_color=COLORS["border"],
-    border_width=1,
-    corner_radius=8
-    )
-    app.lbl_frame_attributi_dipendente.grid(row=1, column=0, sticky="nsew", padx=(6, 0), pady=(0, 8))
-    app.lbl_frame_attributi_dipendente.columnconfigure(0, weight=1)
 
-    # Titolo simulato (non scompare mai ed è stilisticamente migliore)
-    app.lbl_titolo_attributi = ctk.CTkLabel(
-        app.lbl_frame_attributi_dipendente,
-        text="Attributi dipendente selezionato",
-        font=ctk.CTkFont(family=FONT_FAMILY, size=16, weight="bold"),
-        text_color=COLORS["text_dark"]
-    )
-    app.lbl_titolo_attributi.grid(row=0, column=0, padx=8, pady=8, sticky="n")
     '''
     app.lbl_frame_scegli = tk.LabelFrame(
         app.frame_toolbar,

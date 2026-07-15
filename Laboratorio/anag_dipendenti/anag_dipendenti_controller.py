@@ -5,13 +5,62 @@ import mysql.connector
 from anag_dipendenti.dipendente import Dipendente
 from config import get_config
 
+from anag_reparti.reparto import Reparto
+
 from anag_dipendenti.anag_dipendenti_TKinter import setup_window, build_ui
 from db import get_connection, close_connection
 from theme import COLORS, get_font
 
 
+
 class Dipendenti(tk.Toplevel):
+
+    def _carica_combobox_reparti(self):
+        """Carica la lista reparti nella combobox mostrando il campo `reparto` (NON l'id)."""
+        if not hasattr(self, "cb_reparto"):
+            return
+
+        try:
+            reparti = Reparto.fetch_all(self.c)
+        except Exception:
+            reparti = []
+
+        # Mappa: id -> reparto (nome) e reparto (nome) -> id
+        self._reparti_id_to_nome = {}
+        self._reparti_nome_to_id = {}
+
+        values = []
+        for r in reparti:
+            nome = getattr(r, "reparto", "") or ""
+            if not nome:
+                continue
+            if getattr(r, "id", None) is None:
+                continue
+
+            # Se ci fossero duplicati di nome, manteniamo il primo id incontrato.
+            if r.id not in self._reparti_id_to_nome:
+                self._reparti_id_to_nome[int(r.id)] = nome
+            if nome not in self._reparti_nome_to_id:
+                self._reparti_nome_to_id[nome] = int(r.id)
+
+            values.append(nome)
+
+        # Rimuove duplicati mantenendo ordine
+        seen = set()
+        unique_values = []
+        for v in values:
+            if v not in seen:
+                seen.add(v)
+                unique_values.append(v)
+
+        # Opzione vuota per casi senza reparto
+        unique_values = [""] + unique_values
+        self.cb_reparto["values"] = unique_values
+        self._reparti_values_caricati = True
+
+
     def __init__(self):
+
         tk.Toplevel.__init__(self)
         self.configure(bg=COLORS["bg_light"])
         self.item = ''
@@ -32,15 +81,37 @@ class Dipendenti(tk.Toplevel):
             messagebox.showwarning("Attenzione", "Il campo Nome è obbligatorio.")
             return
 
+        email_dipendente = self.ent_email.get().strip() if hasattr(self, 'ent_email') else "" 
+
+        # Reparto dalla combobox (MOSTRA NOME; nel DB salvo l'ID)
+        reparto_selected = ""
+        if hasattr(self, "cb_reparto"):
+            reparto_selected = (self.cb_reparto.get() or "").strip()
+
+        reparto_id_selected = None
+        if reparto_selected != "":
+            # Assicura mapping id<->nome caricato
+            if not getattr(self, "_reparti_values_caricati", False):
+                self._carica_combobox_reparti()
+
+            reparto_id_selected = getattr(self, "_reparti_nome_to_id", {}).get(reparto_selected)
+
+
         try:
             if self.modalita_inserimento:
+
                 # --- CASO A: INSERIMENTO NUOVO DIPENDENTE ---
                 nuovo_dipendente = Dipendente(
                     id=None,  # L'ID viene autogenerato dal Database (Auto-increment)
                     nome=nome_dipendente,
-                   
+                    email=email_dipendente,
+                    reparto=reparto_id_selected,
                 )
+
+
                 nuovo_dipendente.insert(self.c, self.conn)
+
+
                 messagebox.showinfo("Successo", "Nuovo dipendente inserito con successo.")
             
             else:
@@ -56,9 +127,13 @@ class Dipendenti(tk.Toplevel):
                 dipendente_modificato = Dipendente(
                     id=id_dipendente,
                     nome=nome_dipendente,
-                   
+                    email=email_dipendente,
+                    reparto=reparto_id_selected,
                 )
+
+
                 dipendente_modificato.save(self.c, self.conn)
+
                 messagebox.showinfo("Successo", "Dati del dipendente aggiornati con successo.")
 
             # --- OPERAZIONI DI CONCLUSIONE (COMUNI A ENTRAMBI I CASI) ---
@@ -81,6 +156,9 @@ class Dipendenti(tk.Toplevel):
             # Forziamo temporaneamente lo stato normal sui campi altrimenti 
             # i metodi .delete() e .insert() verrebbero ignorati da Tkinter
             self.ent_dipendente.configure(state="normal")
+            if hasattr(self, 'ent_email'):
+                self.ent_email.configure(state="normal")
+
            
 
             # Svuota i campi grafici
@@ -108,7 +186,12 @@ class Dipendenti(tk.Toplevel):
         # 2. Ripristina lo stato di blocco dei widget e l'attivazione dei pulsanti corretti
         self._disabilita_campi()
 
+        # Se presente pulisci/ripristina combobox reparto
+        if hasattr(self, "cb_reparto"):
+            self.cb_reparto.set("")
+
     def _elimina(self):
+
         """Elimina il dipendente selezionato previa conferma dell'utente."""
         # 1. Recupera la riga selezionata nel Treeview
         sel = self.tree_dipendenti.selection()
@@ -179,6 +262,11 @@ class Dipendenti(tk.Toplevel):
 
         # Sblocca temporaneamente i campi per consentire la pulizia e la scrittura
         self.ent_dipendente.configure(state="normal")
+        if hasattr(self, "cb_reparto"):
+            if not getattr(self, "_reparti_values_caricati", False):
+                self._carica_combobox_reparti()
+            self.cb_reparto.configure(state="normal")
+
         
         # Resetta completamente i campi grafici per accogliere il nuovo testo
         self.ent_dipendente.delete(0, "end")
@@ -203,6 +291,11 @@ class Dipendenti(tk.Toplevel):
 
         # Abilita i campi di input grafici
         self.ent_dipendente.configure(state="normal")
+        if hasattr(self, "cb_reparto"):
+            if not getattr(self, "_reparti_values_caricati", False):
+                self._carica_combobox_reparti()
+            self.cb_reparto.configure(state="normal")
+
       
         # Gestione Pulsanti: Disabilita la possibilità di fare altre azioni core
         self.btn_nuovo.configure(state="disabled")
@@ -220,6 +313,11 @@ class Dipendenti(tk.Toplevel):
 
         # Disabilita i widget di testo e scelta
         self.ent_dipendente.configure(state="disabled")
+        if hasattr(self, 'ent_email'):
+            self.ent_email.configure(state="disabled")
+
+        if hasattr(self, 'cb_reparto'):
+            self.cb_reparto.configure(state="disabled")
 
         # Ripristina lo stato dei bottoni principali
         self.btn_nuovo.configure(state="normal")
@@ -229,6 +327,7 @@ class Dipendenti(tk.Toplevel):
         self.btn_salva.configure(state="disabled")
         self.btn_annulla.configure(state="disabled")
         self.btn_elimina.configure(state="disabled")
+
 
     def _onsingleclick(self, event):
         # Se l'utente sta scrivendo (Nuovo o Modifica), blocca gli eventi della tabella ---
@@ -263,16 +362,33 @@ class Dipendenti(tk.Toplevel):
 
         # Popola l'interfaccia grafica leggendo le proprietà dell'oggetto
         self.ent_dipendente.insert(0, dipendente.nome)
-        '''
-        if dipendente.flag1_ing_merce == 1:
-            self.valore_flag_ing_merce.set(1)
-        if dipendente.flag2_inventario == 1:
-            self.valore_flag_inv.set(1)
-        '''
+        if hasattr(self, 'ent_email'):
+            self.ent_email.configure(state="normal")
+            self.ent_email.delete(0, "end")
+            self.ent_email.insert(0, getattr(dipendente, 'email', '') or '')
+
+        # Popola combobox reparto (se esiste)
+        if hasattr(self, "cb_reparto"):
+            # Se non abbiamo ancora caricato i valori, li carichiamo al volo
+            if not getattr(self, "_reparti_values_caricati", False):
+                self._carica_combobox_reparti()
+
+            # dipendente.reparto è l'ID del reparto; in UI mostriamo il nome
+            reparto_id = getattr(dipendente, "reparto", None)
+            reparto_nome = ""
+            if reparto_id is not None and reparto_id != "":
+                reparto_nome = getattr(self, "_reparti_id_to_nome", {}).get(int(reparto_id), "")
+            try:
+                self.cb_reparto.set(reparto_nome)
+
+            except Exception:
+                pass
+
         # Blocca nuovamente i campi in modalità sola lettura dopo il popolamento ---
         self._disabilita_campi()
 
     def _filtra_dipendente(self, event=None):
+
         """Filtra gli elementi della Treeview in base al testo digitato nella Entry."""
         # Recupera il testo digitato direttamente dalla Entry usando self
         testo_ricerca = self.entry_filtro.get().lower()
@@ -313,6 +429,10 @@ class Dipendenti(tk.Toplevel):
         # 6. Pulisce e azzera completamente i widget di dettaglio a destra
         self.ent_dipendente.configure(state="normal")
         self.ent_dipendente.delete(0, "end")
+        if hasattr(self, 'ent_email'):
+            self.ent_email.configure(state="normal")
+            self.ent_email.delete(0, "end")
+
         
         # 7. Riporta i campi puliti allo stato iniziale di protezione (sola lettura)
         self._disabilita_campi()
