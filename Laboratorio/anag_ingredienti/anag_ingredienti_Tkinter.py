@@ -212,8 +212,6 @@ def build_ui(app):
     )
     app.lbl_titolo_attributi.grid(row=0, column=0, padx=8, pady=8, sticky="n")
 
-    #app.valori_flag_dip = tk.IntVar()
-    #app.valori_flag_prod = tk.IntVar()
     app.valori_allergene = tk.IntVar()
 
     '''app.ckbtn_dip = ctk.CTkCheckBox(

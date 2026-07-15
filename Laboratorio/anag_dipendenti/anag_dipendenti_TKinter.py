@@ -59,13 +59,13 @@ def build_ui(app):
     # --- POSIZIONAMENTO DEI FRAME FIGLI ---
 
     # L'elenco copre entrambe le righe e segue l'altezza totale grazie a sticky="nsew"
-    app.frame_elenco.grid(row=0, column=0, rowspan=2, sticky="nsew", padx=(0, 8), pady=0)
-
-    # La toolbar sta in alto a destra e non si allunga verticalmente (sticky="new")
-    app.frame_toolbar.grid(row=0, column=1, sticky="new", padx=(8, 0), pady=(0,12))
-
+    app.frame_elenco.grid(row=1, column=0, rowspan=2, sticky="nsew", padx=(0, 8), pady=0)
+    
     # Il frame dettagli riempie TUTTA la riga 1 sia in larghezza che in altezza (sticky="nsew")
     app.frame_dettagli.grid(row=1, column=1, sticky="nsew", padx=(8, 0), pady=0)
+
+    # La toolbar sta in alto a destra e non si allunga verticalmente (sticky="new")
+    app.frame_toolbar.grid(row=1, column=2, sticky="new", padx=(8, 0), pady=(0,12))
     
     app.frame_elenco.rowconfigure(0, weight=1)
     app.frame_elenco.columnconfigure(0, weight=1)
@@ -181,7 +181,7 @@ def build_ui(app):
     border_width=1,
     corner_radius=8
     )
-    app.lbl_frame_attributi_dipendente.grid(row=0, column=1, sticky="nsew", padx=(6, 0), pady=(0, 8))
+    app.lbl_frame_attributi_dipendente.grid(row=1, column=0, sticky="nsew", padx=(6, 0), pady=(0, 8))
     app.lbl_frame_attributi_dipendente.columnconfigure(0, weight=1)
 
     # Titolo simulato (non scompare mai ed è stilisticamente migliore)
@@ -221,9 +221,10 @@ def build_ui(app):
     )
     app.lbl_titolo_azioni.grid(row=0, column=0, columnspan=5, padx=8, pady=(10, 5), sticky="n")
     '''
-    # Configurazione colonne interne (0-4) per distribuire equamente i 5 pulsanti
-    for col in range(5):
-        app.lbl_frame_scegli.columnconfigure(col, weight=1)
+    # Toolbar azioni in verticale (1 colonna)
+    app.lbl_frame_scegli.columnconfigure(0, weight=1)
+
+
     
     app.btn_nuovo = ctk.CTkButton(
         app.lbl_frame_scegli,
@@ -279,11 +280,12 @@ def build_ui(app):
     )
 
     
+    # Pulsanti in verticale (1 colonna)
     app.btn_nuovo.grid(row=1, column=0, padx=8, pady=8, sticky="ew")
-    app.btn_modifica.grid(row=1, column=1, padx=8, pady=8, sticky="ew")
-    app.btn_salva.grid(row=1, column=2, padx=8, pady=8, sticky="ew")
-    app.btn_annulla.grid(row=1, column=3, padx=8, pady=8, sticky="ew")
-    app.btn_elimina.grid(row=1, column=4, padx=8, pady=8, sticky="ew")
+    app.btn_modifica.grid(row=2, column=0, padx=8, pady=8, sticky="ew")
+    app.btn_salva.grid(row=3, column=0, padx=8, pady=8, sticky="ew")
+    app.btn_annulla.grid(row=4, column=0, padx=8, pady=8, sticky="ew")
+    app.btn_elimina.grid(row=5, column=0, padx=8, pady=8, sticky="ew")
     '''
     for col in range(5):
         app.lbl_frame_scegli.columnconfigure(col, weight=1)

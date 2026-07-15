@@ -85,8 +85,10 @@ class Anagrafica(tk.Toplevel):
 
     @staticmethod
     def _merceologie():
-        from anagrafica_merceologie import MerceologieCucina
-        MerceologieCucina()
+        #from anagrafica_merceologie import MerceologieCucina
+        #MerceologieCucina()
+        from anag_merceologie.anag_merceologie_controller import AnagMerceologieController
+        AnagMerceologieController()
 
     @staticmethod
     def _tagli():
