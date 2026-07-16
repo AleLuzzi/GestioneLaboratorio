@@ -27,12 +27,11 @@ def build_ui(app):
 
     # --- CONFIGURAZIONE DI app.frame_root ---
     app.frame_root = ctk.CTkFrame(app, fg_color=COLORS["bg_light"], corner_radius=0)
-    app.frame_root.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
+    app.frame_root.grid(row=0, column=0, sticky="nsw", padx=10, pady=10)
 
-    # Gestione Colonne: elenco (colonna 0) prende più spazio orizzontale della colonna 1
-    app.frame_root.columnconfigure(0, weight=2)
-    app.frame_root.columnconfigure(1, weight=1)
-    app.frame_root.columnconfigure(2, weight=0)
+    # Colonne a larghezza fissa: la finestra si adatta al contenuto, senza espansione orizzontale
+    app.frame_root.columnconfigure(0, weight=0)
+    app.frame_root.columnconfigure(1, weight=0)
 
     # Gestione Righe:
     # In questo layout usiamo: row=0 per titolo/toolbar e row=1 per dettagli.
@@ -49,15 +48,13 @@ def build_ui(app):
         font=title_font,
         text_color=COLORS["accent_hover"],
     )
-    app.lbl_titolo.grid(row=0, column=0, columnspan=3, sticky="w", padx=4, pady=(0, 8))
+    app.lbl_titolo.grid(row=0, column=0, columnspan=2, sticky="w", padx=4, pady=(0, 8))
 
     app.frame_elenco = ctk.CTkFrame(app.frame_root, fg_color=COLORS["bg_light"], corner_radius=0)
     app.frame_dettagli = ctk.CTkFrame(app.frame_root, fg_color=COLORS["bg_light"], corner_radius=0)
     app.frame_dettagli.grid_columnconfigure(0, weight=1)
-    app.frame_dettagli.grid_columnconfigure(1, weight=1)
-    app.frame_dettagli.grid_columnconfigure(2, weight=0)  # colonna "azioni" non deve espandersi
+    app.frame_dettagli.grid_columnconfigure(1, weight=0, minsize=140)  # colonna "azioni" a larghezza fissa
     app.frame_dettagli.grid_rowconfigure(0, weight=1)
-    app.frame_toolbar = ctk.CTkFrame(app.frame_root, fg_color=COLORS["bg_light"], corner_radius=0)
 
     # --- POSIZIONAMENTO DEI FRAME FIGLI ---
 
@@ -65,19 +62,12 @@ def build_ui(app):
     # (come in anag_dipendenti)
     app.frame_elenco.grid(row=1, column=0, rowspan=2, sticky="nsew", padx=(0, 8), pady=0)
 
-    # Il frame dettagli riempie TUTTA la riga 1 sia in larghezza che in altezza (sticky="nsew")
+    # Dettagli + azioni affiancati nella colonna 1
     app.frame_dettagli.grid(row=1, column=1, sticky="nsew", padx=(8, 0), pady=0)
-
-    # La toolbar sta in alto a destra e non si allunga verticalmente (sticky="new")
-    app.frame_toolbar.grid(row=1, column=2, sticky="new", padx=(8, 0), pady=(0, 12))
 
     # Importante: la griglia interna di frame_dettagli deve avere una riga 0 espandibile
     # (per evitare che i box finiscano “a metà” del frame elenco)
     app.frame_dettagli.rowconfigure(0, weight=1)
-
-
-
-    
     app.frame_elenco.rowconfigure(0, weight=1)
     app.frame_elenco.columnconfigure(0, weight=1)
 
@@ -159,7 +149,7 @@ def build_ui(app):
     )
     app.lbl_titolo_dettagli.grid(row=0, column=0, columnspan=2, padx=8, pady=(10, 5), sticky="n")
 
-    app.lbl_frame_dettagli_selezionato.grid(row=0, column=0, sticky="new", padx=(0, 6), pady=(0, 8))
+    app.lbl_frame_dettagli_selezionato.grid(row=0, column=0, sticky="nsew", padx=(0, 6), pady=(0, 8))
 
     app.lbl_azienda = ctk.CTkLabel(
         app.lbl_frame_dettagli_selezionato,
@@ -226,14 +216,14 @@ def build_ui(app):
         border_width=1,
         corner_radius=8,
     )
-    # Colonna 2 rispetto ai campi attributi (che stanno in colonna 1)
-    app.lbl_frame_scegli.grid(row=0, column=2, rowspan=1, sticky="new", padx=(8, 0), pady=(0, 8))
+    app.lbl_frame_scegli.grid(row=0, column=1, sticky="nsew", padx=(8, 0), pady=(0, 8))
     app.lbl_frame_scegli.columnconfigure(0, weight=1)
 
     app.btn_nuovo = ctk.CTkButton(
         app.lbl_frame_scegli,
         text="Nuovo",
         font=btn_font,
+        width=120,
         height=38,
         fg_color=COLORS["success"],
         hover_color="#1e8449",
@@ -244,6 +234,7 @@ def build_ui(app):
         app.lbl_frame_scegli,
         text="Modifica",
         font=btn_font,
+        width=120,
         height=38,
         fg_color=COLORS["success"],
         hover_color="#1e8449",
@@ -254,6 +245,7 @@ def build_ui(app):
         app.lbl_frame_scegli,
         text="Salva",
         font=btn_font,
+        width=120,
         height=38,
         fg_color=COLORS["accent"],
         hover_color=COLORS["accent_hover"],
@@ -265,6 +257,7 @@ def build_ui(app):
         app.lbl_frame_scegli,
         text="Annulla",
         font=btn_font,
+        width=120,
         height=38,
         fg_color=COLORS["accent"],
         hover_color="#a93226",
@@ -276,6 +269,7 @@ def build_ui(app):
         app.lbl_frame_scegli,
         text="Elimina",
         font=btn_font,
+        width=120,
         height=38,
         fg_color=COLORS["danger"],
         hover_color=COLORS["accent_hover"],
@@ -291,20 +285,22 @@ def build_ui(app):
     app.btn_elimina.grid(row=5, column=0, padx=8, pady=8, sticky="ew")
 
 
-    # --- Adatta dimensione finestra al contenuto (una volta dopo il build) ---
+    # --- Adatta dimensione finestra ai tre labelframe (senza spazio vuoto a destra) ---
     try:
         app.update_idletasks()
-        # Misura richiesta del contenitore principale; aggiunge margine per cornici/bordi.
-        w = app.frame_root.winfo_reqwidth()
-        h = app.frame_root.winfo_reqheight()
-        # Correzione: la larghezza veniva gonfiata (margine costante +40) e lasciava spazio vuoto a destra.
-        # Usiamo solo la richiesta del contenitore principale, con un minimo per evitare finestra troppo stretta.
-        w = max(w, 700)
-        h = max(h + 40, 420)
+        w_elenco = max(app.label_frame_elenco.winfo_reqwidth(), 280)
+        w_dettagli = max(app.lbl_frame_dettagli_selezionato.winfo_reqwidth(), 420)
+        w_azioni = max(app.lbl_frame_scegli.winfo_reqwidth(), 140)
+        gap_dettagli_azioni = 14  # padx + bordi tra dettagli e azioni
+        gap_colonne = 16          # padx tra elenco e colonna dettagli
+        margini = 40              # padx/pady di frame_root + margini finestra
+        w = w_elenco + w_dettagli + w_azioni + gap_dettagli_azioni + gap_colonne + margini
+        h = max(app.frame_root.winfo_reqheight() + 40, 420)
         app.geometry(f"{w}x{h}")
+        app.minsize(w, 420)
     except Exception:
-        # Se la misura fallisce per qualsiasi motivo, non impedire l'apertura della finestra.
-        pass
+        app.geometry("900x420")
+        app.minsize(900, 420)
 
     app._aggiorna()
 
