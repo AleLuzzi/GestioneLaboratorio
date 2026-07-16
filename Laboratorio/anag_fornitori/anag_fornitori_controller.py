@@ -26,7 +26,7 @@ class AnagFornitoriController(tk.Toplevel):
         self.modalita_inserimento = True  # Attiva lo stato di inserimento nuovo record
         
         # Deseleziona qualsiasi riga precedentemente cliccata nella tabella per chiarezza visiva
-        self.tree_fornitori.selection_remove(self.tree_fornitori.selection())
+        self.tree_elenco.selection_remove(self.tree_elenco.selection())
 
         # Sblocca temporaneamente i campi per consentire la pulizia e la scrittura
         self.ent_azienda.configure(state="normal")
@@ -51,7 +51,7 @@ class AnagFornitoriController(tk.Toplevel):
     def _modifica(self):
         """Abilita i campi di inserimento e i pulsanti di gestione dati."""
         # Verifica di sicurezza: l'utente deve aver selezionato qualcosa prima di modificare
-        if not self.tree_fornitori.selection():
+        if not self.tree_elenco.selection():
             messagebox.showinfo("Attenzione", "Seleziona un fornitore dall'elenco per poterlo modificare.")
             return
         
@@ -96,7 +96,7 @@ class AnagFornitoriController(tk.Toplevel):
         self.modalita_modifica = False
 
         # Recupera la selezione corrente della tabella
-        sel = self.tree_fornitori.selection()
+        sel = self.tree_elenco.selection()
         
         if sel:
             # Forziamo temporaneamente lo stato normal sui campi altrimenti 
@@ -111,7 +111,7 @@ class AnagFornitoriController(tk.Toplevel):
             self.valore_flag_inv.set(0)
 
             # Estrae l'ID dalla riga selezionata nel Treeview
-            self.item = self.tree_fornitori.item(sel[0], "values")
+            self.item = self.tree_elenco.item(sel[0], "values")
             id_selezionato = int(self.item[0])
 
             # Recupera l'oggetto originale dalla cache in memoria (senza rieseguire la query SQL)
@@ -156,12 +156,12 @@ class AnagFornitoriController(tk.Toplevel):
             
             else:
                 # --- CASO B: MODIFICA FORNITORE ESISTENTE ---
-                sel = self.tree_fornitori.selection()
+                sel = self.tree_elenco.selection()
                 if not sel:
                     messagebox.showinfo("Attenzione", "Nessun record selezionato per la modifica.")
                     return
                 
-                self.item = self.tree_fornitori.item(sel[0], "values")
+                self.item = self.tree_elenco.item(sel[0], "values")
                 id_fornitore = int(self.item[0])
 
                 fornitore_modificato = Fornitore(
@@ -183,7 +183,7 @@ class AnagFornitoriController(tk.Toplevel):
 
     def _aggiorna(self):
         # Svuota la Treeview usando self
-        self.tree_fornitori.delete(*self.tree_fornitori.get_children())
+        self.tree_elenco.delete(*self.tree_elenco.get_children())
         
         # Svuota la barra di ricerca all'aggiornamento dei dati generali
         if hasattr(self, 'entry_filtro'):
@@ -193,18 +193,18 @@ class AnagFornitoriController(tk.Toplevel):
         self.dati_fornitori_totali = Fornitore.fetch_all(self.c)
         
         for fornitore in self.dati_fornitori_totali:
-           self.tree_fornitori.insert("", "end", values=(fornitore.id, fornitore.azienda))
+           self.tree_elenco.insert("", "end", values=(fornitore.id, fornitore.azienda))
 
     def _elimina(self):
         """Elimina il fornitore selezionato previa conferma dell'utente."""
         # 1. Recupera la riga selezionata nel Treeview
-        sel = self.tree_fornitori.selection()
+        sel = self.tree_elenco.selection()
         if not sel:
             messagebox.showinfo("Attenzione", "Nessun record selezionato per l'eliminazione.")
             return
 
         # 2. Estrae l'ID visibile nella riga
-        self.item = self.tree_fornitori.item(sel, "values")
+        self.item = self.tree_elenco.item(sel, "values")
         id_selezionato = int(self.item[0])
 
         # 3. Recupera l'oggetto dalla cache in memoria per conoscerne il nome
@@ -252,7 +252,7 @@ class AnagFornitoriController(tk.Toplevel):
         testo_ricerca = self.entry_filtro.get().lower()
         
         # Svuota momentaneamente la Treeview per aggiornare l'elenco visivo
-        self.tree_fornitori.delete(*self.tree_fornitori.get_children())
+        self.tree_elenco.delete(*self.tree_elenco.get_children())
         
         # Sicurezza: se la lista in memoria non esiste ancora, esce
         if not hasattr(self, 'dati_fornitori_totali'):
@@ -260,7 +260,7 @@ class AnagFornitoriController(tk.Toplevel):
 
         for fornitore in self.dati_fornitori_totali:
             if testo_ricerca in str(fornitore.azienda).lower() or testo_ricerca in str(fornitore.id):
-                self.tree_fornitori.insert("", "end", values=(fornitore.id, fornitore.azienda))
+                self.tree_elenco.insert("", "end", values=(fornitore.id, fornitore.azienda))
 
     def _onsingleclick(self, event):
         # Se l'utente sta scrivendo (Nuovo o Modifica), blocca gli eventi della tabella ---
@@ -269,7 +269,7 @@ class AnagFornitoriController(tk.Toplevel):
 
         # self.modalita_inserimento = False  # Se clicca una riga, interrompe lo stato di "Nuovo"
         # Recupera la riga selezionata nel Treeview
-        sel = self.tree_fornitori.selection()
+        sel = self.tree_elenco.selection()
         if not sel:
             return
 
@@ -284,7 +284,7 @@ class AnagFornitoriController(tk.Toplevel):
         self.valore_flag_inv.set(0)
 
         # Estrae i valori visibili della riga (il primo elemento è l'ID)
-        self.item = self.tree_fornitori.item(sel[0], "values")
+        self.item = self.tree_elenco.item(sel[0], "values")
         id_selezionato = int(self.item[0])
         
         # Cerca l'oggetto direttamente nella cache locale 
@@ -314,20 +314,20 @@ class AnagFornitoriController(tk.Toplevel):
             return
 
         # 2. Rimuove la selezione visiva corrente dalla Treeview (se presente)
-        if self.tree_fornitori.selection():
-            self.tree_fornitori.selection_remove(self.tree_fornitori.selection())
+        if self.tree_elenco.selection():
+            self.tree_elenco.selection_remove(self.tree_elenco.selection())
 
         # 3. Cancella il testo all'interno della Entry del filtro
         if hasattr(self, 'entry_filtro'):
             self.entry_filtro.delete(0, "end")
             
         # 4. Svuota la Treeview visiva per rigenerarla da zero
-        self.tree_fornitori.delete(*self.tree_fornitori.get_children())
+        self.tree_elenco.delete(*self.tree_elenco.get_children())
         
         # 5. Ripopola l'elenco completo sfruttando i dati già in memoria
         if hasattr(self, 'dati_fornitori_totali'):
             for fornitore in self.dati_fornitori_totali:
-                self.tree_fornitori.insert("", "end", values=(fornitore.id, fornitore.azienda))
+                self.tree_elenco.insert("", "end", values=(fornitore.id, fornitore.azienda))
 
         # 6. Pulisce e azzera completamente i widget di dettaglio a destra
         self.ent_azienda.configure(state="normal")

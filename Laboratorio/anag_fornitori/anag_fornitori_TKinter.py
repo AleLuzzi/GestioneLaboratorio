@@ -122,15 +122,15 @@ def build_ui(app):
     tree_wrap.rowconfigure(0, weight=1)
     tree_wrap.columnconfigure(0, weight=1)
 
-    app.tree_fornitori = ttk.Treeview(tree_wrap, height=18)
-    app.tree_fornitori["columns"] = ("Id", "Azienda")
-    app.tree_fornitori["show"] = "headings"
-    app.tree_fornitori.heading("Id", text="Id")
-    app.tree_fornitori.heading("Azienda", text="Azienda")
-    app.tree_fornitori.column("Id", width=48, anchor="center")
-    app.tree_fornitori.column("Azienda", width=200)
-    app.tree_fornitori.bind("<<TreeviewSelect>>", app._onsingleclick)
-    app.tree_fornitori.grid(row=0, column=0, sticky="nsew", padx=6, pady=6)
+    app.tree_elenco = ttk.Treeview(tree_wrap, height=18)
+    app.tree_elenco["columns"] = ("Id", "Azienda")
+    app.tree_elenco["show"] = "headings"
+    app.tree_elenco.heading("Id", text="Id")
+    app.tree_elenco.heading("Azienda", text="Azienda")
+    app.tree_elenco.column("Id", width=48, anchor="center")
+    app.tree_elenco.column("Azienda", width=200)
+    app.tree_elenco.bind("<<TreeviewSelect>>", app._onsingleclick)
+    app.tree_elenco.grid(row=0, column=0, sticky="nsew", padx=6, pady=6)
 
     app.lbl_frame_dettagli_selezionato = ctk.CTkFrame(
         app.frame_dettagli,

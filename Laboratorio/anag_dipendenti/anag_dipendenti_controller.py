@@ -116,12 +116,12 @@ class Dipendenti(tk.Toplevel):
             
             else:
                 # --- CASO B: MODIFICA DIPENDENTE ESISTENTE ---
-                sel = self.tree_dipendenti.selection()
+                sel = self.tree_elenco.selection()
                 if not sel:
                     messagebox.showinfo("Attenzione", "Nessun record selezionato per la modifica.")
                     return
                 
-                self.item = self.tree_dipendenti.item(sel[0], "values")
+                self.item = self.tree_elenco.item(sel[0], "values")
                 id_dipendente = int(self.item[0])
 
                 dipendente_modificato = Dipendente(
@@ -150,7 +150,7 @@ class Dipendenti(tk.Toplevel):
         self.modalita_modifica = False
 
         # Recupera la selezione corrente della tabella
-        sel = self.tree_dipendenti.selection()
+        sel = self.tree_elenco.selection()
         
         if sel:
             # Forziamo temporaneamente lo stato normal sui campi altrimenti 
@@ -166,7 +166,7 @@ class Dipendenti(tk.Toplevel):
           
 
             # Estrae l'ID dalla riga selezionata nel Treeview
-            self.item = self.tree_dipendenti.item(sel[0], "values")
+            self.item = self.tree_elenco.item(sel[0], "values")
             id_selezionato = int(self.item[0])
 
             # Recupera l'oggetto originale dalla cache in memoria (senza rieseguire la query SQL)
@@ -194,13 +194,13 @@ class Dipendenti(tk.Toplevel):
 
         """Elimina il dipendente selezionato previa conferma dell'utente."""
         # 1. Recupera la riga selezionata nel Treeview
-        sel = self.tree_dipendenti.selection()
+        sel = self.tree_elenco.selection()
         if not sel:
             messagebox.showinfo("Attenzione", "Nessun record selezionato per l'eliminazione.")
             return
 
         # 2. Estrae l'ID visibile nella riga
-        self.item = self.tree_dipendenti.item(sel, "values")
+        self.item = self.tree_elenco.item(sel, "values")
         id_selezionato = int(self.item[0])
 
         # 3. Recupera l'oggetto dalla cache in memoria per conoscerne il nome
@@ -241,7 +241,7 @@ class Dipendenti(tk.Toplevel):
         
     def _aggiorna(self):
         # Svuota la Treeview usando self
-        self.tree_dipendenti.delete(*self.tree_dipendenti.get_children())
+        self.tree_elenco.delete(*self.tree_elenco.get_children())
         
         # Svuota la barra di ricerca all'aggiornamento dei dati generali
         if hasattr(self, 'entry_filtro'):
@@ -251,14 +251,14 @@ class Dipendenti(tk.Toplevel):
         self.dati_dipendenti_totali = Dipendente.fetch_all(self.c)
         
         for dipendente in self.dati_dipendenti_totali:
-           self.tree_dipendenti.insert("", "end", values=(dipendente.id, dipendente.nome))
+           self.tree_elenco.insert("", "end", values=(dipendente.id, dipendente.nome))
 
     def _nuovo(self):
         """Prepara l'interfaccia principale per l'inserimento di un nuovo dipendente."""
         self.modalita_inserimento = True  # Attiva lo stato di inserimento nuovo record
         
         # Deseleziona qualsiasi riga precedentemente cliccata nella tabella per chiarezza visiva
-        self.tree_dipendenti.selection_remove(self.tree_dipendenti.selection())
+        self.tree_elenco.selection_remove(self.tree_elenco.selection())
 
         # Sblocca temporaneamente i campi per consentire la pulizia e la scrittura
         self.ent_dipendente.configure(state="normal")
@@ -283,7 +283,7 @@ class Dipendenti(tk.Toplevel):
     def _modifica(self):
         """Abilita i campi di inserimento e i pulsanti di gestione dati."""
         # Verifica di sicurezza: l'utente deve aver selezionato qualcosa prima di modificare
-        if not self.tree_dipendenti.selection():
+        if not self.tree_elenco.selection():
             messagebox.showinfo("Attenzione", "Seleziona un dipendente dall'elenco per poterlo modificare.")
             return
         
@@ -336,7 +336,7 @@ class Dipendenti(tk.Toplevel):
 
         # self.modalita_inserimento = False  # Se clicca una riga, interrompe lo stato di "Nuovo"
         # Recupera la riga selezionata nel Treeview
-        sel = self.tree_dipendenti.selection()
+        sel = self.tree_elenco.selection()
         if not sel:
             return
 
@@ -347,7 +347,7 @@ class Dipendenti(tk.Toplevel):
         self.ent_dipendente.delete(0, "end")
         
         # Estrae i valori visibili della riga (il primo elemento è l'ID)
-        self.item = self.tree_dipendenti.item(sel[0], "values")
+        self.item = self.tree_elenco.item(sel[0], "values")
         id_selezionato = int(self.item[0])
         
         # Cerca l'oggetto direttamente nella cache locale 
@@ -394,7 +394,7 @@ class Dipendenti(tk.Toplevel):
         testo_ricerca = self.entry_filtro.get().lower()
         
         # Svuota momentaneamente la Treeview per aggiornare l'elenco visivo
-        self.tree_dipendenti.delete(*self.tree_dipendenti.get_children())
+        self.tree_elenco.delete(*self.tree_elenco.get_children())
         
         # Sicurezza: se la lista in memoria non esiste ancora, esce
         if not hasattr(self, 'dati_dipendenti_totali'):
@@ -402,7 +402,7 @@ class Dipendenti(tk.Toplevel):
 
         for dipendente in self.dati_dipendenti_totali:
             if testo_ricerca in str(dipendente.nome).lower() or testo_ricerca in str(dipendente.id):
-                self.tree_dipendenti.insert("", "end", values=(dipendente.id, dipendente.nome))
+                self.tree_elenco.insert("", "end", values=(dipendente.id, dipendente.nome))
 
     def _reset_ricerca(self):
         """Svuota il filtro, ripristina la lista completa e pulisce i dettagli."""
@@ -411,20 +411,20 @@ class Dipendenti(tk.Toplevel):
             return
 
         # 2. Rimuove la selezione visiva corrente dalla Treeview (se presente)
-        if self.tree_dipendenti.selection():
-            self.tree_dipendenti.selection_remove(self.tree_dipendenti.selection())
+        if self.tree_elenco.selection():
+            self.tree_elenco.selection_remove(self.tree_elenco.selection())
 
         # 3. Cancella il testo all'interno della Entry del filtro
         if hasattr(self, 'entry_filtro'):
             self.entry_filtro.delete(0, "end")
             
         # 4. Svuota la Treeview visiva per rigenerarla da zero
-        self.tree_dipendenti.delete(*self.tree_dipendenti.get_children())
+        self.tree_elenco.delete(*self.tree_elenco.get_children())
         
         # 5. Ripopola l'elenco completo sfruttando i dati già in memoria
         if hasattr(self, 'dati_dipendenti_totali'):
             for dipendente in self.dati_dipendenti_totali:
-                self.tree_dipendenti.insert("", "end", values=(dipendente.id, dipendente.nome))
+                self.tree_elenco.insert("", "end", values=(dipendente.id, dipendente.nome))
 
         # 6. Pulisce e azzera completamente i widget di dettaglio a destra
         self.ent_dipendente.configure(state="normal")

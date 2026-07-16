@@ -103,20 +103,20 @@ def build_ui(app):
     tree_wrap.rowconfigure(0, weight=1)
     tree_wrap.columnconfigure(0, weight=1)
 
-    app.tree_ingredienti = ttk.Treeview(tree_wrap, height=18)
-    app.tree_ingredienti["columns"] = ("Id", "Ingrediente", "cod_ean", "merceologia")
-    app.tree_ingredienti["show"] = "headings"
-    app.tree_ingredienti.heading("Id", text="Id")
-    app.tree_ingredienti.heading("Ingrediente", text="Ingrediente")
-    app.tree_ingredienti.heading("cod_ean", text="cod EAN")
-    app.tree_ingredienti.heading("merceologia", text='Merceologia')
-    app.tree_ingredienti.column("Id", width=30)
-    app.tree_ingredienti.column("Ingrediente", width=150)
-    app.tree_ingredienti.column("cod_ean", width=100)
-    app.tree_ingredienti.column("merceologia", width=100)
-    app.tree_ingredienti.bind("<<TreeviewSelect>>", app._onsingleclick)
-    app.tree_ingredienti.bind("<Double-1>", app._onsingleclick)
-    app.tree_ingredienti.grid(row=0, column=0, sticky="nsew", padx=6, pady=6)
+    app.tree_elenco = ttk.Treeview(tree_wrap, height=18)
+    app.tree_elenco["columns"] = ("Id", "Ingrediente", "cod_ean", "merceologia")
+    app.tree_elenco["show"] = "headings"
+    app.tree_elenco.heading("Id", text="Id")
+    app.tree_elenco.heading("Ingrediente", text="Ingrediente")
+    app.tree_elenco.heading("cod_ean", text="cod EAN")
+    app.tree_elenco.heading("merceologia", text='Merceologia')
+    app.tree_elenco.column("Id", width=30)
+    app.tree_elenco.column("Ingrediente", width=150)
+    app.tree_elenco.column("cod_ean", width=100)
+    app.tree_elenco.column("merceologia", width=100)
+    app.tree_elenco.bind("<<TreeviewSelect>>", app._onsingleclick)
+    app.tree_elenco.bind("<Double-1>", app._onsingleclick)
+    app.tree_elenco.grid(row=0, column=0, sticky="nsew", padx=6, pady=6)
 
     
     app.lbl_frame_dettagli_selezionato = tk.LabelFrame(

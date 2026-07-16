@@ -30,7 +30,7 @@ class AnagIngredientiController(tk.Toplevel):
         """Prepara l'interfaccia principale per l'inserimento di un nuovo ingrediente."""
         self.modalita_inserimento = True
 
-        self.tree_ingredienti.selection_remove(self.tree_ingredienti.selection())
+        self.tree_elenco.selection_remove(self.tree_elenco.selection())
 
         self.ent_ingrediente.configure(state="normal")
         self.ent_cod_ean.configure(state="normal")
@@ -50,7 +50,7 @@ class AnagIngredientiController(tk.Toplevel):
         
     def _modifica(self):
         """Abilita i campi di inserimento e i pulsanti di gestione dati."""
-        if not self.tree_ingredienti.selection():
+        if not self.tree_elenco.selection():
             messagebox.showinfo("Attenzione", "Seleziona un ingrediente dall'elenco per poterlo modificare.")
             return
 
@@ -90,7 +90,7 @@ class AnagIngredientiController(tk.Toplevel):
         self.modalita_inserimento = False
         self.modalita_modifica = False
 
-        sel = self.tree_ingredienti.selection()
+        sel = self.tree_elenco.selection()
 
         if sel:
             self.ent_ingrediente.configure(state="normal")
@@ -104,7 +104,7 @@ class AnagIngredientiController(tk.Toplevel):
             self.ent_merceologia.delete(0, "end")
             self.ckbtn_allergene.configure(state="normal")
 
-            self.item = self.tree_ingredienti.item(sel[0], "values")
+            self.item = self.tree_elenco.item(sel[0], "values")
             id_selezionato = int(self.item[0])
 
             ingrediente = next((r for r in self.dati_ingredienti_totali if r.id == id_selezionato), None)
@@ -155,12 +155,12 @@ class AnagIngredientiController(tk.Toplevel):
                 messagebox.showinfo("Successo", "Nuovo ingrediente inserito con successo.")
             
             else:
-                sel = self.tree_ingredienti.selection()
+                sel = self.tree_elenco.selection()
                 if not sel:
                     messagebox.showinfo("Attenzione", "Nessun record selezionato per la modifica.")
                     return
 
-                self.item = self.tree_ingredienti.item(sel[0], "values")
+                self.item = self.tree_elenco.item(sel[0], "values")
                 id_selezionato = int(self.item[0])
 
                 ingrediente_modificato = Ingrediente(
@@ -182,7 +182,7 @@ class AnagIngredientiController(tk.Toplevel):
             messagebox.showerror("Database", f"Errore durante l'operazione: {e}")
 
     def _aggiorna(self):
-        self.tree_ingredienti.delete(*self.tree_ingredienti.get_children())
+        self.tree_elenco.delete(*self.tree_elenco.get_children())
 
         if hasattr(self, "entry_filtro"):
             self.entry_filtro.delete(0, "end")
@@ -190,7 +190,7 @@ class AnagIngredientiController(tk.Toplevel):
         self.dati_ingredienti_totali = Ingrediente.fetch_all(self.c)
 
         for ingrediente in self.dati_ingredienti_totali:
-            self.tree_ingredienti.insert(
+            self.tree_elenco.insert(
                 "", 
                 "end", 
                 values=(ingrediente.id, ingrediente.ingrediente_base, getattr(ingrediente, 'cod_ean', ''), getattr(ingrediente, 'merceologia', ''))
@@ -198,12 +198,12 @@ class AnagIngredientiController(tk.Toplevel):
 
     def _elimina(self):
         """Elimina l'ingrediente selezionato previa conferma dell'utente."""
-        sel = self.tree_ingredienti.selection()
+        sel = self.tree_elenco.selection()
         if not sel:
             messagebox.showinfo("Attenzione", "Nessun record selezionato per l'eliminazione.")
             return
 
-        self.item = self.tree_ingredienti.item(sel, "values")
+        self.item = self.tree_elenco.item(sel, "values")
         id_selezionato = int(self.item[0])
 
         ingrediente = next((r for r in self.dati_ingredienti_totali if r.id == id_selezionato), None)
@@ -244,7 +244,7 @@ class AnagIngredientiController(tk.Toplevel):
     def _filtra_ingrediente(self, event=None):
         """Filtra gli ingredienti nella Treeview in base al testo inserito."""
         testo_ricerca = self.entry_filtro.get().lower()
-        self.tree_ingredienti.delete(*self.tree_ingredienti.get_children())
+        self.tree_elenco.delete(*self.tree_elenco.get_children())
 
         if not hasattr(self, "dati_ingredienti_totali"):
             return
@@ -254,7 +254,7 @@ class AnagIngredientiController(tk.Toplevel):
                 testo_ricerca in str(r.id) or 
                 testo_ricerca in str(getattr(r, 'cod_ean', '')).lower()):
                 
-                self.tree_ingredienti.insert(
+                self.tree_elenco.insert(
                     "", "end", 
                     values=(r.id, r.ingrediente_base, getattr(r, 'cod_ean', ''), getattr(r, 'merceologia', ''))
                 )
@@ -266,7 +266,7 @@ class AnagIngredientiController(tk.Toplevel):
             return
         # ------------------------------------------------------------------------------------------------
         # Recupera la riga selezionata nel Treeview
-        sel = self.tree_ingredienti.selection()
+        sel = self.tree_elenco.selection()
         if not sel:
             return
         # ------------------------------------------------------------------------------------------------
@@ -283,7 +283,7 @@ class AnagIngredientiController(tk.Toplevel):
         self.valori_allergene.set(0)
         # ------------------------------------------------------------------------------------------------
         # Recupera l'ID dell'ingrediente selezionato
-        self.item = self.tree_ingredienti.item(sel[0], "values")
+        self.item = self.tree_elenco.item(sel[0], "values")
         id_selezionato = int(self.item[0])
         # ------------------------------------------------------------------------------------------------
         # Recupera l'oggetto ingrediente selezionato
@@ -316,17 +316,17 @@ class AnagIngredientiController(tk.Toplevel):
         if getattr(self, "modalita_inserimento", False) or getattr(self, "modalita_modifica", False):
             return
 
-        if self.tree_ingredienti.selection():
-            self.tree_ingredienti.selection_remove(self.tree_ingredienti.selection())
+        if self.tree_elenco.selection():
+            self.tree_elenco.selection_remove(self.tree_elenco.selection())
 
         if hasattr(self, "entry_filtro"):
             self.entry_filtro.delete(0, "end")
 
-        self.tree_ingredienti.delete(*self.tree_ingredienti.get_children())
+        self.tree_elenco.delete(*self.tree_elenco.get_children())
 
         if hasattr(self, "dati_ingredienti_totali"):
             for r in self.dati_ingredienti_totali:
-                self.tree_ingredienti.insert(
+                self.tree_elenco.insert(
                     "", "end", 
                     values=(r.id, r.ingrediente_base, getattr(r, 'cod_ean', ''), getattr(r, 'merceologia', ''))
                 )

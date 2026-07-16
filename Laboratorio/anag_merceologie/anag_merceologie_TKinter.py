@@ -12,7 +12,7 @@ def build_ui(app):
     Compatibile con il controller `anag_merceologie_controller.py`.
 
     Richiede che `app` sia un controller con attributi/metodi:
-      - tree_merceologie: Treeview
+      - tree_elenco: Treeview
       - ent_merceologia: Entry (con .get/.delete/.insert)
       - cmb_box_reparto_value / cmb_box_reparto: Combobox
       - valore_flag (dict) e ckbutton (dict) e ATTRIBUTI (list di label)
@@ -104,18 +104,18 @@ def build_ui(app):
     app.btn_reset_filtro.grid(row=0, column=1, sticky="e", padx=0, pady=0)
 
     # Treeview (riga 2)
-    app.tree_merceologie = ttk.Treeview(tree_wrap, height=18)
-    app.tree_merceologie["columns"] = ("Id", "Merceologia", "Reparto")
-    app.tree_merceologie["show"] = "headings"
-    app.tree_merceologie.heading("Id", text="Id")
-    app.tree_merceologie.heading("Merceologia", text="Merceologia")
-    app.tree_merceologie.heading("Reparto", text="Reparto")
-    app.tree_merceologie.column("Id", width=30)
-    app.tree_merceologie.column("Merceologia", width=200)
-    app.tree_merceologie.column("Reparto", width=120)
-    app.tree_merceologie.bind("<<TreeviewSelect>>", app._onsingleclick)
+    app.tree_elenco = ttk.Treeview(tree_wrap, height=18)
+    app.tree_elenco["columns"] = ("Id", "Merceologia", "Reparto")
+    app.tree_elenco["show"] = "headings"
+    app.tree_elenco.heading("Id", text="Id")
+    app.tree_elenco.heading("Merceologia", text="Merceologia")
+    app.tree_elenco.heading("Reparto", text="Reparto")
+    app.tree_elenco.column("Id", width=30)
+    app.tree_elenco.column("Merceologia", width=200)
+    app.tree_elenco.column("Reparto", width=120)
+    app.tree_elenco.bind("<<TreeviewSelect>>", app._onsingleclick)
 
-    app.tree_merceologie.grid(row=2, column=0, sticky="nsew", padx=6, pady=(0, 6))
+    app.tree_elenco.grid(row=2, column=0, sticky="nsew", padx=6, pady=(0, 6))
 
 
     # --- Dettagli ---

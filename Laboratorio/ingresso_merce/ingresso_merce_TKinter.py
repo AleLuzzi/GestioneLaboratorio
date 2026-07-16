@@ -59,13 +59,15 @@ def build_ui(app):
     app.img_btn = _ctk_image(".//immagini//modifica.gif", (18, 18))
 
     # LAYOUT dei frame per impaginazione
-    app.frame_alto = ctk.CTkFrame(app, fg_color=COLORS["bg_light"], corner_radius=0)
-    app.frame_centrale = ctk.CTkFrame(app, fg_color=COLORS["bg_light"], corner_radius=0)
-    app.frame_basso_azioni = ctk.CTkFrame(app, fg_color=COLORS["bg_light"], corner_radius=0)
+    app.frame_elenco = ctk.CTkFrame(app, fg_color=COLORS["bg_light"], corner_radius=0)
 
-    # TREEVIEW per riepilogo inserimenti
-    app.tree = ttk.Treeview(app.frame_alto, height=8)
-    app.tree["columns"] = (
+    app.frame_alto = ctk.CTkFrame(app, fg_color=COLORS["bg_light"], corner_radius=0)
+    app.frame_dettagli = ctk.CTkFrame(app, fg_color=COLORS["bg_light"], corner_radius=0)
+    app.frame_toolbar = ctk.CTkFrame(app, fg_color=COLORS["bg_light"], corner_radius=0)
+
+    # tree_elencoVIEW per riepilogo inserimenti
+    app.tree_riepilogo = ttk.Treeview(app.frame_alto, height=8)
+    app.tree_riepilogo["columns"] = (
         "prog_acq",
         "data",
         "num_ddt",
@@ -76,20 +78,116 @@ def build_ui(app):
         "lotto_chiuso",
         "id_merc",
     )
-    app.tree["displaycolumns"] = ("data", "fornitore", "taglio", "peso_i")
-    app.tree["show"] = "headings"
-    app.tree.column("data", width=100)
-    app.tree.column("fornitore", width=100)
-    app.tree.column("taglio", width=100)
-    app.tree.column("peso_i", width=100)
-    app.tree.heading("data", text="Data")
-    app.tree.heading("fornitore", text="Fornitore")
-    app.tree.heading("taglio", text="Prodotto")
-    app.tree.heading("peso_i", text="Quantita")
+    app.tree_riepilogo["displaycolumns"] = ("data", "fornitore", "taglio", "peso_i")
+    app.tree_riepilogo["show"] = "headings"
+    app.tree_riepilogo.column("data", width=100)
+    app.tree_riepilogo.column("fornitore", width=100)
+    app.tree_riepilogo.column("taglio", width=100)
+    app.tree_riepilogo.column("peso_i", width=100)
+    app.tree_riepilogo.heading("data", text="Data")
+    app.tree_riepilogo.heading("fornitore", text="Fornitore")
+    app.tree_riepilogo.heading("taglio", text="Prodotto")
+    app.tree_riepilogo.heading("peso_i", text="Quantita")
 
-    # LABELFRAME contiene bottoni per scelta fornitore
+    # Contenitore "Elenco" in stile CustomTkinter (come anag_dipendenti)
+    app.labelframe_elenco = ctk.CTkFrame(
+        app.frame_elenco,
+        fg_color=COLORS["bg_content"],
+        corner_radius=8,
+    )
+
+    # Titolo sezione
+    app.lbl_titolo_elenco = ctk.CTkLabel(
+        app.labelframe_elenco,
+        text="Elenco",
+        font=ctk.CTkFont(family=FONT_FAMILY, size=14, weight="bold"),
+        text_color=COLORS["text_dark"],
+        anchor="w",
+    )
+    app.lbl_titolo_elenco.grid(row=0, column=0, sticky="ew", padx=12, pady=(10, 5))
+
+    # Wrapper che ospita Treeview e si espande in altezza
+    tree_wrap = ctk.CTkFrame(
+        app.labelframe_elenco,
+        fg_color="transparent",
+        corner_radius=0,
+    )
+    tree_wrap.grid(row=1, column=0, sticky="nsew", padx=6, pady=(0, 6))
+    tree_wrap.rowconfigure(0, weight=1)
+    tree_wrap.columnconfigure(0, weight=1)
+
+    app.tree_elenco = ttk.Treeview(tree_wrap, height=10, show="headings")
+
+    # notebook_dettagli: contiene "dettagli fornitore" e "dettagli taglio"
+    app.notebook_dettagli = ttk.Notebook(app.frame_dettagli)
+
+    # TAB DETTAGLI DATI (primo tab)
+    # Nota: su alcuni Tk/ttk la insert(0, ...) può fallire con "Slave index 0 out of bounds".
+    # Quindi aggiungo e poi riordino i tab.
+    app.tab_dettagli_dati = tk.Frame(app.notebook_dettagli)
+    app.notebook_dettagli.add(app.tab_dettagli_dati, text="Dati")
+
+    # TAB DETTAGLI FORNITORE
+    app.tab_dettagli_fornitore = tk.Frame(app.notebook_dettagli)
+    app.notebook_dettagli.add(app.tab_dettagli_fornitore, text="Fornitore")
+
+    # TAB DETTAGLI TAGLIO
+    app.tab_dettagli_taglio = tk.Frame(app.notebook_dettagli)
+    app.notebook_dettagli.add(app.tab_dettagli_taglio, text="Tagli / Prodotti")
+
+    # Riordina: garantisce "Dati" come primo tab
+    _tabs = app.notebook_dettagli.tabs()
+    _tab_dati_id = str(app.tab_dettagli_dati)
+    if _tab_dati_id in _tabs:
+        app.notebook_dettagli.forget(app.tab_dettagli_dati)
+        app.notebook_dettagli.insert(0, app.tab_dettagli_dati, text="Dati")
+    # Colonne visibili:
+    # - nr_lotto, fornitore, data
+    #
+    # Colonne "nascoste" (servono per ricostruire la chiave composta in _onsingleclick):
+    # - num_ddt, taglio, peso_i, peso_f, lotto_chiuso, id_merc, prog_acq
+    app.tree_elenco["columns"] = (
+        "nr_lotto",
+        "fornitore",
+        "data",
+        "prog_acq",
+        "num_ddt",
+        "taglio",
+        "peso_i",
+        "peso_f",
+        "lotto_chiuso",
+        "id_merc",
+    )
+
+    # Headings visibili
+    app.tree_elenco.heading("nr_lotto", text="nr Lotto")
+    app.tree_elenco.heading("fornitore", text="Fornitore")
+    app.tree_elenco.heading("data", text="Data")
+
+    # Headings invisibili
+    app.tree_elenco.heading("prog_acq", text="")
+    app.tree_elenco.heading("num_ddt", text="")
+    app.tree_elenco.heading("taglio", text="")
+    app.tree_elenco.heading("peso_i", text="")
+    app.tree_elenco.heading("peso_f", text="")
+    app.tree_elenco.heading("lotto_chiuso", text="")
+    app.tree_elenco.heading("id_merc", text="")
+
+    # Larghezze visibili
+    app.tree_elenco.column("nr_lotto", width=90, anchor="center")
+    app.tree_elenco.column("fornitore", width=120, anchor="w")
+    app.tree_elenco.column("data", width=110, anchor="center")
+
+    # Larghezze invisibili
+    for _col in ("prog_acq", "num_ddt", "taglio", "peso_i", "peso_f", "lotto_chiuso", "id_merc"):
+        app.tree_elenco.column(_col, width=0, minwidth=0, stretch=False, anchor="center")
+
+    app.tree_elenco.grid(row=0, column=0, sticky="nsew", padx=6, pady=6)
+    app.labelframe_elenco.rowconfigure(1, weight=1)
+    app.labelframe_elenco.columnconfigure(0, weight=1)
+
     app.labelframe_fornitori = tk.LabelFrame(
-        app.frame_centrale,
+        app.tab_dettagli_fornitore,
         text="Selezione Fornitore",
         font=get_font(12, bold=True),
         fg=COLORS["text_dark"],
@@ -99,48 +197,69 @@ def build_ui(app):
 
     _add_radio_grid(app.labelframe_fornitori, app.lista_fornitori, app.fornitore, row_wrap=6, width=200)
 
-    # LABELFRAME contiene bottoni per i tagli
+    # Posizionamento labelframe fornitore dentro la sua tab
+    app.labelframe_fornitori.grid(row=0, column=0, sticky="nsew")
+    app.tab_dettagli_fornitore.rowconfigure(0, weight=1)
+    app.tab_dettagli_fornitore.columnconfigure(0, weight=1)
+
+    # LABELFRAME contiene bottoni per i tagli (dentro tab dettagli taglio)
     app.labelframe_taglio = tk.LabelFrame(
-        app.frame_centrale,
+        app.tab_dettagli_taglio,
         text="Selezione Taglio / Prodotto",
         font=get_font(12, bold=True),
         fg=COLORS["text_dark"],
         bg=COLORS["bg_light"],
         labelanchor="n",
     )
-    app.notebook = ttk.Notebook(app.labelframe_taglio)
+    app.notebook_tagli = ttk.Notebook(app.labelframe_taglio)
 
     # TAB AGNELLO
-    app.tab1 = tk.Frame(app.notebook)
-    app.notebook.add(app.tab1, text="AGNELLO", state="disabled", compound="left", image=app.img_btn1)
+    app.tab1 = tk.Frame(app.notebook_tagli)
+    app.notebook_tagli.add(app.tab1, text="AGNELLO", state="disabled", compound="left", image=app.img_btn1)
     _add_radio_grid(app.tab1, app.lst_agnello, app.taglio_s, row_wrap=10)
 
     # TAB BOVINO
-    app.tab2 = tk.Frame(app.notebook)
-    app.notebook.add(app.tab2, text="BOVINO", state="disabled", compound="left", image=app.img_btn1)
+    app.tab2 = tk.Frame(app.notebook_tagli)
+    app.notebook_tagli.add(app.tab2, text="BOVINO", state="disabled", compound="left", image=app.img_btn1)
     _add_radio_grid(app.tab2, app.lst_bovino, app.taglio_s, row_wrap=10)
 
     # TAB SUINO
-    app.tab3 = tk.Frame(app.notebook)
-    app.notebook.add(app.tab3, text="SUINO", compound="left", image=app.img_btn1)
+    app.tab3 = tk.Frame(app.notebook_tagli)
+    app.notebook_tagli.add(app.tab3, text="SUINO", compound="left", image=app.img_btn1)
     _add_radio_grid(app.tab3, app.lst_suino, app.taglio_s, row_wrap=8)
 
     # TAB VITELLO
-    app.tab4 = tk.Frame(app.notebook)
-    app.notebook.add(app.tab4, text="VITELLO", state="disabled", compound="left", image=app.img_btn1)
+    app.tab4 = tk.Frame(app.notebook_tagli)
+    app.notebook_tagli.add(app.tab4, text="VITELLO", state="disabled", compound="left", image=app.img_btn1)
     _add_radio_grid(app.tab4, app.lst_vitello, app.taglio_s, row_wrap=10)
 
-    # LABEL progressivo lotto
+    # Posizionamento notebook tagli dentro il labelframe_taglio
+    app.labelframe_taglio.grid(row=0, column=0, sticky="nsew")
+    app.tab_dettagli_taglio.rowconfigure(0, weight=1)
+    app.tab_dettagli_taglio.columnconfigure(0, weight=1)
+
+    app.notebook_tagli.grid(row=0, column=0, sticky="we")
+
+    # Layout tab "Dati"
+    app.tab_dettagli_dati.rowconfigure(0, weight=0)
+    app.tab_dettagli_dati.rowconfigure(1, weight=0)
+    app.tab_dettagli_dati.rowconfigure(2, weight=0)
+    app.tab_dettagli_dati.rowconfigure(3, weight=0)
+    app.tab_dettagli_dati.columnconfigure(0, weight=1)
+    app.tab_dettagli_dati.columnconfigure(1, weight=0)
+
+    # LABEL progressivo lotto (nel tab "Dati")
+    # NOTE: le label/widget "Dati" (data/nddT/peso) devono essere parented e gridate nella stessa tab.
     title_font = ctk.CTkFont(family=FONT_FAMILY, size=16, weight="bold")
     value_font = ctk.CTkFont(family=FONT_FAMILY, size=16, weight="bold")
     app.label_lotto = ctk.CTkLabel(
-        app.frame_alto,
+        app.tab_dettagli_dati,
         text="PROGRESSIVO LOTTO",
         text_color=COLORS["accent_hover"],
         font=title_font,
     )
     app.label_prog_lotto = ctk.CTkLabel(
-        app.frame_alto,
+        app.tab_dettagli_dati,
         text=str(app.prog_lotto_acq) + "A",
         font=value_font,
         fg_color=COLORS["bg_content"],
@@ -149,26 +268,26 @@ def build_ui(app):
         height=36,
     )
 
-    # LABEL data ingresso + datepicker
+    # LABEL data ingresso + datepicker (nel tab "Dati")
     app.label_data_ingresso = ctk.CTkLabel(
-        app.frame_alto,
+        app.tab_dettagli_dati,
         text="DATA INGRESSO MERCE",
         text_color=COLORS["accent_hover"],
         font=title_font,
     )
-    app.picker = Datepicker(app.frame_alto, datevar=app.data, dateformat="%d-%m-%Y")
+    app.picker = Datepicker(app.tab_dettagli_dati, datevar=app.data, dateformat="%d-%m-%Y")
 
-    # ENTRY numero ddt/fattura
+    # ENTRY numero ddt/fattura (nel tab "Dati")
     app.label_num_ddt = ctk.CTkLabel(
-        app.frame_alto,
+        app.tab_dettagli_dati,
         text="NUMERO DDT/FATTURA",
         text_color=COLORS["accent_hover"],
         font=title_font,
     )
     app.num_ddt = tk.StringVar()
-    app.entry_ddt = ctk.CTkEntry(app.frame_alto, textvariable=app.num_ddt, width=220, height=34)
+    app.entry_ddt = ctk.CTkEntry(app.tab_dettagli_dati, textvariable=app.num_ddt, width=220, height=34)
     app.btn_ins_num_ddt = ctk.CTkButton(
-        app.frame_alto,
+        app.tab_dettagli_dati,
         text="",
         image=app.img_btn,
         width=36,
@@ -179,14 +298,14 @@ def build_ui(app):
     )
     app.entry_ddt.focus()
 
-    # ENTRY inserimento peso
+    # ENTRY inserimento peso (nel tab "Dati")
     app.label_peso = ctk.CTkLabel(
-        app.frame_alto,
+        app.tab_dettagli_dati,
         text="INSERIMENTO PESO",
         text_color=COLORS["accent_hover"],
         font=title_font,
     )
-    app.entry = ctk.CTkEntry(app.frame_alto, textvariable=app.peso, width=220, height=34)
+    app.entry = ctk.CTkEntry(app.tab_dettagli_dati, textvariable=app.peso, width=220, height=34)
 
     def _normalize_and_validate_peso_on_focus_out(_event=None):
         """
@@ -207,7 +326,7 @@ def build_ui(app):
 
     app.entry.bind("<FocusOut>", _normalize_and_validate_peso_on_focus_out)
     app.btn_ins_peso = ctk.CTkButton(
-        app.frame_alto,
+        app.tab_dettagli_dati,
         text="",
         image=app.img_btn,
         width=36,
@@ -219,7 +338,7 @@ def build_ui(app):
 
     # BOTTONI principali
     app.btn_invio = ctk.CTkButton(
-        app.frame_basso_azioni,
+        app.frame_toolbar,
         text="INVIO",
         font=ctk.CTkFont(family=FONT_FAMILY, size=14, weight="bold"),
         height=38,
@@ -228,7 +347,7 @@ def build_ui(app):
         command=app._invio,
     )
     app.btn_salva_esci = ctk.CTkButton(
-        app.frame_basso_azioni,
+        app.frame_toolbar,
         text="SALVA ed ESCI",
         font=ctk.CTkFont(family=FONT_FAMILY, size=14, weight="bold"),
         height=38,
@@ -237,7 +356,7 @@ def build_ui(app):
         command=app._salva_esci,
     )
     app.btn_chiudi_finestra = ctk.CTkButton(
-        app.frame_basso_azioni,
+        app.frame_toolbar,
         text="CHIUDI FINESTRA",
         font=ctk.CTkFont(family=FONT_FAMILY, size=14, weight="bold"),
         height=38,
@@ -255,17 +374,32 @@ def build_ui(app):
     )
 
     # Posizionamento layout
+    # (configurazioni per permettere espansione contenuti nella colonna centrale)
+    # Configurazione righe/colonne del contenitore principale (root app)
+    app.rowconfigure(0, weight=1)
+    app.rowconfigure(1, weight=1)
+    app.columnconfigure(0, weight=0)  # elenco
+    app.columnconfigure(1, weight=1)  # dettagli/alto
+    app.columnconfigure(2, weight=0)  # riepilogo/toolbar
+
+    app.frame_dettagli.rowconfigure(0, weight=1)
+    app.frame_dettagli.columnconfigure(0, weight=0)
+    app.frame_dettagli.columnconfigure(1, weight=1)
+
     app.frame_alto.grid(row=0, column=1, padx=8, pady=6, sticky="we")
-    app.frame_centrale.grid(row=1, column=1, padx=8, pady=6, sticky="we")
-    app.frame_basso_azioni.grid(row=2, column=1, columnspan=2, padx=8, pady=6, sticky="we")
+    app.frame_dettagli.grid(row=1, column=1, padx=8, pady=6, sticky="we")
 
-    app.tree.grid(row=1, column=3, rowspan=4, padx=10)
-    app.labelframe_fornitori.grid(row=1, column=0, sticky="n")
-    app.labelframe_taglio.grid(row=1, column=1)
-    app.notebook.grid(row=1, column=0, columnspan=2, sticky="we")
+    # Toolbar a partire dalla colonna 1: lasciamo la colonna 2 libera per il riepilogo
+    app.frame_toolbar.grid(row=2, column=1, columnspan=1, padx=8, pady=6, sticky="we")
 
-    app.label_lotto.grid(row=1, column=0, sticky="w")
-    app.label_prog_lotto.grid(row=1, column=1)
+    app.tree_riepilogo.grid(row=1, column=2, rowspan=4, padx=10)
+    app.frame_elenco.grid(row=0, column=0, rowspan=2, padx=8, pady=6, sticky="nswe")
+    app.labelframe_elenco.grid(row=0, column=0, sticky="nsew", padx=0, pady=0)
+    app.notebook_dettagli.grid(row=0, column=1, sticky="nsew", padx=(10, 0))
+
+    # Nel tab "Dati"
+    app.label_lotto.grid(row=1, column=0, sticky="w", padx=(0, 0), pady=(10, 0))
+    app.label_prog_lotto.grid(row=1, column=1, sticky="w", padx=(0, 0), pady=(10, 0))
     app.label_data_ingresso.grid(row=2, column=0, sticky="w")
     app.picker.grid(row=2, column=1)
 
@@ -280,4 +414,4 @@ def build_ui(app):
     app.btn_invio.grid(row=0, column=0, sticky="we")
     app.btn_salva_esci.grid(row=0, column=1, sticky="we")
     app.btn_chiudi_finestra.grid(row=0, column=2, sticky="we")
-    app.btn_rimuovi_riga.grid(row=5, column=3, sticky="we")
+    app.btn_rimuovi_riga.grid(row=5, column=2, sticky="we")

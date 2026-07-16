@@ -43,12 +43,12 @@ class Reparti(tk.Toplevel):
                 messagebox.showinfo("Successo", "Nuovo reparto inserito con successo.")
 
             else:
-                sel = self.tree_reparti.selection()
+                sel = self.tree_elenco.selection()
                 if not sel:
                     messagebox.showinfo("Attenzione", "Nessun record selezionato per la modifica.")
                     return
 
-                self.item = self.tree_reparti.item(sel[0], "values")
+                self.item = self.tree_elenco.item(sel[0], "values")
                 id_reparto = int(self.item[0])
 
                 reparto_modificato = Reparto(
@@ -72,7 +72,7 @@ class Reparti(tk.Toplevel):
         self.modalita_inserimento = False
         self.modalita_modifica = False
 
-        sel = self.tree_reparti.selection()
+        sel = self.tree_elenco.selection()
 
         if sel:
             self.ent_reparto.configure(state="normal")
@@ -83,7 +83,7 @@ class Reparti(tk.Toplevel):
             self.valore_flag_dip.set(0)
             self.valore_flag_prod.set(0)
 
-            self.item = self.tree_reparti.item(sel[0], "values")
+            self.item = self.tree_elenco.item(sel[0], "values")
             id_selezionato = int(self.item[0])
 
             reparto = next((r for r in self.dati_reparti_totali if r.id == id_selezionato), None)
@@ -105,12 +105,12 @@ class Reparti(tk.Toplevel):
 
     def _elimina(self):
         """Elimina il reparto selezionato previa conferma dell'utente."""
-        sel = self.tree_reparti.selection()
+        sel = self.tree_elenco.selection()
         if not sel:
             messagebox.showinfo("Attenzione", "Nessun record selezionato per l'eliminazione.")
             return
 
-        self.item = self.tree_reparti.item(sel, "values")
+        self.item = self.tree_elenco.item(sel, "values")
         id_selezionato = int(self.item[0])
 
         reparto = next((r for r in self.dati_reparti_totali if r.id == id_selezionato), None)
@@ -145,7 +145,7 @@ class Reparti(tk.Toplevel):
             messagebox.showerror("Errore Database", f"Impossibile eliminare il reparto: {e}")
 
     def _aggiorna(self):
-        self.tree_reparti.delete(*self.tree_reparti.get_children())
+        self.tree_elenco.delete(*self.tree_elenco.get_children())
 
         if hasattr(self, "entry_filtro"):
             self.entry_filtro.delete(0, "end")
@@ -153,13 +153,13 @@ class Reparti(tk.Toplevel):
         self.dati_reparti_totali = Reparto.fetch_all(self.c)
 
         for reparto in self.dati_reparti_totali:
-            self.tree_reparti.insert("", "end", values=(reparto.id, reparto.reparto))
+            self.tree_elenco.insert("", "end", values=(reparto.id, reparto.reparto))
 
     def _nuovo(self):
         """Prepara l'interfaccia principale per l'inserimento di un nuovo reparto."""
         self.modalita_inserimento = True
 
-        self.tree_reparti.selection_remove(self.tree_reparti.selection())
+        self.tree_elenco.selection_remove(self.tree_elenco.selection())
 
         self.ent_reparto.configure(state="normal")
         self.ckbtn_dip.configure(state="normal")
@@ -178,7 +178,7 @@ class Reparti(tk.Toplevel):
 
     def _modifica(self):
         """Abilita i campi di inserimento e i pulsanti di gestione dati."""
-        if not self.tree_reparti.selection():
+        if not self.tree_elenco.selection():
             messagebox.showinfo("Attenzione", "Seleziona un reparto dall'elenco per poterlo modificare.")
             return
 
@@ -215,7 +215,7 @@ class Reparti(tk.Toplevel):
         if getattr(self, "modalita_inserimento", False) or getattr(self, "modalita_modifica", False):
             return
 
-        sel = self.tree_reparti.selection()
+        sel = self.tree_elenco.selection()
         if not sel:
             return
 
@@ -227,7 +227,7 @@ class Reparti(tk.Toplevel):
         self.valore_flag_dip.set(0)
         self.valore_flag_prod.set(0)
 
-        self.item = self.tree_reparti.item(sel[0], "values")
+        self.item = self.tree_elenco.item(sel[0], "values")
         id_selezionato = int(self.item[0])
 
         reparto = next((r for r in self.dati_reparti_totali if r.id == id_selezionato), None)
@@ -250,31 +250,31 @@ class Reparti(tk.Toplevel):
         """Filtra gli elementi della Treeview in base al testo digitato nella Entry."""
         testo_ricerca = self.entry_filtro.get().lower()
 
-        self.tree_reparti.delete(*self.tree_reparti.get_children())
+        self.tree_elenco.delete(*self.tree_elenco.get_children())
 
         if not hasattr(self, "dati_reparti_totali"):
             return
 
         for reparto in self.dati_reparti_totali:
             if testo_ricerca in str(reparto.reparto).lower() or testo_ricerca in str(reparto.id):
-                self.tree_reparti.insert("", "end", values=(reparto.id, reparto.reparto))
+                self.tree_elenco.insert("", "end", values=(reparto.id, reparto.reparto))
 
     def _reset_ricerca(self):
         """Svuota il filtro, ripristina la lista completa e pulisce i dettagli."""
         if getattr(self, "modalita_inserimento", False) or getattr(self, "modalita_modifica", False):
             return
 
-        if self.tree_reparti.selection():
-            self.tree_reparti.selection_remove(self.tree_reparti.selection())
+        if self.tree_elenco.selection():
+            self.tree_elenco.selection_remove(self.tree_elenco.selection())
 
         if hasattr(self, "entry_filtro"):
             self.entry_filtro.delete(0, "end")
 
-        self.tree_reparti.delete(*self.tree_reparti.get_children())
+        self.tree_elenco.delete(*self.tree_elenco.get_children())
 
         if hasattr(self, "dati_reparti_totali"):
             for reparto in self.dati_reparti_totali:
-                self.tree_reparti.insert("", "end", values=(reparto.id, reparto.reparto))
+                self.tree_elenco.insert("", "end", values=(reparto.id, reparto.reparto))
 
         self.ent_reparto.configure(state="normal")
         self.ent_reparto.delete(0, "end")

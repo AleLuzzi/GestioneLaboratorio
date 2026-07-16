@@ -47,7 +47,7 @@ class AnagMerceologieController(tk.Toplevel):
         self.dati_merceologie_totali = Merceologia.fetch_all(self.c)
 
     def _aggiorna(self):
-        self.tree_merceologie.delete(*self.tree_merceologie.get_children())
+        self.tree_elenco.delete(*self.tree_elenco.get_children())
 
         # Svuota il filtro all'aggiornamento dei dati generali
         if hasattr(self, "entry_filtro"):
@@ -57,7 +57,7 @@ class AnagMerceologieController(tk.Toplevel):
         self._carica_cache()
 
         for m in self.dati_merceologie_totali:
-            self.tree_merceologie.insert(
+            self.tree_elenco.insert(
                 "",
                 "end",
                 values=(m.id, m.merceologia, m.id_reparto),
@@ -74,14 +74,14 @@ class AnagMerceologieController(tk.Toplevel):
 
         testo_ricerca = self.entry_filtro.get().lower()
 
-        self.tree_merceologie.delete(*self.tree_merceologie.get_children())
+        self.tree_elenco.delete(*self.tree_elenco.get_children())
 
         if not hasattr(self, "dati_merceologie_totali"):
             return
 
         for m in self.dati_merceologie_totali:
             if testo_ricerca in str(m.merceologia).lower() or testo_ricerca in str(m.id):
-                self.tree_merceologie.insert(
+                self.tree_elenco.insert(
                     "",
                     "end",
                     values=(m.id, m.merceologia, m.id_reparto),
@@ -92,17 +92,17 @@ class AnagMerceologieController(tk.Toplevel):
         if getattr(self, "modalita_inserimento", False) or getattr(self, "modalita_modifica", False):
             return
 
-        if self.tree_merceologie.selection():
-            self.tree_merceologie.selection_remove(self.tree_merceologie.selection())
+        if self.tree_elenco.selection():
+            self.tree_elenco.selection_remove(self.tree_elenco.selection())
 
         if hasattr(self, "entry_filtro"):
             self.entry_filtro.delete(0, "end")
 
-        self.tree_merceologie.delete(*self.tree_merceologie.get_children())
+        self.tree_elenco.delete(*self.tree_elenco.get_children())
 
         if hasattr(self, "dati_merceologie_totali"):
             for m in self.dati_merceologie_totali:
-                self.tree_merceologie.insert(
+                self.tree_elenco.insert(
                     "",
                     "end",
                     values=(m.id, m.merceologia, m.id_reparto),
@@ -129,10 +129,10 @@ class AnagMerceologieController(tk.Toplevel):
         self.cmb_box_reparto["values"] = lista_reparti
 
     def _seleziona_per_popolamento(self):
-        sel = self.tree_merceologie.selection()
+        sel = self.tree_elenco.selection()
         if not sel:
             return None
-        values = self.tree_merceologie.item(sel[0], "values")
+        values = self.tree_elenco.item(sel[0], "values")
         if not values:
             return None
         # values: (id, merceologia, id_reparto) oppure (id, merceologia, reparto_testo)
@@ -149,7 +149,7 @@ class AnagMerceologieController(tk.Toplevel):
             return
 
         # Recupera la riga selezionata nel Treeview
-        sel = self.tree_merceologie.selection()
+        sel = self.tree_elenco.selection()
         if not sel:
             return
 
@@ -162,7 +162,7 @@ class AnagMerceologieController(tk.Toplevel):
         self.cmb_box_reparto_value.set("")
 
         # Estrae i valori visibili della riga
-        self.item = self.tree_merceologie.item(sel[0], "values")
+        self.item = self.tree_elenco.item(sel[0], "values")
         m_id = int(self.item[0])
 
         # Cerca l'oggetto direttamente nella cache locale
@@ -240,8 +240,8 @@ class AnagMerceologieController(tk.Toplevel):
         self.modalita_modifica = False
 
         # Deseleziona eventuale record
-        if self.tree_merceologie.selection():
-            self.tree_merceologie.selection_remove(self.tree_merceologie.selection())
+        if self.tree_elenco.selection():
+            self.tree_elenco.selection_remove(self.tree_elenco.selection())
         self.item = ""
 
         # Pulisci campi e abilita scrittura

@@ -34,8 +34,8 @@ class AnagTagliController(tk.Toplevel):
         self.modalita_modifica = False
 
         # deselect
-        if self.tree_tagli.selection():
-            self.tree_tagli.selection_remove(self.tree_tagli.selection())
+        if self.tree_elenco.selection():
+            self.tree_elenco.selection_remove(self.tree_elenco.selection())
 
         # sblocca
         self.entry_taglio.configure(state="normal")
@@ -57,7 +57,7 @@ class AnagTagliController(tk.Toplevel):
         self.btn_annulla.configure(state="normal")
 
     def _modifica(self):
-        if not self.tree_tagli.selection():
+        if not self.tree_elenco.selection():
             messagebox.showinfo("Attenzione", "Seleziona un taglio dall'elenco per poterlo modificare.")
             return
 
@@ -92,11 +92,11 @@ class AnagTagliController(tk.Toplevel):
         self.modalita_inserimento = False
         self.modalita_modifica = False
 
-        sel = self.tree_tagli.selection()
+        sel = self.tree_elenco.selection()
 
         # Ripristina dati selezionati (se esiste)
         if sel:
-            self.item = self.tree_tagli.item(sel[0], "values")
+            self.item = self.tree_elenco.item(sel[0], "values")
             id_selezionato = int(self.item[0])
 
             taglio = next((r for r in self.dati_tagli_totali if r.id == id_selezionato), None)
@@ -150,12 +150,12 @@ class AnagTagliController(tk.Toplevel):
                 messagebox.showinfo("Successo", "Nuovo taglio inserito con successo.")
 
             else:
-                sel = self.tree_tagli.selection()
+                sel = self.tree_elenco.selection()
                 if not sel:
                     messagebox.showinfo("Attenzione", "Nessun record selezionato per la modifica.")
                     return
 
-                self.item = self.tree_tagli.item(sel[0], "values")
+                self.item = self.tree_elenco.item(sel[0], "values")
                 id_selezionato = int(self.item[0])
 
                 aggiornato = Taglio(id=id_selezionato, taglio=taglio_desc, id_merceologia=id_merceologia)
@@ -175,14 +175,14 @@ class AnagTagliController(tk.Toplevel):
         # aggiorna combobox merceologie
         self._carica_merceologie()
 
-        self.tree_tagli.delete(*self.tree_tagli.get_children())
+        self.tree_elenco.delete(*self.tree_elenco.get_children())
 
         self.dati_tagli_totali = Taglio.fetch_all(self.c)
 
         for t in self.dati_tagli_totali:
             # per la colonna Merceologia usiamo nome (id -> nome)
             nome_merc = self._map_merceologia_id_to_name.get(getattr(t, "id_merceologia", None), "")
-            self.tree_tagli.insert("", "end", values=(t.id, t.taglio, nome_merc))
+            self.tree_elenco.insert("", "end", values=(t.id, t.taglio, nome_merc))
 
     def _carica_merceologie(self):
         # popola combobox merceologie e costruisce mapping id<->name
@@ -208,12 +208,12 @@ class AnagTagliController(tk.Toplevel):
             self.box_merceologia["values"] = values
 
     def _elimina(self):
-        sel = self.tree_tagli.selection()
+        sel = self.tree_elenco.selection()
         if not sel:
             messagebox.showinfo("Attenzione", "Nessun record selezionato per l'eliminazione.")
             return
 
-        self.item = self.tree_tagli.item(sel[0], "values")
+        self.item = self.tree_elenco.item(sel[0], "values")
         id_selezionato = int(self.item[0])
 
         taglio = next((r for r in self.dati_tagli_totali if r.id == id_selezionato), None)
@@ -256,19 +256,19 @@ class AnagTagliController(tk.Toplevel):
             return
 
         # deselect
-        if self.tree_tagli.selection():
-            self.tree_tagli.selection_remove(self.tree_tagli.selection())
+        if self.tree_elenco.selection():
+            self.tree_elenco.selection_remove(self.tree_elenco.selection())
 
         # reset testo filtro
         if hasattr(self, "entry_filtro"):
             self.entry_filtro.delete(0, "end")
 
         # reset tabella (usa la cache se disponibile, evitando roundtrip extra)
-        self.tree_tagli.delete(*self.tree_tagli.get_children())
+        self.tree_elenco.delete(*self.tree_elenco.get_children())
         if hasattr(self, "dati_tagli_totali"):
             for t in self.dati_tagli_totali:
                 nome_merc = self._map_merceologia_id_to_name.get(getattr(t, "id_merceologia", None), "")
-                self.tree_tagli.insert("", "end", values=(t.id, t.taglio, nome_merc))
+                self.tree_elenco.insert("", "end", values=(t.id, t.taglio, nome_merc))
 
         # reset campi dettaglio
         self.entry_taglio.configure(state="normal")
@@ -282,7 +282,7 @@ class AnagTagliController(tk.Toplevel):
 
     def _filtra_tagli(self, event=None):
         testo = self.entry_filtro.get().lower().strip()
-        self.tree_tagli.delete(*self.tree_tagli.get_children())
+        self.tree_elenco.delete(*self.tree_elenco.get_children())
 
         if not hasattr(self, "dati_tagli_totali"):
             return
@@ -294,14 +294,14 @@ class AnagTagliController(tk.Toplevel):
                 or testo in str(getattr(t, "taglio", "")).lower()
                 or testo in str(nome_merc).lower()
             ):
-                self.tree_tagli.insert("", "end", values=(t.id, t.taglio, nome_merc))
+                self.tree_elenco.insert("", "end", values=(t.id, t.taglio, nome_merc))
 
 
     def _onsingleclick(self, event):
         if getattr(self, "modalita_inserimento", False) or getattr(self, "modalita_modifica", False):
             return
 
-        sel = self.tree_tagli.selection()
+        sel = self.tree_elenco.selection()
         if not sel:
             return
 
@@ -312,7 +312,7 @@ class AnagTagliController(tk.Toplevel):
 
         self.entry_taglio.delete(0, "end")
 
-        self.item = self.tree_tagli.item(sel[0], "values")
+        self.item = self.tree_elenco.item(sel[0], "values")
         id_selezionato = int(self.item[0])
 
         taglio = next((r for r in self.dati_tagli_totali if r.id == id_selezionato), None)

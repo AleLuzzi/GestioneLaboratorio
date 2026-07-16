@@ -121,15 +121,15 @@ def build_ui(app):
     tree_wrap.rowconfigure(0, weight=1)
     tree_wrap.columnconfigure(0, weight=1)
 
-    app.tree_dipendenti = ttk.Treeview(tree_wrap, height=18)
-    app.tree_dipendenti["columns"] = ("Id", "Dipendente")
-    app.tree_dipendenti["show"] = "headings"
-    app.tree_dipendenti.heading("Id", text="Id")
-    app.tree_dipendenti.heading("Dipendente", text="Dipendente")
-    app.tree_dipendenti.column("Id", width=48, anchor="center")
-    app.tree_dipendenti.column("Dipendente", width=200)
-    app.tree_dipendenti.bind("<<TreeviewSelect>>", app._onsingleclick)
-    app.tree_dipendenti.grid(row=0, column=0, sticky="nsew", padx=6, pady=6)
+    app.tree_elenco = ttk.Treeview(tree_wrap, height=18)
+    app.tree_elenco["columns"] = ("Id", "Dipendente")
+    app.tree_elenco["show"] = "headings"
+    app.tree_elenco.heading("Id", text="Id")
+    app.tree_elenco.heading("Dipendente", text="Dipendente")
+    app.tree_elenco.column("Id", width=48, anchor="center")
+    app.tree_elenco.column("Dipendente", width=200)
+    app.tree_elenco.bind("<<TreeviewSelect>>", app._onsingleclick)
+    app.tree_elenco.grid(row=0, column=0, sticky="nsew", padx=6, pady=6)
     
     # Contenitore moderno CustomTkinter per i dettagli del dipendente
     app.lbl_frame_dettagli_selezionato = ctk.CTkFrame(

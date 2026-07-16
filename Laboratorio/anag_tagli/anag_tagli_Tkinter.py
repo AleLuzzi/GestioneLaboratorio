@@ -24,7 +24,7 @@ def build_ui(app):
     - self.conn e self.c o comunque gestisce i dati altrove
 
     Espone widget come attributi per il controller:
-    - tree_tagli
+    - tree_elenco
     - entry_taglio
     - ent_merceologia (combobox)
     - ckbtn_in_inventario (checkbox)
@@ -113,22 +113,22 @@ def build_ui(app):
     tree_wrap.rowconfigure(0, weight=1)
     tree_wrap.columnconfigure(0, weight=1)
 
-    app.tree_tagli = ttk.Treeview(tree_wrap, height=18)
-    app.tree_tagli["columns"] = ("Id", "Tagli", "Merceologia")
-    app.tree_tagli["show"] = "headings"
-    app.tree_tagli.heading("Id", text="Id")
-    app.tree_tagli.heading("Tagli", text="Tagli")
-    app.tree_tagli.heading("Merceologia", text="Merceologia")
+    app.tree_elenco = ttk.Treeview(tree_wrap, height=18)
+    app.tree_elenco["columns"] = ("Id", "Tagli", "Merceologia")
+    app.tree_elenco["show"] = "headings"
+    app.tree_elenco.heading("Id", text="Id")
+    app.tree_elenco.heading("Tagli", text="Tagli")
+    app.tree_elenco.heading("Merceologia", text="Merceologia")
 
-    app.tree_tagli.column("Id", width=30)
-    app.tree_tagli.column("Tagli", width=150)
-    app.tree_tagli.column("Merceologia", width=150)
+    app.tree_elenco.column("Id", width=30)
+    app.tree_elenco.column("Tagli", width=150)
+    app.tree_elenco.column("Merceologia", width=150)
 
     # Nel controller verrà gestito come: _onsingleclick(event)
-    app.tree_tagli.bind("<<TreeviewSelect>>", getattr(app, "_onsingleclick", lambda e=None: None))
-    app.tree_tagli.bind("<Double-1>", getattr(app, "_onsingleclick", lambda e=None: None))
+    app.tree_elenco.bind("<<TreeviewSelect>>", getattr(app, "_onsingleclick", lambda e=None: None))
+    app.tree_elenco.bind("<Double-1>", getattr(app, "_onsingleclick", lambda e=None: None))
 
-    app.tree_tagli.grid(row=0, column=0, sticky="nsew", padx=6, pady=6)
+    app.tree_elenco.grid(row=0, column=0, sticky="nsew", padx=6, pady=6)
 
     # --- Dettagli ---
     app.lbl_frame_dettagli_selezionato = tk.LabelFrame(
