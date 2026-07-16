@@ -12,11 +12,10 @@ def setup_window(window):
     ctk.set_appearance_mode("light")
     window.configure(bg=COLORS["bg_light"])
     window.title("Anagrafica fornitori")
+    # Mantieni solo la posizione: la dimensione verrà calcolata dopo la costruzione UI
     window.geometry("+80+80")
-    window.minsize(720, 420)
     window.rowconfigure(0, weight=1)
     window.columnconfigure(0, weight=1)
-
 
 def build_ui(app):
     """Costruisce layout e widget; richiede connessione/cursor gia' su `app`."""
@@ -35,9 +34,12 @@ def build_ui(app):
     app.frame_root.columnconfigure(1, weight=1)
     app.frame_root.columnconfigure(2, weight=0)
 
-    # Gestione Righe: 
-    app.frame_root.rowconfigure(0, weight=0)  # La toolbar non deve deformarsi in altezza
-    app.frame_root.rowconfigure(1, weight=1)  # La riga dei dettagli si espande e riempie il vuoto
+    # Gestione Righe:
+    # In questo layout usiamo: row=0 per titolo/toolbar e row=1 per dettagli.
+    # L'area elenco (frame_elenco) occupa anche row=0 con rowspan=2.
+    app.frame_root.rowconfigure(0, weight=0)
+    app.frame_root.rowconfigure(1, weight=1)
+
 
     
 
@@ -53,19 +55,28 @@ def build_ui(app):
     app.frame_dettagli = ctk.CTkFrame(app.frame_root, fg_color=COLORS["bg_light"], corner_radius=0)
     app.frame_dettagli.grid_columnconfigure(0, weight=1)
     app.frame_dettagli.grid_columnconfigure(1, weight=1)
+    app.frame_dettagli.grid_columnconfigure(2, weight=0)  # colonna "azioni" non deve espandersi
     app.frame_dettagli.grid_rowconfigure(0, weight=1)
     app.frame_toolbar = ctk.CTkFrame(app.frame_root, fg_color=COLORS["bg_light"], corner_radius=0)
 
     # --- POSIZIONAMENTO DEI FRAME FIGLI ---
 
     # L'elenco copre entrambe le righe e segue l'altezza totale grazie a sticky="nsew"
-    app.frame_elenco.grid(row=0, column=0, rowspan=2, sticky="nsew", padx=(0, 8), pady=0)
-
-    # La toolbar sta in alto a destra e non si allunga verticalmente (sticky="new")
-    app.frame_toolbar.grid(row=0, column=1, sticky="new", padx=(8, 0), pady=0)
+    # (come in anag_dipendenti)
+    app.frame_elenco.grid(row=1, column=0, rowspan=2, sticky="nsew", padx=(0, 8), pady=0)
 
     # Il frame dettagli riempie TUTTA la riga 1 sia in larghezza che in altezza (sticky="nsew")
     app.frame_dettagli.grid(row=1, column=1, sticky="nsew", padx=(8, 0), pady=0)
+
+    # La toolbar sta in alto a destra e non si allunga verticalmente (sticky="new")
+    app.frame_toolbar.grid(row=1, column=2, sticky="new", padx=(8, 0), pady=(0, 12))
+
+    # Importante: la griglia interna di frame_dettagli deve avere una riga 0 espandibile
+    # (per evitare che i box finiscano “a metà” del frame elenco)
+    app.frame_dettagli.rowconfigure(0, weight=1)
+
+
+
     
     app.frame_elenco.rowconfigure(0, weight=1)
     app.frame_elenco.columnconfigure(0, weight=1)
@@ -131,15 +142,24 @@ def build_ui(app):
     app.tree_fornitori.bind("<<TreeviewSelect>>", app._onsingleclick)
     app.tree_fornitori.grid(row=0, column=0, sticky="nsew", padx=6, pady=6)
 
-    app.lbl_frame_dettagli_selezionato = tk.LabelFrame(
+    app.lbl_frame_dettagli_selezionato = ctk.CTkFrame(
         app.frame_dettagli,
-        text="Dettagli fornitore selezionato",
-        font=get_font(12, bold=True),
-        fg=COLORS["text_dark"],
-        bg=COLORS["bg_light"],
-        labelanchor="n",
+        fg_color=COLORS["bg_light"],
+        border_color=COLORS["border"],
+        border_width=1,
+        corner_radius=8
     )
-    app.lbl_frame_dettagli_selezionato.grid(row=0, column=0, sticky="nsew", pady=(0, 8))
+
+    # Titolo in alto per allineare i 3 box (titolo+campi e attributi) come nel modello dipendenti
+    app.lbl_titolo_dettagli = ctk.CTkLabel(
+        app.lbl_frame_dettagli_selezionato,
+        text="Dettagli fornitore selezionato",
+        font=ctk.CTkFont(family=FONT_FAMILY, size=16, weight="bold"),
+        text_color=COLORS["text_dark"]
+    )
+    app.lbl_titolo_dettagli.grid(row=0, column=0, columnspan=2, padx=8, pady=(10, 5), sticky="n")
+
+    app.lbl_frame_dettagli_selezionato.grid(row=0, column=0, sticky="new", padx=(0, 6), pady=(0, 8))
 
     app.lbl_azienda = ctk.CTkLabel(
         app.lbl_frame_dettagli_selezionato,
@@ -147,7 +167,7 @@ def build_ui(app):
         font=label_font,
         text_color=COLORS["text_dark"],
     )
-    app.lbl_azienda.grid(row=0, column=0, padx=8, pady=8, sticky="w")
+    app.lbl_azienda.grid(row=1, column=0, padx=8, pady=8, sticky="w")
     app.ent_azienda = ctk.CTkEntry(
         app.lbl_frame_dettagli_selezionato,
         width=240,
@@ -158,24 +178,16 @@ def build_ui(app):
         text_color=COLORS["text_dark"],
         state="disabled"
     )
-    app.ent_azienda.grid(row=0, column=1, padx=8, pady=8, sticky="ew")
-    app.lbl_frame_dettagli_selezionato.columnconfigure(1, weight=1)
+    app.ent_azienda.grid(row=1, column=1, padx=8, pady=8, sticky="ew")
 
-    app.lbl_frame_attributi_fornitori = tk.LabelFrame(
-        app.frame_dettagli,
-        text="Attributi fornitore selezionato",
-        font=get_font(12, bold=True),
-        fg=COLORS["text_dark"],
-        bg=COLORS["bg_light"],
-        labelanchor="n",
-    )
-    app.lbl_frame_attributi_fornitori.grid(row=0, column=1, sticky="nsew", pady=(0, 8))
+    # NOTE: Spostate checkbox dal vecchio contenitore “attributi” dentro il contenitore “dettagli”.
+    # In questo modo possiamo cancellare completamente app.lbl_frame_attributi_fornitori.
 
     app.valore_flag_ing_merce = tk.IntVar()
     app.valore_flag_inv = tk.IntVar()
-
+    
     app.ckbtn_ing_merce = ctk.CTkCheckBox(
-        app.lbl_frame_attributi_fornitori,
+        app.lbl_frame_dettagli_selezionato,
         text="Visualizza nel modulo Ingresso merce",
         variable=app.valore_flag_ing_merce,
         onvalue=1,
@@ -187,10 +199,10 @@ def build_ui(app):
         text_color=COLORS["text_dark"],
         state="disabled"
     )
-    app.ckbtn_ing_merce.grid(row=0, column=0, padx=8, pady=10, sticky="w")
+    app.ckbtn_ing_merce.grid(row=2, column=0, padx=8, pady=10, sticky="w")
 
     app.ckbtn_inv = ctk.CTkCheckBox(
-        app.lbl_frame_attributi_fornitori,
+        app.lbl_frame_dettagli_selezionato,
         text="Visualizza nel modulo Inventario",
         variable=app.valore_flag_inv,
         onvalue=1,
@@ -202,20 +214,21 @@ def build_ui(app):
         text_color=COLORS["text_dark"],
         state="disabled"
     )
-    app.ckbtn_inv.grid(row=1, column=0, padx=8, pady=10, sticky="w")
+    app.ckbtn_inv.grid(row=3, column=0, padx=8, pady=10, sticky="w")
 
-    app.lbl_frame_scegli = tk.LabelFrame(
-        app.frame_toolbar,
-        text="Azioni",
-        font=get_font(12, bold=True),
-        fg=COLORS["text_dark"],
-        bg=COLORS["bg_light"],
-        labelanchor="n",
+
+    # --- Azioni: label frame con bottoni a destra del frame "Attributi" e disposti in verticale ---
+
+    app.lbl_frame_scegli = ctk.CTkFrame(
+        app.frame_dettagli,
+        fg_color=COLORS["bg_light"],
+        border_color=COLORS["border"],
+        border_width=1,
+        corner_radius=8,
     )
-    app.lbl_frame_scegli.grid(row=0, column=0, sticky="ew")
-
-    
-    
+    # Colonna 2 rispetto ai campi attributi (che stanno in colonna 1)
+    app.lbl_frame_scegli.grid(row=0, column=2, rowspan=1, sticky="new", padx=(8, 0), pady=(0, 8))
+    app.lbl_frame_scegli.columnconfigure(0, weight=1)
 
     app.btn_nuovo = ctk.CTkButton(
         app.lbl_frame_scegli,
@@ -245,7 +258,7 @@ def build_ui(app):
         fg_color=COLORS["accent"],
         hover_color=COLORS["accent_hover"],
         command=app._salva,
-        state="disabled"
+        state="disabled",
     )
 
     app.btn_annulla = ctk.CTkButton(
@@ -270,15 +283,29 @@ def build_ui(app):
         command=app._elimina,
     )
 
-    
-    app.btn_nuovo.grid(row=0, column=0, padx=8, pady=8, sticky="ew")
-    app.btn_modifica.grid(row=0, column=1, padx=8, pady=8, sticky="ew")
-    app.btn_salva.grid(row=0, column=2, padx=8, pady=8, sticky="ew")
-    app.btn_annulla.grid(row=0, column=3, padx=8, pady=8, sticky="ew")
-    app.btn_elimina.grid(row=0, column=4, padx=8, pady=8, sticky="ew")
+    # Pulsanti in verticale (1 colonna)
+    app.btn_nuovo.grid(row=1, column=0, padx=8, pady=8, sticky="ew")
+    app.btn_modifica.grid(row=2, column=0, padx=8, pady=8, sticky="ew")
+    app.btn_salva.grid(row=3, column=0, padx=8, pady=8, sticky="ew")
+    app.btn_annulla.grid(row=4, column=0, padx=8, pady=8, sticky="ew")
+    app.btn_elimina.grid(row=5, column=0, padx=8, pady=8, sticky="ew")
 
-    for col in range(5):
-        app.lbl_frame_scegli.columnconfigure(col, weight=1)
+
+    # --- Adatta dimensione finestra al contenuto (una volta dopo il build) ---
+    try:
+        app.update_idletasks()
+        # Misura richiesta del contenitore principale; aggiunge margine per cornici/bordi.
+        w = app.frame_root.winfo_reqwidth()
+        h = app.frame_root.winfo_reqheight()
+        # Correzione: la larghezza veniva gonfiata (margine costante +40) e lasciava spazio vuoto a destra.
+        # Usiamo solo la richiesta del contenitore principale, con un minimo per evitare finestra troppo stretta.
+        w = max(w, 700)
+        h = max(h + 40, 420)
+        app.geometry(f"{w}x{h}")
+    except Exception:
+        # Se la misura fallisce per qualsiasi motivo, non impedire l'apertura della finestra.
+        pass
 
     app._aggiorna()
+
 
