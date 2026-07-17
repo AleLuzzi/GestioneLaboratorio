@@ -114,6 +114,22 @@ class MovIngressoMerce:
         aggiorna tutti i campi e usa WHERE sulla chiave composta.
         """
         return self.params_insert() + self.params_where()
+    
+    @classmethod
+    def fetch_by_progressivo(cls, cursor, progressivo_acq):
+        """
+        Recupera tutti i movimenti che appartengono allo stesso lotto 
+        filtrando per il campo progressivo_acq.
+        """
+        cursor.execute(
+            """
+            SELECT * FROM ingresso_merce 
+            WHERE progressivo_acq = %s
+            """, 
+            (progressivo_acq,)
+        )
+        return [cls.from_row(row) for row in cursor.fetchall()]
+
 
     @classmethod
     def fetch_all(cls, cursor):
@@ -157,7 +173,40 @@ class MovIngressoMerce:
         )
         row = cursor.fetchone()
         return cls.from_row(row) if row else None
+    
+    def save(self, cursor, conn):
+        """
+        Esegue UPDATE del record corrente utilizzando come riferimento 
+        univoco il campo progressivo_acq (prog_acq).
+        """
+        # Estraiamo i 9 valori correnti aggiornati dell'oggetto per il SET
+        update_values = self.params_insert()
+        
+        # Identifichiamo il record nel WHERE usando il progressivo_acq dell'istanza
+        where_value = (self.prog_acq,)
+        
+        # Uniamo le tuple: i primi 9 valori per i SET, l'ultimo per il WHERE
+        query_params = update_values + where_value
 
+        cursor.execute(
+            """
+            UPDATE ingresso_merce
+            SET progressivo_acq = %s,
+                data_acq = %s,
+                documento = %s,
+                fornitore = %s,
+                prodotto = %s,
+                quantita = %s,
+                residuo = %s,
+                lotto_chiuso = %s,
+                id_merc = %s
+            WHERE progressivo_acq = %s
+            """,
+            query_params,
+        )
+        conn.commit()
+
+    '''
     def save(self, cursor, conn):
         """
         Esegue UPDATE del record corrente.
@@ -188,7 +237,7 @@ class MovIngressoMerce:
             self.params_update(),
         )
         conn.commit()
-
+    '''
     def insert(self, cursor, conn):
         """Esegue INSERT del nuovo record sul database."""
         cursor.execute(

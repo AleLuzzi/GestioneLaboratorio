@@ -79,21 +79,65 @@ class IngressoMerce(tk.Toplevel):
                                             'no',
                                             merc))
         self.entry.delete(0, tk.END)
-
+        
     def _salva(self):
+        # Se siamo in modalità modifica, aggiorniamo il record esistente
+        if self.modalita_modifica:
+            sel = self.tree_elenco.selection()
+            if not sel:
+                return
+            
+            # Recuperiamo i valori originari della riga selezionata prima delle modifiche a schermo
+            # per identificare l'oggetto nel DB tramite find_by_key
+            item_values = self.tree_elenco.item(sel[0], "values")
+            if not item_values or len(item_values) < 10:
+                return
+                
+            # Estraiamo i 10 valori (compreso l'id_merc e prog_acq nascosti)
+            # e ricostruiamo la chiave per trovare il movimento originale nel database
+            # Nota: l'ordine dei valori deve rispecchiare quello inserito nel tree_elenco
+            nr_lotto, fornitore, data_db, prog_acq, num_ddt, taglio, peso_i, peso_f, lotto_chiuso, id_merc = item_values[:10]
+            
+            key = (prog_acq, data_db, num_ddt, fornitore, taglio, peso_i, peso_f, lotto_chiuso, id_merc)
+            mov = MovIngressoMerce.find_by_key(self.c, key)
+            
+            if mov:
+                # Aggiorniamo l'oggetto con i NUOVI dati inseriti dall'utente nei widget della UI
+                # Gestione corretta della data in formato compatibile con il DB
+                try:
+                    mov.data = datetime.datetime.strptime(self.data.get(), "%d-%m-%Y").date()
+                except Exception:
+                    mov.data = self.data.get()
+                    
+                mov.num_ddt = self.num_ddt.get()
+                mov.fornitore = self.fornitore.get()
+                mov.taglio = self.taglio_s.get()
+                
+                # Risoluzione dell'incoerenza: la entry scrive in self.peso, ma il modello usa peso_i
+                mov.peso_i = self.peso.get() 
+                
+                # Eseguiamo l'UPDATE mirato sul database usando come riferimento progressivo_acq
+                mov.save(self.c, self.conn)
+            
+            # Ricarichiamo la tabella e ripristiniamo lo stato di sola lettura
+            self._carica_elenco_ingresso_merce()
+            self._disabilita_campi()
+            return
+
+        # --- LOGICA DI INSERIMENTO NUOVO MOVIMENTO (Preesistente) ---
+        # Viene eseguita solo se modalita_modifica è False
         for child in self.tree_elenco.get_children():
             self.lista_da_salvare.append(self.tree_elenco.item(child)['values'])
-
-        # Sostituzione query INSERT con metodi MovIngressoMerce
+            
         for values in self.lista_da_salvare:
             mov = MovIngressoMerce.from_row(values)
             mov.insert(self.c, self.conn)
-
+            
         self.c.execute('UPDATE progressivi SET prog_acq = %s', (self.prog_lotto_acq + 1,))
         self.conn.commit()
         self.conn.close()
         self.destroy()
-
+   
     def _ins_peso(self):
         peso = Tast_num(self)
         val = peso.value.get()
@@ -139,18 +183,17 @@ class IngressoMerce(tk.Toplevel):
                     mov.id_merc,
                 ),
             )
-
+            
     def _onsingleclick(self, event=None):
         """
-        Popola i campi di inserimento quando l'utente seleziona una riga
-        nel riepilogo (tree_elenco).
-
-        Recupera i dettagli completi dal DB tramite MovIngressoMerce.
+        Popola il tree_riepilogo con tutte le righe appartenenti al progressivo_acq
+        della riga selezionata in tree_elenco. Popola anche i campi di input.
         """
-        # Se l'utente sta editando, non sovrascrivere i campi
+        # Se l'utente sta editando o inserendo, blocchiamo il click per evitare sovrascritture accidental
         if getattr(self, "modalita_inserimento", False) or getattr(self, "modalita_modifica", False):
             return
 
+        # 1. Recuperiamo la selezione attiva da tree_elenco
         sel = self.tree_elenco.selection()
         if not sel:
             return
@@ -159,56 +202,56 @@ class IngressoMerce(tk.Toplevel):
         if not item_values or len(item_values) < 10:
             return
 
-        # Valori della riga (coerenti con UI columns)
-        nr_lotto, fornitore, data_db, prog_acq, num_ddt, taglio, peso_i, peso_f, lotto_chiuso, id_merc = item_values[:10]
+        # Mappatura colonne di tree_elenco in base a riga 158-168 del file grafico (build_ui)
+        # nr_lotto=0, fornitore=1, data=2, prog_acq=3, num_ddt=4, taglio=5, peso_i=6, peso_f=7, lotto_chiuso=8, id_merc=9
+        prog_acq_selezionato = item_values[3]
 
-        # Ricostruzione chiave composta (9 valori) per find_by_key
-        # (prog_acq, data, num_ddt, fornitore, taglio, peso_i, peso_f, lotto_chiuso, id_merc)
-        key = (
-            prog_acq,
-            data_db,
-            num_ddt,
-            fornitore,
-            taglio,
-            peso_i,
-            peso_f,
-            lotto_chiuso,
-            id_merc,
-        )
+        # ----------------------------------------------------
+        # PARTE NOVITÀ: SVUOTA E POPOLA IL TREE_RIEPILOGO
+        # ----------------------------------------------------
+        # Svuotiamo il tree_riepilogo dai vecchi dati visualizzati
+        for child in self.tree_riepilogo.get_children():
+            self.tree_riepilogo.delete(child)
 
-        mov = MovIngressoMerce.find_by_key(self.c, key)
-        if not mov:
-            return
+        # Interroghiamo il DB per trovare tutte le righe di questo lotto/DDT
+        movimenti_lotto = MovIngressoMerce.fetch_by_progressivo(self.c, prog_acq_selezionato)
 
-        # Popolamento campi UI
-        # NOTE: i radio button fornitore hanno come value i dati letti da DB con `SELECT azienda ...`,
-        # quindi per selezionare correttamente dobbiamo valorizzare la StringVar con quella "azienda"
-        # (che è esattamente `fornitore` preso dal tree_elencoview riga).
-        self.fornitore.set(fornitore)
+        # Inseriamo i movimenti trovati all'interno di tree_riepilogo
+        for mov in movimenti_lotto:
+            # 1. Formattiamo la data in modo sicuro
+            data_visibile = mov.data.strftime("%d-%m-%Y") if hasattr(mov.data, "strftime") else str(mov.data)
+            
+            # 2. Risolviamo l'estrazione del prodotto dall'oggetto (controllo incrociato)
+            valore_prodotto = getattr(mov, "prodotto", None) or getattr(mov, "taglio", None) or ""
+            
+            # 3. Costruiamo la tupla a 9 elementi rispettando rigorosamente l'ordine strutturale:
+            # Indici:      0 (prog_acq)      , 1 (data)     , 2 (num_ddt) , 3 (fornitore) , 4 (taglio)       , 5 (peso_i) , 6 (peso_f) , 7 (lotto_chiuso), 8 (id_merc)
+            valori_riga = (mov.prog_acq or "", data_visibile, mov.num_ddt , mov.fornitore , valore_prodotto , mov.peso_i , mov.peso_f , mov.lotto_chiuso, mov.id_merc)
 
-        try:
-            # In UI controller usa formato stringa dd-mm-YYYY per self.data
-            if hasattr(mov.data, "strftime"):
-                self.data.set(mov.data.strftime("%d-%m-%Y"))
+            # Inseriamo la riga intera. Tkinter ora sa esattamente dove posizionare il Prodotto e il Fornitore.
+            self.tree_riepilogo.insert("", "end", values=valori_riga)
+
+        # ----------------------------------------------------
+        # PARTE ESISTENTE: POPOLAMENTO CAMPI INPUT SINGOLI (DI SELEZIONE)
+        # ----------------------------------------------------
+        # Usiamo l'ultimo movimento o una query mirata per riempire i widget Dati/Fornitore
+        if movimenti_lotto:
+            mov_primo = movimenti_lotto[0]
+            
+            self.fornitore.set(mov_primo.fornitore)
+            
+            if hasattr(mov_primo.data, "strftime"):
+                self.data.set(mov_primo.data.strftime("%d-%m-%Y"))
             else:
-                self.data.set(str(mov.data))
-        except Exception:
-            self.data.set(str(data_db))
-
-        try:
-            self.num_ddt.set(getattr(mov, "num_ddt", None) or num_ddt or "")
-        except Exception:
-            self.num_ddt.set(num_ddt)
-
-        # taglio (prodotto) -> se mov è incerto, usiamo il valore dal tree_elencoview
-        self.taglio_s.set(getattr(mov, "taglio", None) or taglio or "")
-
-        # peso_i (quantità) -> se mov è incerto, usiamo il valore dal tree_elencoview
-        self.peso.set(getattr(mov, "peso_i", None) or peso_i or "")
-
-        # Non richiamiamo aggiorna UI/ripristini perché qui è solo "read-only populate"
+                self.data.set(str(mov_primo.data))
+                
+            self.num_ddt.set(mov_primo.num_ddt)
+            self.taglio_s.set(mov_primo.taglio)
+            self.peso.set(mov_primo.peso_i)
+            
         return
 
+   
     def _disabilita_campi(self):
         """Riporta la finestra in modalità sola lettura (campi/azioni di modifica bloccati)."""
         # Reset flag sicurezza

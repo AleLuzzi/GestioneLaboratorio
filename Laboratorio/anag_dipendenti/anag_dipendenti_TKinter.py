@@ -215,18 +215,6 @@ def build_ui(app):
 
     app.lbl_frame_dettagli_selezionato.columnconfigure(1, weight=1)
 
-    # Contenitore moderno CustomTkinter
-
-    '''
-    app.lbl_frame_scegli = tk.LabelFrame(
-        app.frame_toolbar,
-        text="Azioni",
-        font=get_font(12, bold=True),
-        fg=COLORS["text_dark"],
-        bg=COLORS["bg_light"],
-        labelanchor="n",
-    )
-    '''
     # Contenitore moderno CustomTkinter per i pulsanti d'azione
     app.lbl_frame_scegli = ctk.CTkFrame(
         app.frame_toolbar,
@@ -236,16 +224,7 @@ def build_ui(app):
         corner_radius=8
     )
     app.lbl_frame_scegli.grid(row=0, column=0, sticky="ew", padx=0, pady=0)
-    '''
-    # Titolo della sezione posizionato in alto al centro (riga 0, esteso su tutte e 5 le colonne)
-    app.lbl_titolo_azioni = ctk.CTkLabel(
-        app.lbl_frame_scegli,
-        text="Azioni",
-        font=get_font(12, bold=True),
-        text_color=COLORS["text_dark"]
-    )
-    app.lbl_titolo_azioni.grid(row=0, column=0, columnspan=5, padx=8, pady=(10, 5), sticky="n")
-    '''
+    
     # Toolbar azioni in verticale (1 colonna)
     app.lbl_frame_scegli.columnconfigure(0, weight=1)
 
