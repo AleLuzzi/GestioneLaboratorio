@@ -141,6 +141,15 @@ def build_ui(app):
     if _tab_dati_id in _tabs:
         app.notebook_dettagli.forget(app.tab_dettagli_dati)
         app.notebook_dettagli.insert(0, app.tab_dettagli_dati, text="Dati")
+
+    # Forza selezione del tab "Dati" all'apertura finestra
+    try:
+        app.notebook_dettagli.select(app.tab_dettagli_dati)
+        app.notebook_dettagli.update_idletasks()
+    except Exception:
+        # Alcuni Tk/ttk possono avere differenze di comportamento in base alla versione
+        pass
+
     # Colonne visibili:
     # - nr_lotto, fornitore, data
     #
@@ -268,14 +277,14 @@ def build_ui(app):
         height=36,
     )
 
-    # LABEL data ingresso + datepicker (nel tab "Dati")
+    # LABEL data ingresso + data_picker (nel tab "Dati")
     app.label_data_ingresso = ctk.CTkLabel(
         app.tab_dettagli_dati,
         text="DATA INGRESSO MERCE",
         text_color=COLORS["accent_hover"],
         font=title_font,
     )
-    app.picker = Datepicker(app.tab_dettagli_dati, datevar=app.data, dateformat="%d-%m-%Y")
+    app.data_picker = Datepicker(app.tab_dettagli_dati, datevar=app.data, dateformat="%d-%m-%Y")
 
     # ENTRY numero ddt/fattura (nel tab "Dati")
     app.label_num_ddt = ctk.CTkLabel(
@@ -337,32 +346,14 @@ def build_ui(app):
     )
 
     # BOTTONI principali
-    app.btn_invio = ctk.CTkButton(
-        app.frame_toolbar,
-        text="INVIO",
-        font=ctk.CTkFont(family=FONT_FAMILY, size=14, weight="bold"),
-        height=38,
+    app.btn_aggiungi_riga = ctk.CTkButton(
+        app.frame_alto,
+        text="AGGIUNGI RIGA",
+        #font=ctk.CTkFont(family=FONT_FAMILY, size=14, weight="bold"),
+        height=32,
         fg_color=COLORS["accent"],
         hover_color=COLORS["accent_hover"],
-        command=app._invio,
-    )
-    app.btn_salva_esci = ctk.CTkButton(
-        app.frame_toolbar,
-        text="SALVA ed ESCI",
-        font=ctk.CTkFont(family=FONT_FAMILY, size=14, weight="bold"),
-        height=38,
-        fg_color=COLORS["success"],
-        hover_color="#1e8449",
-        command=app._salva_esci,
-    )
-    app.btn_chiudi_finestra = ctk.CTkButton(
-        app.frame_toolbar,
-        text="CHIUDI FINESTRA",
-        font=ctk.CTkFont(family=FONT_FAMILY, size=14, weight="bold"),
-        height=38,
-        fg_color=COLORS["danger"],
-        hover_color="#a93226",
-        command=app._chiudi,
+        command=app._aggiungi_riga,
     )
     app.btn_rimuovi_riga = ctk.CTkButton(
         app.frame_alto,
@@ -370,8 +361,58 @@ def build_ui(app):
         height=32,
         fg_color=COLORS["danger"],
         hover_color="#a93226",
-        command=app._rimuovi_riga_selezionata,
+        command=app._rimuovi_riga,
     )
+    
+    app.btn_nuovo = ctk.CTkButton(
+        app.frame_toolbar,
+        text="NUOVO",
+        font=ctk.CTkFont(family=FONT_FAMILY, size=14, weight="bold"),
+        height=38,
+        fg_color=COLORS["success"],
+        hover_color="#1e8449",
+        command=app._nuovo,
+    )
+    app.btn_modifica = ctk.CTkButton(
+        app.frame_toolbar,
+        text="MODIFICA",
+        font=ctk.CTkFont(family=FONT_FAMILY, size=14, weight="bold"),
+        height=38,
+        fg_color=COLORS["accent"],
+        hover_color=COLORS["accent_hover"],
+        command=app._modifica,
+    )
+    app.btn_salva = ctk.CTkButton(
+        app.frame_toolbar,
+        text="SALVA",
+        font=ctk.CTkFont(family=FONT_FAMILY, size=14, weight="bold"),
+        height=38,
+        fg_color=COLORS["success"],
+        hover_color="#1e8449",
+        command=app._salva,
+        state="disabled",
+    )
+    app.btn_annulla = ctk.CTkButton(
+        app.frame_toolbar,
+        text="ANNULLA",
+        font=ctk.CTkFont(family=FONT_FAMILY, size=14, weight="bold"),
+        height=38,
+        fg_color=COLORS["accent"],
+        hover_color="#a93226",
+        command=app._annulla,
+        state="disabled",
+    )
+    app.btn_chiudi_finestra = ctk.CTkButton(
+        app.frame_toolbar,
+        text="CHIUDI",
+        font=ctk.CTkFont(family=FONT_FAMILY, size=14, weight="bold"),
+        height=38,
+        fg_color=COLORS["danger"],
+        hover_color="#a93226",
+        command=app._chiudi,
+        state="disabled",
+    )
+    
 
     # Posizionamento layout
     # (configurazioni per permettere espansione contenuti nella colonna centrale)
@@ -392,7 +433,7 @@ def build_ui(app):
     # Toolbar a partire dalla colonna 1: lasciamo la colonna 2 libera per il riepilogo
     app.frame_toolbar.grid(row=2, column=1, columnspan=1, padx=8, pady=6, sticky="we")
 
-    app.tree_riepilogo.grid(row=1, column=2, rowspan=4, padx=10)
+    app.tree_riepilogo.grid(row=0, column=0, rowspan=2, padx=10)
     app.frame_elenco.grid(row=0, column=0, rowspan=2, padx=8, pady=6, sticky="nswe")
     app.labelframe_elenco.grid(row=0, column=0, sticky="nsew", padx=0, pady=0)
     app.notebook_dettagli.grid(row=0, column=1, sticky="nsew", padx=(10, 0))
@@ -401,7 +442,7 @@ def build_ui(app):
     app.label_lotto.grid(row=1, column=0, sticky="w", padx=(0, 0), pady=(10, 0))
     app.label_prog_lotto.grid(row=1, column=1, sticky="w", padx=(0, 0), pady=(10, 0))
     app.label_data_ingresso.grid(row=2, column=0, sticky="w")
-    app.picker.grid(row=2, column=1)
+    app.data_picker.grid(row=2, column=1)
 
     app.label_num_ddt.grid(row=3, column=0, sticky="w")
     app.entry_ddt.grid(row=3, column=1)
@@ -411,7 +452,12 @@ def build_ui(app):
     app.entry.grid(row=4, column=1)
     app.btn_ins_peso.grid(row=4, column=2)
 
-    app.btn_invio.grid(row=0, column=0, sticky="we")
-    app.btn_salva_esci.grid(row=0, column=1, sticky="we")
-    app.btn_chiudi_finestra.grid(row=0, column=2, sticky="we")
-    app.btn_rimuovi_riga.grid(row=5, column=2, sticky="we")
+    app.btn_aggiungi_riga.grid(row=0, column=1, sticky="we")
+    app.btn_rimuovi_riga.grid(row=1, column=1, sticky="we")
+      
+    app.btn_nuovo.grid(row=0, column=0, sticky="we", padx=(0, 6))
+    app.btn_modifica.grid(row=0, column=1, sticky="we")
+    app.btn_salva.grid(row=0, column=2, sticky="we")
+    app.btn_annulla.grid(row=0, column=3, sticky="we", padx=(6, 6))
+    app.btn_chiudi_finestra.grid(row=0, column=4, sticky="we")
+  
