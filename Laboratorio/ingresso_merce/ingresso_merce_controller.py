@@ -72,7 +72,7 @@ class IngressoMerce(tk.Toplevel):
             "end",
             values=(
                 str(self.prog_lotto_acq) + 'A',
-                datetime.datetime.strptime(self.data.get(), "%d-%m-%Y").date(),
+                self.data.get(),
                 self.num_ddt.get(),
                 self.fornitore.get(),
                 self.taglio_s.get(),
@@ -178,13 +178,19 @@ class IngressoMerce(tk.Toplevel):
                 continue
             visto_prog_acq.add(prog)
 
+            data_visibile = (
+                mov.data.strftime("%d-%m-%Y")
+                if hasattr(mov.data, "strftime")
+                else str(mov.data)
+            )
+
             self.tree_elenco.insert(
                 "",
                 "end",
                 values=(
                     mov.prog_acq,
                     mov.fornitore,
-                    mov.data,
+                    data_visibile,
                     mov.prog_acq,
                     mov.num_ddt,
                     mov.taglio,
