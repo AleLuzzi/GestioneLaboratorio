@@ -116,8 +116,8 @@ class MovIngressoMerce:
 
     @classmethod
     def fetch_all(cls, cursor):
-        """Recupera tutti i movimenti presenti in `ingresso_merce`."""
-        cursor.execute("SELECT * FROM ingresso_merce")
+        """Recupera tutti i movimenti presenti in `ingresso_merce` ordinati per data decrescente."""
+        cursor.execute("SELECT * FROM ingresso_merce ORDER BY data_acq DESC, progressivo_acq DESC")
         return [cls.from_row(row) for row in cursor.fetchall()]
 
     @classmethod

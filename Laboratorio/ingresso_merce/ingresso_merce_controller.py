@@ -159,12 +159,25 @@ class IngressoMerce(tk.Toplevel):
         self.num_ddt.set(val)
 
     def _carica_elenco_ingresso_merce(self):
-        """Popola la tabella principale con i movimenti presenti su ingresso_merce."""
+        """Popola la tabella principale con 1 riga per ogni `progressivo_acq`.
+
+        Nota: i movimenti vengono ordinati da `fetch_all` per data decrescente,
+        quindi teniamo la prima occorrenza (quella più recente) per progressivo_acq.
+        """
         for child in self.tree_elenco.get_children():
             self.tree_elenco.delete(child)
 
         movimenti = MovIngressoMerce.fetch_all(self.c)
+
+        # Deduplica per progressivo_acq: 1 riga per progressivo.
+        # In ordine data decrescente, la prima incontrata è la più recente.
+        visto_prog_acq = set()
         for mov in movimenti:
+            prog = mov.prog_acq
+            if prog in visto_prog_acq:
+                continue
+            visto_prog_acq.add(prog)
+
             self.tree_elenco.insert(
                 "",
                 "end",
@@ -182,6 +195,7 @@ class IngressoMerce(tk.Toplevel):
                 ),
             )
 
+
     def _onsingleclick(self, event=None):
         """Aggiorna riepilogo e campi di input in base alla riga selezionata."""
         if getattr(self, "modalita_inserimento", False) or getattr(self, "modalita_modifica", False):
@@ -196,6 +210,16 @@ class IngressoMerce(tk.Toplevel):
             return
 
         prog_acq_selezionato = item_values[3]
+        # Aggiorna label del progressivo lotto in base alla riga selezionata nel tree_elenco
+        try:
+            self.label_prog_lotto.configure(text=str(prog_acq_selezionato))
+        except Exception:
+            # fallback best-effort: aggiorna direttamente il valore usato in UI
+            try:
+                self.label_prog_lotto.config(text=str(prog_acq_selezionato))
+            except Exception:
+                pass
+
 
         for child in self.tree_riepilogo.get_children():
             self.tree_riepilogo.delete(child)

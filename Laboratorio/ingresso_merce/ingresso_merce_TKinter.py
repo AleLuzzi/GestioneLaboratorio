@@ -115,9 +115,11 @@ def build_ui(app):
     tree_wrap.rowconfigure(0, weight=1)
     tree_wrap.columnconfigure(0, weight=1)
 
-    app.tree_elenco = ttk.Treeview(tree_wrap, height=10, show="headings")
+    # Rimuovo height fissa per permettere al Treeview di espandersi tramite il layout (grid) fino alla toolbar.
+    app.tree_elenco = ttk.Treeview(tree_wrap, show="headings")
 
     app.notebook_dettagli = ttk.Notebook(app.frame_dettagli)
+
 
     app.tab_dettagli_dati = tk.Frame(app.notebook_dettagli)
     app.notebook_dettagli.add(app.tab_dettagli_dati, text="Dati")
@@ -401,13 +403,27 @@ def build_ui(app):
 
     app.rowconfigure(0, weight=1)
     app.rowconfigure(1, weight=1)
+    # La toolbar (riga 2) non deve espandersi: `frame_elenco` (rowspan=2)
+    # deve arrivare fino al bordo inferiore della toolbar.
+    app.rowconfigure(2, weight=0)
     app.columnconfigure(0, weight=0)
+
     app.columnconfigure(1, weight=1)
     app.columnconfigure(2, weight=0)
 
+
+    # Garantisce che la colonna sinistra (frame_elenco -> labelframe_elenco -> tree_wrap)
+    # possa espandersi verticalmente fino al bordo della toolbar.
+    app.frame_elenco.rowconfigure(0, weight=1)
+    # riga 1 (tree_wrap) deve prendere il resto dello spazio
+    app.frame_elenco.rowconfigure(1, weight=1)
+    app.frame_elenco.columnconfigure(0, weight=1)
+
     app.frame_dettagli.rowconfigure(0, weight=1)
+
     app.frame_dettagli.columnconfigure(0, weight=0)
     app.frame_dettagli.columnconfigure(1, weight=1)
+
 
     app.frame_alto.grid(row=0, column=1, padx=8, pady=6, sticky="we")
     app.frame_dettagli.grid(row=1, column=1, padx=8, pady=6, sticky="we")
@@ -415,8 +431,8 @@ def build_ui(app):
     app.frame_toolbar.grid(row=2, column=1, columnspan=1, padx=8, pady=6, sticky="we")
 
     app.tree_riepilogo.grid(row=0, column=0, rowspan=2, padx=10)
-    app.frame_elenco.grid(row=0, column=0, rowspan=2, padx=8, pady=6, sticky="nswe")
-    app.labelframe_elenco.grid(row=0, column=0, sticky="nsew", padx=0, pady=0)
+    app.frame_elenco.grid(row=0, column=0, rowspan=3, padx=8, pady=6, sticky="nswe")
+    app.labelframe_elenco.grid(row=0, column=0, rowspan=3, sticky="nsew", padx=0, pady=0)
 
     app.notebook_dettagli.grid(row=0, column=1, sticky="nsew", padx=(10, 0))
 
