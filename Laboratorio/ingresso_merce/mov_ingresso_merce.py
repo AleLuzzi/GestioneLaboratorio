@@ -1,13 +1,11 @@
 class MovIngressoMerce:
-    """
-    Record movimenti per tabella `ingresso_merce`.
+    """Record movimenti per tabella `ingresso_merce`.
 
     Il progetto (controller + UI) inserisce righe con 9 campi in questo ordine:
       (prog_acq, data, num_ddt, fornitore, taglio, peso_i, peso_f, lotto_chiuso, id_merc)
 
     Nota naming DB:
-    - nel DB la colonna relativa al progressivo è chiamata `progressivo_acq`
-      (non `prog_acq`).
+    - nel DB la colonna relativa al progressivo è chiamata `progressivo_acq` (non `prog_acq`).
     - questo modello mantiene l'attributo `prog_acq` ma nelle query usa `progressivo_acq`.
     """
 
@@ -47,14 +45,7 @@ class MovIngressoMerce:
 
     @classmethod
     def from_row(cls, row):
-        """
-        Costruisce un oggetto da una riga del DB.
-
-        Supporta:
-        - (prog_acq, data, num_ddt, fornitore, taglio, peso_i, peso_f, lotto_chiuso, id_merc)
-        - eventuali campi extra iniziali (es. id PK) ignorati a supporto compatibilità:
-          se len(row) == 10, usa row[1:] per mappare i 9 campi.
-        """
+        """Costruisce un oggetto da una riga del DB."""
         if row is None:
             return None
 
@@ -63,7 +54,9 @@ class MovIngressoMerce:
         elif len(row) == 10:
             data = row[1:]
         else:
-            raise ValueError(f"Riga non supportata per ingresso_merce: len(row)={len(row)}")
+            raise ValueError(
+                f"Riga non supportata per ingresso_merce: len(row)={len(row)}"
+            )
 
         return cls(
             prog_acq=data[0],
@@ -92,10 +85,7 @@ class MovIngressoMerce:
         )
 
     def params_where(self):
-        """
-        Valori per WHERE basata sulla chiave composta (tutti i campi noti).
-        Utile per UPDATE/DELETE senza conoscere PK.
-        """
+        """Valori per WHERE basata sulla chiave composta (tutti i campi noti)."""
         return (
             self.prog_acq,
             self.data,
@@ -109,27 +99,20 @@ class MovIngressoMerce:
         )
 
     def params_update(self):
-        """
-        Valori per UPDATE:
-        aggiorna tutti i campi e usa WHERE sulla chiave composta.
-        """
+        """Valori per UPDATE: SET (insert) + WHERE (where)."""
         return self.params_insert() + self.params_where()
-    
+
     @classmethod
     def fetch_by_progressivo(cls, cursor, progressivo_acq):
-        """
-        Recupera tutti i movimenti che appartengono allo stesso lotto 
-        filtrando per il campo progressivo_acq.
-        """
+        """Recupera tutti i movimenti associati a un dato `progressivo_acq`."""
         cursor.execute(
             """
-            SELECT * FROM ingresso_merce 
+            SELECT * FROM ingresso_merce
             WHERE progressivo_acq = %s
-            """, 
-            (progressivo_acq,)
+            """,
+            (progressivo_acq,),
         )
         return [cls.from_row(row) for row in cursor.fetchall()]
-
 
     @classmethod
     def fetch_all(cls, cursor):
@@ -139,23 +122,16 @@ class MovIngressoMerce:
 
     @classmethod
     def find_by_key(cls, cursor, key):
-        """
-        Cerca una singola riga tramite chiave composta.
-        `key` può essere:
-          - tupla di 9 valori in ordine:
-            (prog_acq, data, num_ddt, fornitore, taglio, peso_i, peso_f, lotto_chiuso, id_merc)
-          - oppure oggetto IngressoMerceMov
-        """
+        """Cerca una singola riga tramite chiave composta."""
         if isinstance(key, cls):
-            obj = key
-            params = obj.params_where()
+            params = key.params_where()
         else:
             if len(key) != 9:
-                raise ValueError("Chiave composta ingresso_merce deve contenere 9 valori.")
+                raise ValueError(
+                    "Chiave composta ingresso_merce deve contenere 9 valori."
+                )
             params = tuple(key)
 
-        # WHERE su tutti i campi per evitare ambiguità senza PK
-        # (progressivo_acq è il nome colonna reale nel DB)
         cursor.execute(
             """
             SELECT * FROM ingresso_merce
@@ -173,20 +149,11 @@ class MovIngressoMerce:
         )
         row = cursor.fetchone()
         return cls.from_row(row) if row else None
-    
+
     def save(self, cursor, conn):
-        """
-        Esegue UPDATE del record corrente utilizzando come riferimento 
-        univoco il campo progressivo_acq (prog_acq).
-        """
-        # Estraiamo i 9 valori correnti aggiornati dell'oggetto per il SET
+        """Aggiorna il record corrente tramite `progressivo_acq`."""
         update_values = self.params_insert()
-        
-        # Identifichiamo il record nel WHERE usando il progressivo_acq dell'istanza
-        where_value = (self.prog_acq,)
-        
-        # Uniamo le tuple: i primi 9 valori per i SET, l'ultimo per il WHERE
-        query_params = update_values + where_value
+        query_params = update_values + (self.prog_acq,)
 
         cursor.execute(
             """
@@ -206,38 +173,6 @@ class MovIngressoMerce:
         )
         conn.commit()
 
-    '''
-    def save(self, cursor, conn):
-        """
-        Esegue UPDATE del record corrente.
-        Nota: usa WHERE sulla chiave composta.
-        """
-        cursor.execute(
-            """
-            UPDATE ingresso_merce
-                   progressivo_acq = %s,
-                   data_acq = %s,
-                   documento = %s,
-                   fornitore = %s,
-                   prodotto = %s,
-                   quantita = %s,
-                   residuo = %s,
-                   lotto_chiuso = %s,
-                   id_merc = %s
-             WHERE progressivo_acq = %s
-               AND data_acq = %s
-               AND documento = %s
-               AND fornitore = %s
-               AND prodotto = %s
-               AND quantita = %s
-               AND residuo = %s
-               AND lotto_chiuso = %s
-               AND id_merc = %s
-            """,
-            self.params_update(),
-        )
-        conn.commit()
-    '''
     def insert(self, cursor, conn):
         """Esegue INSERT del nuovo record sul database."""
         cursor.execute(
@@ -250,10 +185,7 @@ class MovIngressoMerce:
         conn.commit()
 
     def delete(self, cursor, conn):
-        """
-        Elimina il record corrente.
-        Usa WHERE sulla chiave composta.
-        """
+        """Elimina il record corrente tramite chiave composta."""
         cursor.execute(
             """
             DELETE FROM ingresso_merce
@@ -270,3 +202,4 @@ class MovIngressoMerce:
             self.params_where(),
         )
         conn.commit()
+
