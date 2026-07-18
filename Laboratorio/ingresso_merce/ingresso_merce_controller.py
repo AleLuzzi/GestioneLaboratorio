@@ -304,61 +304,34 @@ class IngressoMerce(tk.Toplevel):
 
         try:
             self.entry_ddt.configure(state="disabled")
-        except Exception:
-            pass
-        try:
             self.entry_peso.configure(state="disabled")
-        except Exception:
-            pass
-
-        try:
             self.data_picker.configure(state="disabled")
-        except Exception:
-            pass
-
-        try:
-            winfo_children = getattr(self.data_picker, "winfo_children", None)
-            if callable(winfo_children):
-                for child in winfo_children():
-                    try:
-                        child.configure(state="disabled")
-                    except Exception:
-                        pass
-        except Exception:
-            pass
-
-        try:
             self.btn_ins_num_ddt.configure(state="disabled")
-        except Exception:
-            pass
-        try:
             self.btn_ins_peso.configure(state="disabled")
-        except Exception:
-            pass
-
-        try:
             self.btn_nuovo.configure(state="normal")
-        except Exception:
-            pass
-        try:
             self.btn_modifica.configure(state="normal")
-        except Exception:
-            pass
-        try:
             self.btn_salva.configure(state="disabled")
-        except Exception:
-            pass
-        try:
             self.btn_annulla.configure(state="disabled")
+            self.btn_aggiungi_riga.configure(state="disabled")
+            self.btn_rimuovi_riga.configure(state="disabled")
         except Exception:
             pass
 
+    def _best_effort_set_state(self, widget, state: str):
+        """Imposta widget['state'] in modo best-effort."""
         try:
-            self.btn_aggiungi_riga.configure(state="disabled")
+            widget.configure(state=state)
+            return
         except Exception:
             pass
+
+        # best-effort fallback: se è un contenitore, prova ad agire sui figli
         try:
-            self.btn_rimuovi_riga.configure(state="disabled")
+            for child in widget.winfo_children():
+                try:
+                    child.configure(state=state)
+                except Exception:
+                    pass
         except Exception:
             pass
 
@@ -367,107 +340,62 @@ class IngressoMerce(tk.Toplevel):
         self.modalita_inserimento = True
         self.modalita_modifica = False
 
-        try:
-            if hasattr(self, "tree_elenco") and self.tree_elenco.selection():
-                self.tree_elenco.selection_remove(self.tree_elenco.selection())
-        except Exception:
-            pass
+        # Rimuovi selezione in tabella (best-effort)
+        if getattr(self, "tree_elenco", None) is not None:
+            try:
+                if self.tree_elenco.selection():
+                    self.tree_elenco.selection_remove(self.tree_elenco.selection())
+            except Exception:
+                pass
 
-        self.num_ddt.set("")
-        self.peso.set("")
-        self.fornitore.set("")
-        self.taglio_s.set("")
+        # Reset campi (StringVar.set di solito non fallisce)
         try:
+            self.num_ddt.set("")
+            self.peso.set("")
+            self.fornitore.set("")
+            self.taglio_s.set("")
             self.data.set(datetime.date.today().strftime("%d-%m-%Y"))
         except Exception:
             pass
 
-        try:
-            self.entry_ddt.configure(state="normal")
-        except Exception:
-            pass
-        try:
-            self.entry_peso.configure(state="normal")
-        except Exception:
-            pass
+        # Abilita campi di input principali
+        self._best_effort_set_state(self.entry_ddt, "normal")
+        self._best_effort_set_state(self.entry_peso, "normal")
+        self._best_effort_set_state(self.data_picker, "normal")
 
-        try:
-            self.data_picker.configure(state="normal")
-        except Exception:
-            try:
-                for child in self.data_picker.winfo_children():
-                    try:
-                        child.configure(state="normal")
-                    except Exception:
-                        pass
-            except Exception:
-                pass
+        # Abilita tasti di inserimento numerico/peso
+        self._best_effort_set_state(self.btn_ins_num_ddt, "normal")
+        self._best_effort_set_state(self.btn_ins_peso, "normal")
 
-        try:
-            self.btn_ins_num_ddt.configure(state="normal")
-        except Exception:
-            pass
-        try:
-            self.btn_ins_peso.configure(state="normal")
-        except Exception:
-            pass
-
+        # Abilita ricorsivamente i widget compatibili
         try:
             for child in self.winfo_children():
                 self._best_effort_enable_widgets(child)
         except Exception:
             pass
 
-        try:
-            self.btn_nuovo.configure(state="disabled")
-        except Exception:
-            pass
-        try:
-            self.btn_modifica.configure(state="disabled")
-        except Exception:
-            pass
-        try:
-            self.btn_salva.configure(state="normal")
-        except Exception:
-            pass
-        try:
-            self.btn_annulla.configure(state="normal")
-        except Exception:
-            pass
+        # Gestione bottoni in base allo stato
+        self._best_effort_set_state(self.btn_nuovo, "disabled")
+        self._best_effort_set_state(self.btn_modifica, "disabled")
+        self._best_effort_set_state(self.btn_salva, "normal")
+        self._best_effort_set_state(self.btn_annulla, "normal")
 
-        try:
-            self.btn_aggiungi_riga.configure(state="disabled")
-        except Exception:
-            pass
-        try:
-            self.btn_rimuovi_riga.configure(state="disabled")
-        except Exception:
-            pass
+        self._best_effort_set_state(self.btn_aggiungi_riga, "disabled")
+        self._best_effort_set_state(self.btn_rimuovi_riga, "disabled")
 
         # Richiedi progressivo in modo atomico (evita race condition tra finestre)
         # Solo al primo accesso alla modalità "NUOVO".
         if self.prog_lotto_acq is None:
             self.prog_lotto_acq = self._next_prog_acq()
-
-
-            # aggiorna UI
+            # aggiorna UI (best-effort)
             try:
                 self.label_prog_lotto.configure(text=f"{self.prog_lotto_acq}A")
             except Exception:
-                try:
-                    self.label_prog_lotto.config(text=f"{self.prog_lotto_acq}A")
-                except Exception:
-                    pass
+                pass
 
         # abilita riga (non deve dipendere dall'allocazione progressivo: evita blocchi UI)
-        try:
-            self.btn_aggiungi_riga.configure(state="normal")
-        except Exception:
-            pass
-        try:
-            self.btn_rimuovi_riga.configure(state="normal")
-        except Exception:
-            pass
+        self._best_effort_set_state(self.btn_aggiungi_riga, "normal")
+        self._best_effort_set_state(self.btn_rimuovi_riga, "normal")
 
         return
 
@@ -650,17 +578,8 @@ class IngressoMerce(tk.Toplevel):
 
         try:
             self.btn_nuovo.configure(state="normal")
-        except Exception:
-            pass
-        try:
             self.btn_modifica.configure(state="normal")
-        except Exception:
-            pass
-        try:
             self.btn_salva.configure(state="disabled")
-        except Exception:
-            pass
-        try:
             self.btn_annulla.configure(state="disabled")
         except Exception:
             pass
