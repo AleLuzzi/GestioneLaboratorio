@@ -6,6 +6,7 @@ from config import get_config
 from db import get_connection, close_connection
 from .ingresso_merce_TKinter import setup_window, build_ui
 from .mov_ingresso_merce import MovIngressoMerce
+from anag_fornitori.fornitore import Fornitore
 
 
 class IngressoMerce(tk.Toplevel):
@@ -22,9 +23,12 @@ class IngressoMerce(tk.Toplevel):
         self.conn = get_connection()
         self.c = self.conn.cursor()
 
-        # Lettura progressivo acquisto (utilizzato per il numero lotto)
-        self.c.execute("SELECT prog_acq FROM progressivi")
-        self.prog_lotto_acq = self.c.fetchone()[0]
+        # progressivo lotto verrà richiesto in modo atomico quando si entra in modalità "NUOVO"
+        # (vuoto -> non visualizzare nulla in label all'apertura)
+        self.prog_lotto_acq = None
+        # guard per evitare doppie allocazioni del progressivo in caso di click ripetuti / handler concorrenti
+        self._allocating_prog_acq = False
+
 
         # Struttura temporanea per l'inserimento multiplo
         self.lista_da_salvare = []
@@ -36,9 +40,14 @@ class IngressoMerce(tk.Toplevel):
 
         # Cache liste (tagli) per merceologia
         self.lista_fornitori = []
-        self.c.execute("SELECT azienda FROM fornitori WHERE flag1_ing_merce = 1")
-        for row in self.c:
-            self.lista_fornitori.extend(row)
+        # Recupera le aziende dei fornitori abilitati per "ingresso merce" usando il modello.
+        # Nota: `Fornitore` fornisce i campi completi; qui servono solo `azienda`.
+        
+
+        for f in Fornitore.fetch_all(self.c):
+            if getattr(f, "flag1_ing_merce", 0) == 1:
+                self.lista_fornitori.append(f.azienda)
+
         self.lst_agnello = self._load_tagli_by_merceologia(12)
         self.lst_bovino = self._load_tagli_by_merceologia(10)
         self.lst_suino = self._load_tagli_by_merceologia(11)
@@ -82,7 +91,7 @@ class IngressoMerce(tk.Toplevel):
                 merc,
             ),
         )
-        self.entry.delete(0, tk.END)
+        self.entry_peso.delete(0, tk.END)
 
     def _salva(self):
         # Caso: aggiornamento di una riga già presente
@@ -141,12 +150,11 @@ class IngressoMerce(tk.Toplevel):
             mov = MovIngressoMerce.from_row(values)
             mov.insert(self.c, self.conn)
 
-        self.c.execute(
-            'UPDATE progressivi SET prog_acq = %s', (self.prog_lotto_acq + 1,)
-        )
+        # Progressivo già assegnato in modalità "NUOVO".
         self.conn.commit()
         self.conn.close()
         self.destroy()
+
 
     def _ins_peso(self):
         peso = Tast_num(self)
@@ -157,6 +165,31 @@ class IngressoMerce(tk.Toplevel):
         ddt_num = Tast_num(self)
         val = ddt_num.value.get()
         self.num_ddt.set(val)
+        
+    def _sposta_focus_su_peso(self, *args):
+        """Sposta il focus su entry_peso quando viene selezionato un taglio.
+
+        Nota: la UI può mettere entry_peso in state='disabled' (es. sola lettura).
+        Per evitare focus non desiderati o non applicati, facciamo focus solo
+        quando l'entry è abilitata e la finestra è in inserimento/modifica.
+        """
+        if not (self.taglio_s.get() and hasattr(self, "entry_peso")):
+            return
+
+        # Se la finestra è in sola lettura, non forzare il focus.
+        if not (getattr(self, "modalita_inserimento", False) or getattr(self, "modalita_modifica", False)):
+            return
+
+        try:
+            # Best-effort: se per qualche motivo lo stato non è normal, provo ad abilitarlo.
+            if str(self.entry_peso.cget("state")) == "disabled":
+                self.entry_peso.configure(state="normal")
+
+            self.entry_peso.focus_set()
+            self.entry_peso.select_range(0, "end")
+        except Exception:
+            pass
+
 
     def _carica_elenco_ingresso_merce(self):
         """Popola la tabella principale con 1 riga per ogni `progressivo_acq`.
@@ -274,7 +307,7 @@ class IngressoMerce(tk.Toplevel):
         except Exception:
             pass
         try:
-            self.entry.configure(state="disabled")
+            self.entry_peso.configure(state="disabled")
         except Exception:
             pass
 
@@ -354,7 +387,7 @@ class IngressoMerce(tk.Toplevel):
         except Exception:
             pass
         try:
-            self.entry.configure(state="normal")
+            self.entry_peso.configure(state="normal")
         except Exception:
             pass
 
@@ -411,9 +444,76 @@ class IngressoMerce(tk.Toplevel):
         except Exception:
             pass
 
+        # Richiedi progressivo in modo atomico (evita race condition tra finestre)
+        # Solo al primo accesso alla modalità "NUOVO".
+        if self.prog_lotto_acq is None:
+            self.prog_lotto_acq = self._next_prog_acq()
+
+
+            # aggiorna UI
+            try:
+                self.label_prog_lotto.configure(text=f"{self.prog_lotto_acq}A")
+            except Exception:
+                try:
+                    self.label_prog_lotto.config(text=f"{self.prog_lotto_acq}A")
+                except Exception:
+                    pass
+
+        # abilita riga (non deve dipendere dall'allocazione progressivo: evita blocchi UI)
+        try:
+            self.btn_aggiungi_riga.configure(state="normal")
+        except Exception:
+            pass
+        try:
+            self.btn_rimuovi_riga.configure(state="normal")
+        except Exception:
+            pass
+
         return
 
+
+    def _next_prog_acq(self):
+        """Preleva e incrementa il progressivo in modo atomico (consumo DB).
+
+        Nota: questa funzione è resa robusta contro lo stato transazionale già aperto
+        (evita ProgrammingError: "Transaction already in progress").
+        """
+        # guard contro doppie allocazioni
+        if self._allocating_prog_acq:
+            # se chiamata concorrente/click ripetuti, non allocare due volte
+            raise RuntimeError("Allocazione progressivo già in corso")
+
+        self._allocating_prog_acq = True
+        try:
+            # best-effort: se esiste già una transaction attiva, facciamo rollback
+            # (evita l'errore di start_transaction)
+            try:
+                self.conn.rollback()
+            except Exception:
+                pass
+
+            self.conn.start_transaction()
+            self.c.execute("SELECT prog_acq FROM progressivi FOR UPDATE")
+            row = self.c.fetchone()
+            if not row:
+                raise RuntimeError("Nessun progressivo presente in tabella progressivi")
+            current = row[0]
+            self.c.execute("UPDATE progressivi SET prog_acq = prog_acq + 1")
+            self.conn.commit()
+            return current
+        except Exception:
+            try:
+                self.conn.rollback()
+            except Exception:
+                pass
+            raise
+        finally:
+            self._allocating_prog_acq = False
+
+
+
     def _best_effort_disable_widgets(self, widget):
+
         """Disabilita widget compatibili con state='disabled' (best-effort)."""
         try:
             widget.configure(state="disabled")
@@ -436,7 +536,7 @@ class IngressoMerce(tk.Toplevel):
         self.modalita_modifica = True
 
         self.entry_ddt.configure(state="normal")
-        self.entry.configure(state="normal")
+        self.entry_peso.configure(state="normal")
 
         try:
             self.data_picker.configure(state="normal")

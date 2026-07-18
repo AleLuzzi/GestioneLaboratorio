@@ -122,10 +122,10 @@ def build_ui(app):
 
 
     app.tab_dettagli_dati = tk.Frame(app.notebook_dettagli)
-    app.notebook_dettagli.add(app.tab_dettagli_dati, text="Dati")
+    app.notebook_dettagli.add(app.tab_dettagli_dati, text="Dati Documento")
 
-    app.tab_dettagli_fornitore = tk.Frame(app.notebook_dettagli)
-    app.notebook_dettagli.add(app.tab_dettagli_fornitore, text="Fornitore")
+    #app.tab_dettagli_fornitore = tk.Frame(app.notebook_dettagli)
+    #app.notebook_dettagli.add(app.tab_dettagli_fornitore, text="Fornitore")
 
     app.tab_dettagli_taglio = tk.Frame(app.notebook_dettagli)
     app.notebook_dettagli.add(app.tab_dettagli_taglio, text="Tagli / Prodotti")
@@ -182,7 +182,7 @@ def build_ui(app):
     app.labelframe_elenco.columnconfigure(0, weight=1)
 
     app.labelframe_fornitori = tk.LabelFrame(
-        app.tab_dettagli_fornitore,
+        app.tab_dettagli_dati,
         text="Selezione Fornitore",
         font=get_font(12, bold=True),
         fg=COLORS["text_dark"],
@@ -192,9 +192,14 @@ def build_ui(app):
 
     _add_radio_grid(app.labelframe_fornitori, app.lista_fornitori, app.fornitore, row_wrap=6, width=200)
 
-    app.labelframe_fornitori.grid(row=0, column=0, sticky="nsew")
-    app.tab_dettagli_fornitore.rowconfigure(0, weight=1)
-    app.tab_dettagli_fornitore.columnconfigure(0, weight=1)
+    app.labelframe_fornitori.grid(row=4, column=0, sticky="nsew", padx=(0, 0), pady=(10, 0))
+    
+
+
+    # Mantengo la struttura del tab "Fornitore" nel notebook anche se non contiene più i widget.
+    #app.tab_dettagli_fornitore.rowconfigure(0, weight=0)
+    #app.tab_dettagli_fornitore.columnconfigure(0, weight=0)
+
 
     app.labelframe_taglio = tk.LabelFrame(
         app.tab_dettagli_taglio,
@@ -242,17 +247,25 @@ def build_ui(app):
 
     app.labelframe_taglio.grid(row=0, column=0, sticky="nsew")
     app.tab_dettagli_taglio.rowconfigure(0, weight=1)
+    app.labelframe_taglio.rowconfigure(1, weight=0)
     app.tab_dettagli_taglio.columnconfigure(0, weight=1)
 
-    app.notebook_tagli.grid(row=0, column=0, sticky="we")
+    app.notebook_tagli.grid(row=0, column=0, columnspan=3, sticky="nsew", padx=10, pady=(10, 5))
+    
+    # Crea una linea di separazione visiva (opzionale ma molto professionale)
+    separatore = ctk.CTkFrame(app.labelframe_taglio, height=2, fg_color=COLORS["border"])
+    separatore.grid(row=1, column=0, columnspan=3, sticky="ew", padx=15, pady=10)
+
 
     app.tab_dettagli_dati.rowconfigure(0, weight=0)
     app.tab_dettagli_dati.rowconfigure(1, weight=0)
     app.tab_dettagli_dati.rowconfigure(2, weight=0)
     app.tab_dettagli_dati.rowconfigure(3, weight=0)
+    app.tab_dettagli_dati.rowconfigure(4, weight=1)
+
     app.tab_dettagli_dati.columnconfigure(0, weight=1)
     app.tab_dettagli_dati.columnconfigure(1, weight=0)
-
+    
     title_font = ctk.CTkFont(family=FONT_FAMILY, size=16, weight="bold")
     value_font = ctk.CTkFont(family=FONT_FAMILY, size=16, weight="bold")
 
@@ -301,12 +314,17 @@ def build_ui(app):
     app.entry_ddt.focus()
 
     app.label_peso = ctk.CTkLabel(
-        app.tab_dettagli_dati,
+        app.labelframe_taglio,
         text="INSERIMENTO PESO",
         text_color=COLORS["accent_hover"],
         font=title_font,
     )
-    app.entry = ctk.CTkEntry(app.tab_dettagli_dati, textvariable=app.peso, width=220, height=34)
+    app.entry_peso = ctk.CTkEntry(
+        app.labelframe_taglio, 
+        textvariable=app.peso, 
+        width=180, 
+        height=34
+        )
 
     def _normalize_and_validate_peso_on_focus_out(_event=None):
         """Normalizza il separatore decimale e valida in uscita dal campo."""
@@ -321,11 +339,18 @@ def build_ui(app):
             app.peso.set(normalized_value)
         else:
             app.peso.set("")
+            
+    
 
-    app.entry.bind("<FocusOut>", _normalize_and_validate_peso_on_focus_out)
+    # Collega la variabile della selezione del taglio alla funzione di focus
+    app.taglio_s.trace_add("write", app._sposta_focus_su_peso)
+
+    # Premendo INVIO nella entry del peso, viene attivata l'aggiunta della riga
+    app.entry_peso.bind("<Return>", lambda event: app._aggiungi_riga())
+    app.entry_peso.bind("<FocusOut>", _normalize_and_validate_peso_on_focus_out)
 
     app.btn_ins_peso = ctk.CTkButton(
-        app.tab_dettagli_dati,
+        app.labelframe_taglio,
         text="",
         image=app.img_btn,
         width=36,
@@ -336,7 +361,7 @@ def build_ui(app):
     )
 
     app.btn_aggiungi_riga = ctk.CTkButton(
-        app.frame_alto,
+        app.labelframe_taglio,
         text="AGGIUNGI RIGA",
         height=32,
         fg_color=COLORS["accent"],
@@ -430,7 +455,8 @@ def build_ui(app):
 
     app.frame_toolbar.grid(row=2, column=1, columnspan=1, padx=8, pady=6, sticky="we")
 
-    app.tree_riepilogo.grid(row=0, column=0, rowspan=2, padx=10)
+    # --- GESTIONE TABELLA E RIMOZIONE (Dentro frame_alto) ---
+    app.tree_riepilogo.grid(row=0, column=0, rowspan=2, padx=10, sticky="nsew")
     app.frame_elenco.grid(row=0, column=0, rowspan=3, padx=8, pady=6, sticky="nswe")
     app.labelframe_elenco.grid(row=0, column=0, rowspan=3, sticky="nsew", padx=0, pady=0)
 
@@ -445,17 +471,19 @@ def build_ui(app):
     app.label_num_ddt.grid(row=3, column=0, sticky="w")
     app.entry_ddt.grid(row=3, column=1)
     app.btn_ins_num_ddt.grid(row=3, column=2)
+   
+    app.label_peso.grid(row=2, column=0, sticky="w", padx=(15, 10), pady=(5, 15))
+    app.entry_peso.grid(row=2, column=1, sticky="w", padx=10, pady=(5, 15))
+    app.btn_ins_peso.grid(row=2, column=2)
 
-    app.label_peso.grid(row=4, column=0, sticky="w")
-    app.entry.grid(row=4, column=1)
-    app.btn_ins_peso.grid(row=4, column=2)
+    app.btn_aggiungi_riga.configure(text="AGGIUNGI A RIEPILOGO")
+    app.btn_aggiungi_riga.grid(row=2, column=3, sticky="e", padx=(10, 15), pady=(5, 15))
 
-    app.btn_aggiungi_riga.grid(row=0, column=1, sticky="we")
-    app.btn_rimuovi_riga.grid(row=1, column=1, sticky="we")
-
+    app.btn_rimuovi_riga.configure(text="RIMUOVI SELEZIONATA")
+    app.btn_rimuovi_riga.grid(row=2, column=0, sticky="e", padx=10, pady=(5, 0)) 
+    
     app.btn_nuovo.grid(row=0, column=0, sticky="we", padx=(0, 6))
     app.btn_modifica.grid(row=0, column=1, sticky="we")
     app.btn_salva.grid(row=0, column=2, sticky="we")
     app.btn_annulla.grid(row=0, column=3, sticky="we", padx=(6, 6))
     app.btn_chiudi_finestra.grid(row=0, column=4, sticky="we")
-
